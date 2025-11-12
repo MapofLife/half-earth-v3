@@ -14,6 +14,8 @@ import IndicatorIcon from 'icons/gauge_icon.svg?react';
 import HomeIcon from 'icons/house-solid.svg?react';
 import StacksIcon from 'icons/stacks.svg?react';
 import TimeLineIcon from 'icons/timeline.svg?react';
+import PlanningIcon from 'icons/planning.svg?react';
+import ExpertIcon from 'icons/expert_tools.svg?react';
 
 import styles from './dashboard-nav-styles.module.scss';
 
@@ -42,6 +44,7 @@ function DashboardNavComponent(props) {
     REGION_ANALYSIS: 'region-analysis',
     TRENDS: 'trends',
     INFO: 'info',
+    PLANNING: 'planning',
   };
 
   const updateHistory = (page) => {
@@ -145,6 +148,25 @@ function DashboardNavComponent(props) {
           onClick={() => updateHistory(NAVIGATION.TRENDS, titles.TRENDS)}
         >
           <TimeLineIcon />
+        </button>
+        <button
+          type="button"
+          aria-label={t('Planning')}
+          title={t('Planning')}
+          className={cx({
+            [styles.selected]: selectedIndex === NAVIGATION.PLANNING,
+          })}
+          onClick={() => updateHistory(NAVIGATION.PLANNING, titles.PLANNING)}
+        >
+          <PlanningIcon />
+        </button>
+        <button
+          type="button"
+          aria-label={t('Expert Tools')}
+          title={t('Expert Tools')}
+          onClick={() => window.location.href = 'https://mol.org/dashboard/expert'}
+        >
+          <ExpertIcon />
         </button>
         <button
           type="button"
