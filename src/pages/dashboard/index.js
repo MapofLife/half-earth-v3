@@ -65,7 +65,7 @@ function DashboardContainer(props) {
   const [filteredTaxaList, setFilteredTaxaList] = useState([]);
   const [scientificName, setScientificName] = useState(null);
   const [selectedIndex, setSelectedIndex] = useState(NAVIGATION.HOME);
-  const [loggedIn, setLoggedIn] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(true);
   const [selectedRegion, setSelectedRegion] = useState();
   const [selectedGeometryRings, setSelectedGeometryRings] = useState();
   const [fromTrends, setFromTrends] = useState(false);
@@ -414,7 +414,7 @@ function DashboardContainer(props) {
   };
 
   const getCustomAreasSpeciesDetails = (speciesData, taxa) => {
-    const results = speciesData.map(({ name, commonName }) => {
+    const results = speciesData.map(({ name, commonName, threat_status, species_url }) => {
       const isFound = speciesToAvoid
         .map((item) => item.toUpperCase())
         .includes(name.toUpperCase());
@@ -426,9 +426,9 @@ function DashboardContainer(props) {
         return {
           common_name,
           scientific_name: name,
-          threat_status: '',
+          threat_status,
           source: 'range',
-          species_url: 'NA',
+          species_url,
           taxa,
         };
       }

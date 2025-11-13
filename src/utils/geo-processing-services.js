@@ -171,7 +171,8 @@ export function getCustomAOISpeciesData(crfName, geometry) {
             const result = features
               .map((f) => {
                 const { attributes } = f
-                const crfInfo = crfSlices[attributes.SliceNumber]
+                const crfInfo = crfSlices[attributes.SliceNumber];
+                const subAttributes = JSON.parse(attributes.attributes.replace(/NA/g, null).replace(/NaN/g, 'null'));
                 return {
                   category: crfName,
                   has_image: attributes.has_image,
@@ -189,6 +190,8 @@ export function getCustomAOISpeciesData(crfName, geometry) {
                   SPS_AOI: crfInfo.SPS_AOI,
                   meet_target: crfInfo.meet_target,
                   SPS_increase: crfInfo.SPS_increase,
+                  threat_status: subAttributes?.[0]?.threat_status,
+                  species_url: subAttributes?.[0]?.species_url,
                   id: getId(crfName, attributes.SliceNumber),
                 }
               })
