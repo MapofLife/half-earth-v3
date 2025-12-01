@@ -11,7 +11,6 @@ import {
   WDPA_PERCENTAGE,
   POPULATION,
   LOOKUP_TABLES,
-  TEMP_LOOKUP_TABLES,
   ECOLOGICAL_LAND_UNITS,
   CONTEXTUAL_DATA_TABLES,
   LAND_PRESSURES_LABELS_SLUGS,
@@ -165,14 +164,15 @@ export function getCustomAOISpeciesData(crfName, geometry) {
         // old value: url: LAYERS_URLS[LOOKUP_TABLES[crfName]],
         // new value: url: LAYERS_URLS[LOOKUP_TABLES[crfName]],
         EsriFeatureService.getFeatures({
-          url: LAYERS_URLS[TEMP_LOOKUP_TABLES[crfName]],
+          url: LAYERS_URLS[LOOKUP_TABLES[crfName]],
           whereClause: `SliceNumber IN (${ids.toString()})`,
         })
           .then((features) => {
             const result = features
               .map((f) => {
                 const { attributes } = f
-                const crfInfo = crfSlices[attributes.SliceNumber]
+                const crfInfo = crfSlices[attributes.SliceNumber];
+                const subAttributes = JSON.parse(attributes.attributes.replace(/NA/g, null).replace(/NaN/g, 'null'));
                 return {
                   category: crfName,
                   has_image: attributes.has_image,
@@ -190,6 +190,8 @@ export function getCustomAOISpeciesData(crfName, geometry) {
                   SPS_AOI: crfInfo.SPS_AOI,
                   meet_target: crfInfo.meet_target,
                   SPS_increase: crfInfo.SPS_increase,
+                  threat_status: subAttributes?.[0]?.threat_status,
+                  species_url: subAttributes?.[0]?.species_url,
                   id: getId(crfName, attributes.SliceNumber),
                 }
               })
@@ -269,10 +271,10 @@ export const setPrecalculatedSpeciesData = (
   handleLoadedTaxaData
 ) => {
 
-  const birdPreCalc = getPrecalculatedSpeciesData(BIRDS, attributes.birds)
-  const mammalPreCalc = getPrecalculatedSpeciesData(MAMMALS, attributes.mammals)
-  const reptilePreCalc = getPrecalculatedSpeciesData(REPTILES, attributes.reptiles)
-  const amphibianPreCalc = getPrecalculatedSpeciesData(AMPHIBIANS, attributes.amphibians)
+  const birdPreCalc = JSON.parse(attributes.birds).length > 0 ? getPrecalculatedSpeciesData(BIRDS, attributes.birds) : []
+  const mammalPreCalc = JSON.parse(attributes.mammals).length > 0 ? getPrecalculatedSpeciesData(MAMMALS, attributes.mammals) : []
+  const reptilePreCalc = JSON.parse(attributes.reptiles).length > 0 ? getPrecalculatedSpeciesData(REPTILES, attributes.reptiles) : []
+  const amphibianPreCalc = JSON.parse(attributes.amphibians).length > 0 ? getPrecalculatedSpeciesData(AMPHIBIANS, attributes.amphibians) : []
 
   Promise.all([
     birdPreCalc,
@@ -283,7 +285,7 @@ export const setPrecalculatedSpeciesData = (
     const [birdData, mammalData, reptileData, amphibianData] = data
     setTaxaData([
       ...birdData,
-      ...mammalData.filter((sp) => sp.sliceNumber !== 2954 && sp.sliceNumber !== 2955),
+      ...mammalData,
       ...reptileData,
       ...amphibianData
     ])
