@@ -69,6 +69,7 @@ export const NAVIGATION = {
   TRENDS: 7,
   EXPLORE_SPECIES: 8,
   INFO: 9,
+  PLANNING: 10,
 };
 
 export const LAYER_OPTIONS = {

@@ -30,7 +30,16 @@ import {
 import {
   COUNTRIES_DATA_SERVICE_URL,
   DASHBOARD_URLS,
+  LAYERS_URLS,
 } from 'constants/layers-urls';
+import {
+  AMPHIBIAN_LOOKUP,
+  BIRDS_LOOKUP,
+  GADM_1_ADMIN_AREAS_FEATURE_LAYER,
+  MAMMALS_LOOKUP,
+  REPTILES_LOOKUP,
+  WDPA_OECM_FEATURE_DATA_LAYER
+ } from 'constants/layers-slugs.js';
 import { layersConfig } from 'constants/mol-layers-configs';
 
 import DashboardComponent from './dashboard-component.jsx';
@@ -294,16 +303,16 @@ function DashboardContainer(props) {
 
     switch (taxa) {
       case 'amphibians':
-        url = DASHBOARD_URLS.AMPHIBIAN_LOOKUP;
+        url = LAYERS_URLS[AMPHIBIAN_LOOKUP];
         break;
       case 'birds':
-        url = DASHBOARD_URLS.BIRDS_LOOKUP;
+        url = LAYERS_URLS[BIRDS_LOOKUP];
         break;
       case 'mammals':
-        url = DASHBOARD_URLS.MAMMALS_LOOKUP;
+        url = LAYERS_URLS[MAMMALS_LOOKUP];
         break;
       case 'reptiles':
-        url = DASHBOARD_URLS.REPTILES_LOOKUP;
+        url = LAYERS_URLS[REPTILES_LOOKUP];
         break;
       default:
         break;
@@ -382,23 +391,27 @@ function DashboardContainer(props) {
   const getProtectAreasSpeciesDetails = (speciesData, taxa) => {
     const results = speciesData.species.map(
       ({ scientific_name, common_name, attributes }) => {
-        const { source, species_url, threat_status } = JSON.parse(
-          attributes.replace(/NaN/g, 'null')
-        )[0];
+        console.log('attributes', attributes);
+        console.log('attributes null', attributes.replace(/NA/g, null).replace(/NaN/g, 'null'));
+        if(attributes !== 'NA'){
+          const { source, species_url, threat_status } = JSON.parse(
+            attributes.replace(/NA/g, null).replace(/NaN/g, 'null')
+          )[0];
 
-        const isFound = speciesToAvoid
-          .map((item) => item.toUpperCase())
-          .includes(scientific_name.toUpperCase());
+          const isFound = speciesToAvoid
+            .map((item) => item.toUpperCase())
+            .includes(scientific_name.toUpperCase());
 
-        if (!isFound) {
-          return {
-            common_name,
-            scientific_name,
-            threat_status,
-            source: source ?? 'range',
-            species_url,
-            taxa,
-          };
+          if (!isFound) {
+            return {
+              common_name,
+              scientific_name,
+              threat_status,
+              source: source ?? 'range',
+              species_url,
+              taxa,
+            };
+          }
         }
       }
     );
@@ -622,7 +635,7 @@ function DashboardContainer(props) {
         setSpeciesListLoading(false);
       }
     } else {
-      let url = DASHBOARD_URLS.PRECALC_AOI;
+      let url = LAYERS_URLS[GADM_1_ADMIN_AREAS_FEATURE_LAYER];
       let whereClause = `GID_0 = '${countryISO}'`;
 
       if (countryISO === 'EE') {
@@ -639,7 +652,7 @@ function DashboardContainer(props) {
         }
       } else {
         if (exploreAllSpecies) {
-          url = DASHBOARD_URLS.PRECALC_AOI_COUNTRY;
+          url = LAYERS_URLS[GADM_1_ADMIN_AREAS_FEATURE_LAYER];
         }
 
         if (selectedRegion) {
@@ -650,7 +663,7 @@ function DashboardContainer(props) {
 
           if (WDPA_PID) {
             whereClause = `WDPA_PID = '${WDPA_PID}'`;
-            url = DASHBOARD_URLS.WDPA_PRECALC;
+            url = LAYERS_URLS[WDPA_OECM_FEATURE_DATA_LAYER];
           }
 
           if (mgc) {

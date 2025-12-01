@@ -157,3 +157,16 @@ $featureMapsHeight: 750px;
     margin-bottom: 32px;
   }
 }
+
+.MuiSlider-markLabel {
+  color: var(--font-color) !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  top: 36px !important;
+}
+
+/* Active label (when thumb is over it) */
+.MuiSlider-markLabelActive {
+  color: $brand-color-main !important;
+  font-weight: 700 !important;
+}

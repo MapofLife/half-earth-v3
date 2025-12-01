@@ -524,16 +524,13 @@ export const DASHBOARD_URLS = {
   WDPA_OCCURENCE_URL:
     'https://services9.arcgis.com/IkktFdUAcY3WrH25/arcgis/rest/services/cd_occ_province_join/FeatureServer',
   SPI_PROVINCE_TREND_URL:
-    // 'https://services9.arcgis.com/IkktFdUAcY3WrH25/arcgis/rest/services/ESRI_table2_v2_2/FeatureServer',
     'https://services1.arcgis.com/7uJv7I3kgh2y7Pe0/arcgis/rest/services/country_shi_spi_trend_table/FeatureServer',
   SPI_REGION_SPECIES_URL:
     'https://services9.arcgis.com/IkktFdUAcY3WrH25/arcgis/rest/services/regional_species_spi_scores_year_2024_v1_2/FeatureServer',
   SPI_HISTOGRAM_URL:
-    // 'https://services9.arcgis.com/IkktFdUAcY3WrH25/arcgis/rest/services/regional_and_national_spi_bin_count_2024/FeatureServer',
     'https://services1.arcgis.com/7uJv7I3kgh2y7Pe0/arcgis/rest/services/country_sps_shs_binned/FeatureServer',
   SHI_PROVINCE_TREND_URL:
     'https://services9.arcgis.com/IkktFdUAcY3WrH25/arcgis/rest/services/regional_shs_COD_v2/FeatureServer',
-  // https://services1.arcgis.com/7uJv7I3kgh2y7Pe0/arcgis/rest/services/regional_shs_COD_v2/FeatureServer
   SHI_SPECIES_URL:
     'https://services9.arcgis.com/IkktFdUAcY3WrH25/arcgis/rest/services/national_species_shi_scores_year_2024/FeatureServer',
   SHI_HISTOGRAM_URL:
@@ -544,27 +541,9 @@ export const DASHBOARD_URLS = {
     'https://services9.arcgis.com/IkktFdUAcY3WrH25/arcgis/rest/services/regional_species_shs_scores_year_2022/FeatureServer',
   SHI_COUNTRY_DATA_URL:
     'https://services9.arcgis.com/IkktFdUAcY3WrH25/arcgis/rest/services/national_and_province_shs_by_taxa/FeatureServer',
-  AMPHIBIAN_LOOKUP:
-    'https://utility.arcgis.com/usrsvcs/servers/a17e5af9ca354a69870f3726294e4754/rest/services/amphibians_202507_attributes/FeatureServer',
-  BIRDS_LOOKUP:
-    'https://utility.arcgis.com/usrsvcs/servers/3ff5a9d0c0c64502a5926b15db01cd68/rest/services/birds_202507_attributes/FeatureServer',
-  MAMMALS_LOOKUP:
-    'https://utility.arcgis.com/usrsvcs/servers/00080f7438514fbfac713aa1ab60bf9f/rest/services/mammals_202507_attributes/FeatureServer',
-  REPTILES_LOOKUP:
-    'https://utility.arcgis.com/usrsvcs/servers/c7816b6cbb684ccb8bc69045505315f3/rest/services/reptiles_202507_attributes/FeatureServer?f=pjson',
   PRECALC_AOI_COUNTRY:
-    // 'https://services9.arcgis.com/IkktFdUAcY3WrH25/arcgis/rest/services/gadm0_aoi_summaries_updated_20240326/FeatureServer',
     'https://utility.arcgis.com/usrsvcs/servers/ca22a0922f934999a00e092feca4315d/rest/services/main_gadm0_precalculated_aoi_summaries_updated_20250521/FeatureServer',
-  PRECALC_AOI:
-    'https://services9.arcgis.com/IkktFdUAcY3WrH25/arcgis/rest/services/gadm1_precalculated_aoi_summaries_updated_20240321/FeatureServer',
   WDPA: 'https://services9.arcgis.com/IkktFdUAcY3WrH25/arcgis/rest/services/wdpa_occ_species_COD/FeatureServer',
-  WDPA_PRECALC:
-    'https://services9.arcgis.com/IkktFdUAcY3WrH25/arcgis/rest/services/wdpa_precalculated_aoi_summaries_updated_20240408/FeatureServer',
-  ADMIN_AREAS_FEATURE_LAYER: [
-    // 'https://services9.arcgis.com/IkktFdUAcY3WrH25/arcgis/rest/services/gadm0_aoi_summaries_updated_20240326/FeatureServer',
-    'https://utility.arcgis.com/usrsvcs/servers/ca22a0922f934999a00e092feca4315d/rest/services/main_gadm0_precalculated_aoi_summaries_updated_20250521/FeatureServer',
-    'https://services9.arcgis.com/IkktFdUAcY3WrH25/arcgis/rest/services/gadm1_precalculated_aoi_summaries_updated_20240321/FeatureServer',
-  ],
   FOREST:
     'https://services9.arcgis.com/IkktFdUAcY3WrH25/arcgis/rest/services/forest_title_refined_range_species/FeatureServer',
   PRIORITY_SPECIES:
