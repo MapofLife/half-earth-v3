@@ -138,7 +138,7 @@ function RegionsAnalysisComponent(props) {
     },
     {
       title: t('Forest Titles'),
-      value: REGION_OPTIONS.FOREST_TITLES,
+      value: REGION_OPTIONS.FORESTS,
     },
     {
       title: t('NBS-OP Interventions'),

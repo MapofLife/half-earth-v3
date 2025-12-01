@@ -167,7 +167,7 @@ export const layersConfig = {
     url: LAYERS_URLS[ADMIN_AREAS_FEATURE_LAYER],
     renderer: BORDERS_LAYERS_RENDERER,
     bbox: null,
-    portalId: [ '6710f8b62392473d8e06ee9c207ed010', 'ca22a0922f934999a00e092feca4315d'],
+    portalId: [ 'a5e0c4b6c24048948a7095823d277c56', 'dcd82cc752bf45eea09e454a2aac2763'],
   },
   [GADM_0_ADMIN_AREAS_FEATURE_LAYER]: {
     title: GADM_0_ADMIN_AREAS_FEATURE_LAYER,
@@ -176,7 +176,7 @@ export const layersConfig = {
     url: LAYERS_URLS[GADM_0_ADMIN_AREAS_FEATURE_LAYER],
     renderer: BORDERS_LAYERS_RENDERER,
     bbox: null,
-    portalId: 'ca22a0922f934999a00e092feca4315d'
+    portalId: 'a5e0c4b6c24048948a7095823d277c56'
   },
   [GADM_1_ADMIN_AREAS_FEATURE_LAYER]: {
     title: GADM_1_ADMIN_AREAS_FEATURE_LAYER,
@@ -185,7 +185,7 @@ export const layersConfig = {
     url: LAYERS_URLS[GADM_1_ADMIN_AREAS_FEATURE_LAYER],
     renderer: BORDERS_LAYERS_RENDERER,
     bbox: null,
-    portalId: '6710f8b62392473d8e06ee9c207ed010'
+    portalId: 'dcd82cc752bf45eea09e454a2aac2763'
   },
   [WDPA_OECM_FEATURE_LAYER]: {
     title: WDPA_OECM_FEATURE_LAYER,
@@ -194,7 +194,7 @@ export const layersConfig = {
     url: LAYERS_URLS[WDPA_OECM_FEATURE_LAYER],
     renderer: BORDERS_LAYERS_RENDERER,
     bbox: null,
-    portalId: ['adfdb53a755a4916af057be6bb824422', 'cc75600a103b4e39a14c103a62a80091', '4530b1d34e74497ea64938055867115d'],
+    portalId: ['145696cd80634e8fb120e85e344b936a', '52f4499eba6944c7881550ef35a93c67', '903406acc1fb49918b74abdedd804b8f'],
   },
   [SPECIFIC_REGIONS_TILE_LAYER]: {
     title: SPECIFIC_REGIONS_TILE_LAYER,
