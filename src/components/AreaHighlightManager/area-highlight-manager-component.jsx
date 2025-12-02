@@ -394,6 +394,11 @@ function AreaHighlightManagerComponent(props) {
           view.on('click', (event) => handleRegionClicked(event))
         );
         setOnPointerMoveHandler(view.on('pointer-move', handlePointerMove));
+      }else if (tabOption === TABS.SII && siiActiveTrend !== NATIONAL_TREND) {
+        setOnClickHandler(
+          view.on('click', (event) => handleRegionClicked(event))
+        );
+        setOnPointerMoveHandler(view.on('pointer-move', handlePointerMove));
       }
     } else {
       setOnClickHandler(
