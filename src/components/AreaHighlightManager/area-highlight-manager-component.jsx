@@ -71,6 +71,12 @@ function AreaHighlightManagerComponent(props) {
               regionLayers[`${countryISO}-shi-int`]
           );
         }
+
+        if(tabOption === TABS.SII){
+          return view.whenLayerView(
+            regionLayers[`${countryISO}-sii`]
+          );
+        }
       } else {
         return view.whenLayerView(
           regionLayers[LAYER_OPTIONS.DISSOLVED_NBS] ||
@@ -95,8 +101,7 @@ function AreaHighlightManagerComponent(props) {
         regionLayers[LAYER_OPTIONS.PROTECTED_AREAS] ||
         regionLayers[LAYER_OPTIONS.FORESTS] ||
         regionLayers[LAYER_OPTIONS.INDIGENOUS_LANDS] ||
-        regionLayers[`${countryISO}-outline`] ||
-        regionLayers[`${countryISO}-sii`]
+        regionLayers[`${countryISO}-outline`]
     );
   };
 
@@ -394,7 +399,7 @@ function AreaHighlightManagerComponent(props) {
           view.on('click', (event) => handleRegionClicked(event))
         );
         setOnPointerMoveHandler(view.on('pointer-move', handlePointerMove));
-      }else if (tabOption === TABS.SII && siiActiveTrend !== NATIONAL_TREND) {
+      } else if (tabOption === TABS.SII && siiActiveTrend !== NATIONAL_TREND) {
         setOnClickHandler(
           view.on('click', (event) => handleRegionClicked(event))
         );
@@ -406,7 +411,7 @@ function AreaHighlightManagerComponent(props) {
       );
       setOnPointerMoveHandler(view.on('pointer-move', handlePointerMove));
     }
-  }, [layerView, tabOption, activeTrend, shiActiveTrend]);
+  }, [layerView, tabOption, activeTrend, shiActiveTrend, siiActiveTrend]);
   return <div />;
 }
 
