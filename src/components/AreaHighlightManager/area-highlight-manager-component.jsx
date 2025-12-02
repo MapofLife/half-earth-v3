@@ -353,7 +353,9 @@ function AreaHighlightManagerComponent(props) {
             );
           }
         } else if (tabOption === TABS.SII) {
-          if (siiActiveTrend !== PROVINCE_TREND) {
+          if (countryISO.toLowerCase() === 'ee') {
+            layer = await getLayerView();
+          } else if (siiActiveTrend !== PROVINCE_TREND) {
             layer = await getLayerView();
           } else {
             layer = await view.whenLayerView(regionLayers[`${countryISO}-sii`]);
@@ -370,7 +372,7 @@ function AreaHighlightManagerComponent(props) {
 
       setLayerView(layer);
     }
-  }, [regionLayers, view, tabOption, mapLegendLayers]);
+  }, [regionLayers, view, tabOption, mapLegendLayers, selectedIndex]);
 
   useEffect(() => {
     if (!layerView) return;
@@ -411,7 +413,7 @@ function AreaHighlightManagerComponent(props) {
       );
       setOnPointerMoveHandler(view.on('pointer-move', handlePointerMove));
     }
-  }, [layerView, tabOption, activeTrend, shiActiveTrend, siiActiveTrend]);
+  }, [layerView, tabOption, activeTrend, shiActiveTrend, siiActiveTrend, selectedIndex]);
   return <div />;
 }
 

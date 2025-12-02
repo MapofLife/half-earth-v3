@@ -52,6 +52,7 @@ function DashboardTrendsSidebarContainer(props) {
     setMapLegendLayers,
     activeTrend,
     shiActiveTrend,
+    siiActiveTrend,
   } = props;
 
   const [geo, setGeo] = useState(null);

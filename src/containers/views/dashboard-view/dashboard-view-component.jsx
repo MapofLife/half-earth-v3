@@ -163,6 +163,7 @@ function DashboardViewComponent(props) {
         setSelectedProvince={setSelectedProvince}
         activeTrend={activeTrend}
         shiActiveTrend={shiActiveTrend}
+        siiActiveTrend={siiActiveTrend}
         handleRegionSelected={handleRegionSelected}
         {...props}
       />

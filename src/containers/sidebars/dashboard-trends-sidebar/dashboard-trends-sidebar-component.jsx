@@ -91,13 +91,13 @@ function DashboardTrendsSidebar(props) {
       (item) => item.id === `${countryISO}-sii`
     );
 
-    const guyRiver = map.layers.items.find(
-      (item) => item.id === 'GUY-RIVER'
-    );
+    // const guyRiver = map.layers.items.find(
+    //   (item) => item.id === 'GUY-RIVER'
+    // );
 
-    if(guyRiver){
-      guyRiver.visible = false;
-    }
+    // if(guyRiver){
+    //   guyRiver.visible = false;
+    // }
 
     if (tabClicked === TABS.SII) {
       if (foundProvinceLayer) {
