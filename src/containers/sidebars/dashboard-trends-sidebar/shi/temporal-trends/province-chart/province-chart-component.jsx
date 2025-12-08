@@ -26,7 +26,7 @@ import { SHI_LATEST_YEAR } from 'constants/dashboard-constants.js';
 
 import shiProvinceImg from 'images/dashboard/tutorials/tutorial_shi_provinces-en.png?react';
 import shiProvinceFRImg from 'images/dashboard/tutorials/tutorial_shi_provinces-fr.png?react';
-
+import { useWatchUtils } from 'hooks/esri';
 import { SECTION_INFO } from '../../../../dashboard-sidebar/tutorials/sections/sections-info';
 import compStyles from '../../../dashboard-trends-sidebar-styles.module.scss';
 
@@ -40,11 +40,24 @@ const SCORES = {
   CONNECTIVITY_SCORE: 'connectivity',
 };
 
+function getUniqueProvinces(provinces) {
+  const provinceSet = new Set()
+  provinces.forEach((item) => {
+    if (item.name && item.iso3 !== item.region_key) {
+      provinceSet.add(JSON.stringify({ name: item.name }))
+    }
+  })
+  const uniqueProvinces = Array.from(provinceSet).map((item) => JSON.parse(item)
+  )
+  return uniqueProvinces
+}
+
 function ProvinceChartComponent(props) {
   const bubbleDataCountryList = ['EE', 'GUY-FM'];
   const t = useT();
   const shiStartYear = 2001;
   const locale = useLocale();
+  const watchUtils = useWatchUtils();
   const chartRef = useRef(null);
   const { lightMode } = useContext(LightModeContext);
   const {
@@ -60,6 +73,8 @@ function ProvinceChartComponent(props) {
     layerView,
     lang,
     countryISO,
+    view,
+    regionLayers,
   } = props;
 
   const [isLoading, setIsLoading] = useState(true);
@@ -363,6 +378,33 @@ function ProvinceChartComponent(props) {
   }, [shiProvinceTrendData]);
 
   useEffect(() => {
+    if (!view || regionLayers.length === 0 ||provinces.length === 0) return;
+    setIsLoading(false);
+
+    watchUtils.watch(() =>
+      view.map.allLayers.forEach((layer) => {
+        if (layer.id === `${countryISO}-shi` && layer.visible) {
+          if(provinceList.length === 0){
+            const uniqueProvinces = getUniqueProvinces(provinces)
+            setProvinceList(uniqueProvinces);
+          }
+
+          if (countryISO === 'EE' || countryISO === 'GUY-FM') {
+            getLineData();
+          } else if (selectedProvince) {
+            handleProvinceSelected(selectedProvince);
+            setFoundIndex(provinceList.findIndex((region) => region.name === selectedProvince.name));
+            getLineData(selectedProvince.name);
+          } else {
+            setSelectedProvince(provinces[0]);
+            handleProvinceSelected(provinces[0]);
+          }
+        }
+      })
+    );
+  }, [view, regionLayers, provinces]);
+
+  useEffect(() => {
     if (shiProvinceTrendData.length && provinces.length) {
       if (provinceName) {
         // const region = shiProvinceTrendData.find(
@@ -376,6 +418,7 @@ function ProvinceChartComponent(props) {
       } else if (selectedProvince) {
         handleProvinceSelected(selectedProvince);
       } else {
+        setSelectedProvince(provinces[0]);
         handleProvinceSelected(provinces[0]);
       }
     }
@@ -383,11 +426,12 @@ function ProvinceChartComponent(props) {
 
   useEffect(() => {
     if (selectedProvince && !clickedRegion) {
+      handleProvinceSelected(selectedProvince);
       setFoundIndex(
         provinces.findIndex((prov) => prov.name === selectedProvince.name)
       );
     }
-  }, [selectedProvince]);
+  }, [selectedProvince, provinces]);
 
   useEffect(() => {
     if (clickedRegion && shiProvinceTrendData.length) {

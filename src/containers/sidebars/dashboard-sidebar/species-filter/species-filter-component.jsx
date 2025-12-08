@@ -65,7 +65,7 @@ function SpeciesFilterComponent(props) {
         {
           name: t('Refined Range Map'),
           active: false,
-          test: (species) => species.source.indexOf('range') > -1,
+          test: (species) => species?.source.indexOf('range') > -1,
           count: 0,
           type: 'and',
           result: false,
@@ -81,11 +81,11 @@ function SpeciesFilterComponent(props) {
           active: false,
           test: (species) => {
             if (selectedRegionOption === REGION_OPTIONS.RAPID_INVENTORY_32) {
-              return species.source.indexOf('Rapid') > -1;
+              return species?.source.indexOf('Rapid') > -1;
             }
             return (
-              species.source.indexOf('GBIF') > -1 ||
-              species.source.indexOf('eBird') > -1
+              species?.source.indexOf('GBIF') > -1 ||
+              species?.source.indexOf('eBird') > -1
             );
           },
           count: 0,
@@ -112,7 +112,7 @@ function SpeciesFilterComponent(props) {
           name: t('Critically Endangered'),
           active: false,
           test: (species) =>
-            species.threat_status?.toUpperCase() ===
+            species?.threat_status?.toUpperCase() ===
             IUCNStatusTypes.CR.toUpperCase(),
           count: 0,
           result: false,
@@ -123,7 +123,7 @@ function SpeciesFilterComponent(props) {
           result: false,
           active: false,
           test: (species) =>
-            species.threat_status?.toUpperCase() ===
+            species?.threat_status?.toUpperCase() ===
             IUCNStatusTypes.EN.toUpperCase(),
           count: 0,
           type: 'or',
@@ -132,7 +132,7 @@ function SpeciesFilterComponent(props) {
           name: t('Vulnerable'),
           active: false,
           test: (species) =>
-            species.threat_status?.toUpperCase() ===
+            species?.threat_status?.toUpperCase() ===
             IUCNStatusTypes.VU.toUpperCase(),
           count: 0,
           type: 'or',
@@ -142,7 +142,7 @@ function SpeciesFilterComponent(props) {
           name: t('Near Threatened'),
           active: false,
           test: (species) =>
-            species.threat_status?.toUpperCase() ===
+            species?.threat_status?.toUpperCase() ===
             IUCNStatusTypes.NT.toUpperCase(),
           count: 0,
           type: 'or',
@@ -152,7 +152,7 @@ function SpeciesFilterComponent(props) {
           name: t('Least Concern'),
           active: false,
           test: (species) =>
-            species.threat_status?.toUpperCase() ===
+            species?.threat_status?.toUpperCase() ===
             IUCNStatusTypes.LC.toUpperCase(),
           count: 0,
           type: 'or',
@@ -162,7 +162,7 @@ function SpeciesFilterComponent(props) {
           name: t('Data Deficient'),
           active: false,
           test: (species) =>
-            species.threat_status?.toUpperCase() ===
+            species?.threat_status?.toUpperCase() ===
             IUCNStatusTypes.DD.toUpperCase(),
           count: 0,
           type: 'or',
@@ -173,9 +173,9 @@ function SpeciesFilterComponent(props) {
           active: false,
           result: false,
           test: (species) =>
-            species.threat_status?.toUpperCase() ===
+            species?.threat_status?.toUpperCase() ===
               IUCNStatusTypes.NE.toUpperCase() ||
-            species.threat_status?.toUpperCase() ===
+            species?.threat_status?.toUpperCase() ===
               IUCNStatusTypes.UN.toUpperCase(),
           count: 0,
           type: 'or',

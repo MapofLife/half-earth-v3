@@ -23,21 +23,34 @@ import { Loading } from 'he-components';
 import ChartInfoComponent from 'components/chart-info-popup/chart-info-component';
 import SpiArcChartComponent from 'components/charts/spi-arc-chart/spi-arc-chart-component';
 
-import { SPI_LATEST_YEAR } from 'constants/dashboard-constants.js';
+import { SPI_LATEST_YEAR, REGION_OPTIONS } from 'constants/dashboard-constants.js';
 
 import spiProvinceImg from 'images/dashboard/tutorials/tutorial_spi_provinces-en.png?react';
 import spiProvinceFRImg from 'images/dashboard/tutorials/tutorial_spi_provinces-fr.png?react';
 
 import { SECTION_INFO } from '../../../../dashboard-sidebar/tutorials/sections/sections-info';
-
+import { useWatchUtils } from 'hooks/esri';
 import styles from './province-chart-styles.module.scss';
 
 ChartJS.register(LinearScale, ArcElement, PointElement, Tooltip, Legend);
+
+function getUniqueProvinces(provinces) {
+  const provinceSet = new Set()
+  provinces.forEach((item) => {
+    if (item.name && item.iso3 !== item.region_key) {
+      provinceSet.add(JSON.stringify({ name: item.name }))
+    }
+  })
+  const uniqueProvinces = Array.from(provinceSet).map((item) => JSON.parse(item)
+  )
+  return uniqueProvinces
+}
 
 function ProvinceChartComponent(props) {
   const bubbleDataCountryList = ['EE', 'GUY-FM'];
   const t = useT();
   const locale = useLocale();
+  const watchUtils = useWatchUtils();
   const chartRef = useRef(null);
   const { lightMode } = useContext(LightModeContext);
   const {
@@ -52,6 +65,8 @@ function ProvinceChartComponent(props) {
     layerView,
     countryISO,
     lang,
+    view,
+    regionLayers,
   } = props;
 
   const blankData = {
@@ -186,15 +201,7 @@ function ProvinceChartComponent(props) {
 
     setSpiArcData(spiArc);
 
-    const provinceSet = new Set();
-    provinces.forEach((item) => {
-      if (item.name && item.iso3 !== item.region_key) {
-        provinceSet.add(JSON.stringify({ name: item.name }));
-      }
-    });
-    const uniqueProvinces = Array.from(provinceSet).map((item) =>
-      JSON.parse(item)
-    );
+    const uniqueProvinces = getUniqueProvinces(provinces)
     setProvinceList(uniqueProvinces);
 
     // EE and COD could use region name
@@ -252,24 +259,6 @@ function ProvinceChartComponent(props) {
     handleProvinceSelected(value);
     setFoundIndex(provinces.findIndex((prov) => prov.name === value.name));
   };
-
-  const updateChartInfo = () => {
-    setChartInfo({
-      title: t('Province View'),
-      description: t(SECTION_INFO.SPI_PROVINCE_VIEW),
-      imgAlt: t('Species Protection Index - Trends'),
-      image: locale === 'fr' ? spiProvinceFRImg : spiProvinceImg,
-    });
-  };
-
-  useEffect(() => {
-    if (!lang) return;
-    updateChartInfo();
-  }, [lang]);
-
-  useEffect(() => {
-    updateChartInfo();
-  }, []);
 
   const options = {
     plugins: {
@@ -378,16 +367,50 @@ function ProvinceChartComponent(props) {
     },
   };
 
+  const updateChartInfo = () => {
+    setChartInfo({
+      title: t('Province View'),
+      description: t(SECTION_INFO.SPI_PROVINCE_VIEW),
+      imgAlt: t('Species Protection Index - Trends'),
+      image: locale === 'fr' ? spiProvinceFRImg : spiProvinceImg,
+    });
+  };
+
   useEffect(() => {
-    if (provinces.length === 0) return;
+    if (!lang) return;
+    updateChartInfo();
+  }, [lang]);
+
+  useEffect(() => {
+    updateChartInfo();
+  }, []);
+
+  useEffect(() => {
+    if (!view || regionLayers.length === 0 ||provinces.length === 0) return;
     setIsLoading(false);
 
-    if (countryISO === 'EE' || countryISO === 'GUY-FM') {
-      getChartData();
-    } else if (!selectedProvince) {
-      handleProvinceSelected(provinces[0]);
-    }
-  }, [provinces]);
+    watchUtils.watch(() =>
+      view.map.allLayers.forEach((layer) => {
+        if (layer.id === `${REGION_OPTIONS.PROVINCES}` && layer.visible) {
+          if(provinceList.length === 0){
+            const uniqueProvinces = getUniqueProvinces(provinces)
+            setProvinceList(uniqueProvinces);
+          }
+
+          if (countryISO === 'EE' || countryISO === 'GUY-FM') {
+            getChartData();
+          } else if (selectedProvince) {
+            handleProvinceSelected(selectedProvince);
+            setFoundIndex(provinceList.findIndex((region) => region.name === selectedProvince.name));
+            getChartData(selectedProvince.name);
+          } else {
+            setSelectedProvince(provinces[0]);
+            handleProvinceSelected(provinces[0]);
+          }
+        }
+      })
+    );
+  }, [view, regionLayers, provinces]);
 
   useEffect(() => {
     if (provinces.length && bubbleData && !clickedRegion) {
@@ -397,6 +420,7 @@ function ProvinceChartComponent(props) {
       } else if (selectedProvince) {
         handleProvinceSelected(selectedProvince);
       } else {
+        setSelectedProvince(provinces[0]);
         handleProvinceSelected(provinces[0]);
       }
     }
@@ -409,7 +433,7 @@ function ProvinceChartComponent(props) {
         provinces.findIndex((prov) => prov.name === selectedProvince.name)
       );
     }
-  }, [selectedProvince]);
+  }, [selectedProvince, provinces]);
 
   useEffect(() => {
     if (clickedRegion && provinces.length) {
@@ -491,3 +515,4 @@ function ProvinceChartComponent(props) {
 }
 
 export default ProvinceChartComponent;
+

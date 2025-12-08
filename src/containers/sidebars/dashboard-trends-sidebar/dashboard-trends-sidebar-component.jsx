@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { useT } from '@transifex/react';
 
@@ -201,6 +201,26 @@ function DashboardTrendsSidebar(props) {
 
     setTabOption(tabClicked);
   };
+
+  useEffect(() => {
+    const guyRiver = map.layers.items.find(
+      (item) => item.id === `GUY-RIVER`
+    );
+
+    if(guyRiver){
+      guyRiver.visible = false;
+    }
+
+    return () => {
+      const guyRiver = map.layers.items.find(
+        (item) => item.id === `GUY-RIVER`
+      );
+
+      if(guyRiver){
+        guyRiver.visible = true;
+      }
+    }
+  });
 
   return (
     <div id="dashboard-sidebar" className={styles.container}>
