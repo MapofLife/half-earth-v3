@@ -165,10 +165,14 @@ function RegionsAnalysisComponent(props) {
     setAoiGeometry({ hash, geometry });
     postAoiToDataBase(geometry, { aoiId: hash });
 
-    setSelectedIndex(NAVIGATION.EXPLORE_SPECIES);
-    setRegionName(t('Custom Area'));
-    setHash(hash);
-    setSelectedRegion({ name: t('Custom Area'), iso: countryISO });
+    setTimeout(() => {
+      setSelectedIndex(NAVIGATION.EXPLORE_SPECIES);
+      setRegionName(t('Custom Area'));
+      setHash(hash);
+      setSelectedRegion({ name: t('Custom Area'), iso: countryISO });
+    }, 1000);
+
+
   };
 
   const warningMessages = useMemo(
