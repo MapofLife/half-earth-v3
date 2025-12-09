@@ -95,7 +95,6 @@ function App(props) {
   return (
     <QueryClientProvider client={queryClient}>
       <div className={styles.app}>
-        <Banner />
         <div className={styles.content}>
         <Suspense fallback={null}>
           <AppLayout {...props} />

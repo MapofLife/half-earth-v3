@@ -104,6 +104,7 @@ function ScoreDistributionsSpiComponent(props) {
           color: getCSSVariable('oslo-gray'),
           stepSize: 10,
         },
+        max: 100,
       },
       y: {
         stacked: true,
@@ -169,7 +170,8 @@ function ScoreDistributionsSpiComponent(props) {
 
     // Loop through each number and place it in the appropriate bucket
     locationData?.forEach((a) => {
-      const bin = a.bin.split(',')[1].replace(/ /gi, '');
+      const group = a.bin.split(',');
+      const bin = group[1] ? group[1].replace(/ /gi, '') : a.bin;
 
       taxaSet.amphibians[bin] = a.amphibians_spi_count || a.amphibians;
       taxaSet.birds[bin] = a.birds_spi_count || a.birds;

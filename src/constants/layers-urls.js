@@ -517,17 +517,7 @@ export const DASHBOARD_URLS = {
   SPI_REGION_SPECIES_URL:
     'https://services9.arcgis.com/IkktFdUAcY3WrH25/arcgis/rest/services/regional_species_spi_scores_year_2024_v1_2/FeatureServer',
   SPI_HISTOGRAM_URL:
-    'https://services1.arcgis.com/7uJv7I3kgh2y7Pe0/arcgis/rest/services/country_sps_shs_binned/FeatureServer',
-  SHI_PROVINCE_TREND_URL:
-    'https://services9.arcgis.com/IkktFdUAcY3WrH25/arcgis/rest/services/regional_shs_COD_v2/FeatureServer',
-  SHI_SPECIES_URL:
-    'https://services9.arcgis.com/IkktFdUAcY3WrH25/arcgis/rest/services/national_species_shi_scores_year_2024/FeatureServer',
-  SHI_HISTOGRAM_URL:
-    'https://services9.arcgis.com/IkktFdUAcY3WrH25/arcgis/rest/services/shs_summary_for_stacked_bar_chart_2021/FeatureServer',
-  SHI_PROVINCE_HISTOGRAM_URL:
-    'https://services9.arcgis.com/IkktFdUAcY3WrH25/arcgis/rest/services/regional_shs_bin_count_2022/FeatureServer',
-  SHI_PROVINCE_SPECIES_URL:
-    'https://services9.arcgis.com/IkktFdUAcY3WrH25/arcgis/rest/services/regional_species_shs_scores_year_2022/FeatureServer',
+    'https://services1.arcgis.com/7uJv7I3kgh2y7Pe0/arcgis/rest/services/country_sps_shs_binned_shsoutof120_GUY_COD_GIN_LBR_SLE_COL_update/FeatureServer',
   SHI_COUNTRY_DATA_URL:
     'https://services9.arcgis.com/IkktFdUAcY3WrH25/arcgis/rest/services/national_and_province_shs_by_taxa/FeatureServer',
   PRECALC_AOI_COUNTRY:

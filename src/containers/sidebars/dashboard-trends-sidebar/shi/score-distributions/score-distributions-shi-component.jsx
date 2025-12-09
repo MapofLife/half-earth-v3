@@ -77,6 +77,9 @@ function ScoreDistributionsShiComponent(props) {
 
   const toolTipTitle = (tooltipItems) => {
     const bucket = parseInt(tooltipItems[0].label, 10);
+    if(bucket === 120){
+      return '> 120';
+    }
     return `${bucket} - ${bucket + 5}`;
   };
 
@@ -269,7 +272,8 @@ function ScoreDistributionsShiComponent(props) {
       }
 
       shiData?.forEach((a) => {
-        const bin = a.bin.split(',')[1].replace(/ /gi, '');
+        const group = a.bin.split(',');
+        const bin = group[1] ? group[1].replace(/ /gi, '') : a.bin;
 
         taxaSet.amphibians[bin] = a.amphibians_shi_count || a.amphibians;
         taxaSet.birds[bin] = a.birds_shi_count || a.birds;
