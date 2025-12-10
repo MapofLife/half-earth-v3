@@ -268,6 +268,16 @@ function DataLayerComponent(props) {
       setDataPoints((prevDataPoints) => {
         if (Array.isArray(prevDataPoints)) {
           const updatedDataPoints = [...prevDataPoints];
+          updatedDataPoints.push({
+            label: t('Habitat Loss/Gain'),
+            items: [],
+            id: LAYER_OPTIONS.HABITAT,
+            total_no_rows: '',
+            isActive: false,
+            showChildren: false,
+            type: DATA_POINT_TYPE.PUBLIC,
+          });
+
           const habitatLayer = updatedDataPoints.find(
             (dp) => dp.id === LAYER_OPTIONS.HABITAT
           );
@@ -353,16 +363,6 @@ function DataLayerComponent(props) {
         type: DATA_POINT_TYPE.PUBLIC,
       });
     }
-
-    publicData.push({
-      label: t('Habitat Loss/Gain'),
-      items: [],
-      id: LAYER_OPTIONS.HABITAT,
-      total_no_rows: '',
-      isActive: false,
-      showChildren: false,
-      type: DATA_POINT_TYPE.PUBLIC,
-    });
 
     setDataPoints(publicData);
 
