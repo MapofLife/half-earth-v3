@@ -536,7 +536,10 @@ function DashboardContainer(props) {
     //   whereClause = `region_key = '${region_key}'`;
     // }
 
-    if (!selectedRegion?.mgc) {
+    // if (!selectedRegion?.mgc) {
+    if (
+      selectedRegionOption !== REGION_OPTIONS.RAPID_INVENTORY_32
+    ){
       let geoRings = null;
       if (selectedGeometryRings) {
         geoRings = {
@@ -601,7 +604,8 @@ function DashboardContainer(props) {
         setAllTaxa(list);
       }
       setTaxaList(list);
-    } else {
+    }
+    else {
       setTaxaList(speciesData);
     }
     setSpeciesListLoading(false);
