@@ -109,15 +109,6 @@ function DataLayerComponent(props) {
       type: DATA_POINT_TYPE.REGIONS_DATA,
       id: LAYER_OPTIONS.ADMINISTRATIVE_LAYERS,
     },
-    {
-      label: t('Indigenous Territories'),
-      items: [],
-      total_no_rows: '',
-      isActive: false,
-      showChildren: false,
-      type: DATA_POINT_TYPE.REGIONS_DATA,
-      id: LAYER_OPTIONS.INDIGENOUS_LANDS,
-    },
   ]);
   const [isLoading, setIsLoading] = useState(true);
   const [chartData, setChartData] = useState();
@@ -429,6 +420,18 @@ function DataLayerComponent(props) {
   }, [dataPoints, dataByCountry]);
 
   useEffect(() => {
+    if(countryISO.toUpperCase() === 'GUY'){
+      setRegionsData(prev => [...prev,
+        {
+        label: t('Indigenous Territories'),
+        items: [],
+        total_no_rows: '',
+        isActive: false,
+        showChildren: false,
+        type: DATA_POINT_TYPE.REGIONS_DATA,
+        id: LAYER_OPTIONS.INDIGENOUS_LANDS,
+      }]);
+    }
     setSpeciesDataLoading(true);
   }, []);
 
