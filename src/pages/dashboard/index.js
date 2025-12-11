@@ -1275,8 +1275,19 @@ function DashboardContainer(props) {
 
     if (countryISO === 'COD' || countryISO === 'GIN') {
       await tx.setCurrentLocale('fr');
+      const url = new URL(window.location.href);
+      url.searchParams.set('lang', 'fr'); // Add or update the parameter
+
+      // Update the address bar without reloading the page
+      window.history.replaceState({}, '', url.toString());
+
     } else {
       await tx.setCurrentLocale('en');
+      const url = new URL(window.location.href);
+      url.searchParams.set('lang', 'en'); // Add or update the parameter
+
+      // Update the address bar without reloading the page
+      window.history.replaceState({}, '', url.toString())
     }
 
     // Cleanup event listener on component unmount

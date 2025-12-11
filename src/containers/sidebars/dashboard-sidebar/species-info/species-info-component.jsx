@@ -6,7 +6,7 @@ import { IUCNStatusTypes } from 'utils/dashboard-utils.js';
 
 import cx from 'classnames';
 import { LightModeContext } from 'context/light-mode';
-
+import { tx } from '@transifex/native';
 import Button from 'components/button';
 import TaxaImageComponent from 'components/taxa-image';
 
@@ -29,7 +29,7 @@ function SpeciesInfoComponent(props) {
 
   const getLanguageContent = (info) => {
     const found = info.find(
-      (values) => values.lang.toUpperCase() === locale.toUpperCase()
+      (values) => values.lang.toUpperCase() === tx.currentLocale.toUpperCase()
     );
 
     if (found) {
