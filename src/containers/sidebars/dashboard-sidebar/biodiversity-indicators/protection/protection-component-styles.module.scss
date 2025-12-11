@@ -216,35 +216,35 @@
       tr {
         height: 30px;
         border: 1px solid transparent;
-
-        &:nth-child(odd) {
-          background-color: $alto;
-        }
-
-        &:nth-child(even) {
-          background-color: $wild-sand;
-        }
+        background-color: rgba(0, 0, 0, 0.4);
 
         &:hover {
-          border: 1px solid var(--font-color);
+          border: 1px solid var(--habitat-country-compare);
           cursor: pointer;
         }
 
         &:has(+ :hover) {
-          border-bottom: 1px solid var(--font-color);
+          border-bottom: 1px solid var(--habitat-country-compare);
+
+        }
+
+        &.highlightedMainCountry{
+          border: 1px solid var(--habitat-country);
+          td{
+            border-top: 1px solid var(--habitat-country);
+          }
         }
 
         &.highlighted {
-          background-color: rgba(0, 0, 0, 0.4);
-
-          td {
-            color: #{$white};
+          border: 1px solid var(--habitat-country-compare);
+          td{
+            border-top: 1px solid var(--habitat-country-compare);
           }
         }
       }
 
       td {
-        color: #{$black};
+        color: #{$white};
         padding: 0 5px;
       }
     }

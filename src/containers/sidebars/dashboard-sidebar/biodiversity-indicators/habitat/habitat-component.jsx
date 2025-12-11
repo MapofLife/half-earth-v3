@@ -82,6 +82,7 @@ function HabitatComponent(props) {
 
   useEffect(() => {
     updateChartInfo();
+    t('Republic of Congo');
   }, []);
 
   return (
@@ -155,11 +156,9 @@ function HabitatComponent(props) {
                     key={row.country}
                     onClick={() => updateCountry({ value: row.country })}
                     className={
-                      selectedCountry === row.country ||
-                      countryName === row.country
-                        ? styles.highlighted
-                        : ''
-                    }
+                      cx(selectedCountry === row.country ? styles.highlighted : '',
+                        countryName === row.country ? styles.highlightedMainCountry : ''
+                      )}
                   >
                     <td>{t(row.country)}</td>
                     <td className={styles.textCenter}>
