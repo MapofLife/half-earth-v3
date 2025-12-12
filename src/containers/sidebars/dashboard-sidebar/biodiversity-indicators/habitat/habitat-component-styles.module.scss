@@ -223,9 +223,12 @@
         }
 
         &.highlightedMainCountry{
-          border: 1px solid var(--habitat-country);
+          border: 3px solid var(--habitat-country) !important;
+          background-color: #{$white};
+
           td{
-            border-top: 1px solid var(--habitat-country);
+            color: #{$black};
+            border-top: 3px solid var(--habitat-country) !important;
           }
         }
 

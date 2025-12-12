@@ -191,7 +191,8 @@ function ScoreDistributionsShiComponent(props) {
 
       // Loop through each number and place it in the appropriate bucket
       shiData?.forEach((a) => {
-        const bin = a.bin.split(',')[1].replace(/ /gi, '');
+        const group = a.bin.split(',');
+        const bin = group[1] ? group[1].replace(/ /gi, '') : a.bin;
 
         taxaSet.amphibians[bin] = a.amphibians_shi_count || a.amphibians;
         taxaSet.birds[bin] = a.birds_shi_count || a.birds;
