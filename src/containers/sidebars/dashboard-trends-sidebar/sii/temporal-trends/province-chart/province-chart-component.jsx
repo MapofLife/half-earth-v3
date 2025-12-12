@@ -173,7 +173,7 @@ function ProvinceChartComponent(props) {
       provinces.filter((prov) => prov.name === province.name)
     );
 
-    setSelectedProvince(lastProvinceValue);
+    // setSelectedProvince(lastProvinceValue);
     setProvinceName(name);
     setSiiRank(sii_rank);
     setAreaRank(size_rank);

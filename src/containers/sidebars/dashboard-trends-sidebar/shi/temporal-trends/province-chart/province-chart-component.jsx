@@ -129,7 +129,7 @@ function ProvinceChartComponent(props) {
 
     const { name } = shiProvinceValue;
 
-    setSelectedProvince(shiProvinceValue);
+    // setSelectedProvince(shiProvinceValue);
     setFilteredProvince(shiProvinceValue);
     setProvinceName(name);
 
