@@ -171,7 +171,7 @@ function ProvinceChartComponent(props) {
       richness_vert_spi_rank,
     } = lastProvinceValue;
 
-    // setSelectedProvince(lastProvinceValue);
+    setSelectedProvince(lastProvinceValue);
     setProvinceName(name);
     setSpiRank(spi_rank);
     setAreaRank(size_rank);
