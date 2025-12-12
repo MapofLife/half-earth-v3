@@ -31,6 +31,7 @@ import { SECTION_INFO } from '../../../../dashboard-sidebar/tutorials/sections/s
 import compStyles from '../../../dashboard-trends-sidebar-styles.module.scss';
 
 import styles from './province-chart-styles.module.scss';
+import { watch } from '@arcgis/core/core/reactiveUtils'
 
 ChartJS.register(LinearScale, LineElement, PointElement, Tooltip, Legend);
 
@@ -363,12 +364,13 @@ function ProvinceChartComponent(props) {
 
   useEffect(() => {
     if (!lang) return;
-    updateChartInfo();
-  }, [lang]);
-
-  useEffect(() => {
-    updateChartInfo();
-  }, []);
+    setChartInfo({
+      title: t('Province View'),
+      description: t(SECTION_INFO.SHI_PROVINCE_VIEW),
+      imgAlt: t('Species Protection Index - Trends'),
+      image: locale === 'fr' ? shiProvinceFRImg : shiProvinceImg,
+    });
+  }, [lang, t, locale]);
 
   useEffect(() => {
     if (shiProvinceTrendData.length) {
@@ -381,7 +383,7 @@ function ProvinceChartComponent(props) {
     if (!view || regionLayers.length === 0 ||provinces.length === 0) return;
     setIsLoading(false);
 
-    watchUtils.watch(() =>
+    const watchHandle = watchUtils.watch(() =>
       view.map.allLayers.forEach((layer) => {
         if (layer.id === `${countryISO}-shi` && layer.visible) {
           if(provinceList.length === 0){
@@ -402,6 +404,10 @@ function ProvinceChartComponent(props) {
         }
       })
     );
+
+    return () => {
+      watchHandle.remove();
+    }
   }, [view, regionLayers, provinces]);
 
   useEffect(() => {

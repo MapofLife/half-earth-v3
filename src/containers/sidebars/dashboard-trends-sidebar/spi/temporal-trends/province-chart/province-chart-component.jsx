@@ -389,7 +389,7 @@ function ProvinceChartComponent(props) {
     if (!view || regionLayers.length === 0 ||provinces.length === 0) return;
     setIsLoading(false);
 
-    watchUtils.watch(() =>
+    const watchHandle = watchUtils.watch(() =>
       view.map.allLayers.forEach((layer) => {
         if (layer.id === `${REGION_OPTIONS.PROVINCES}` && layer.visible) {
           if(provinceList.length === 0){
@@ -410,6 +410,10 @@ function ProvinceChartComponent(props) {
         }
       })
     );
+
+    return () => {
+      watchHandle.remove();
+    }
   }, [view, regionLayers, provinces]);
 
   useEffect(() => {
