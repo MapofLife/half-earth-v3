@@ -374,7 +374,7 @@ function ScoreDistributionsShiComponent(props) {
 
           values.forEach((value) => {
             const val = value;
-            if (!threatStatuses.includes(val.threat_status?.toUpperCase())) {
+            if (!threatStatuses.includes(val.threat_status?.toUpperCase()) && val.species_url) {
               species.push({
                 scientificname: val.species,
                 species_url: val.species_url,
