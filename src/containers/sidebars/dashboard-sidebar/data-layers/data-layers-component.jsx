@@ -246,16 +246,13 @@ function DataLayerComponent(props) {
   };
 
   const getHabitatMapData = async () => {
-    // const habitatMapUrl = `https://dev-api-dot-api-2-x-dot-map-of-life.appspot.com/2.x/species/indicators/habitat-trends/tile-urls?species=${speciesInfo.scientificname}&taxa=${speciesInfo.taxa}`;
-    let habitatMapUrl = `https://dev-api-dot-api-2-x-dot-map-of-life.appspot.com/2.x/species/indicators/habitat-trends/map?scientificname=${speciesInfo.scientificname}`;
-
-    if (countryISO === 'EE') {
-      habitatMapUrl = `${REGION_RANGE_MAP_URL}?species=${speciesInfo.scientificname}&taxa=${speciesInfo.taxa}`;
-    }
+    const habitatMapUrl = `${REGION_RANGE_MAP_URL}?species=${speciesInfo.scientificname}&taxa=${speciesInfo.taxa}`;
     const response = await fetch(habitatMapUrl);
     const d = await response.json();
 
-    if (d.points) {
+    const { trend_data, data } = d;
+
+    if (trend_data) {
       setDataPoints((prevDataPoints) => {
         if (Array.isArray(prevDataPoints)) {
           const updatedDataPoints = [...prevDataPoints];
@@ -281,10 +278,7 @@ function DataLayerComponent(props) {
         }
         return [];
       });
-    }
 
-    if (d.trend_data) {
-      const { trend_data } = d;
       trend_data.shift();
       setValuesExists(true);
 
@@ -307,27 +301,27 @@ function DataLayerComponent(props) {
           },
         ],
       });
-    } else if (d.data?.length > 1) {
+    } else if (data?.length > 1) {
       // remove Year row
-      d.data.shift();
+      data.shift();
       setValuesExists(true);
 
       setChartData({
-        labels: d.data.map((item) => item[0]),
+        labels: data.map((item) => item[0]),
         datasets: [
           {
             fill: false,
             backgroundColor: 'rgba(24, 186, 180, 1)',
             borderColor: 'rgba(24, 186, 180, 1)',
             pointStyle: false,
-            data: d.data.map((item) => item[2]),
+            data: data.map((item) => item[2]),
           },
           {
             fill: '-1',
             backgroundColor: 'rgba(24, 186, 180, 0.7)',
             borderColor: 'rgba(24, 186, 180, 1)',
             pointStyle: false,
-            data: d.data.map((item) => item[3]),
+            data: data.map((item) => item[3]),
           },
         ],
       });
