@@ -404,9 +404,9 @@ function ScoreDistributionsSpiComponent(props) {
                       </div>
                       <span
                         className={styles.spsScore}
-                      >{`SPS: ${s.species_protection_score_all?.toFixed(
+                      >{s.species_protection_score_all?.toFixed(
                         1
-                      )}`}</span>
+                      )}</span>
                     </button>
                   </li>
                 );
