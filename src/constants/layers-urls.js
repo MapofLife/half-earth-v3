@@ -529,6 +529,7 @@ export const DASHBOARD_URLS = {
     'https://services1.arcgis.com/7uJv7I3kgh2y7Pe0/arcgis/rest/services/priority_species/FeatureServer',
   IGNORE_SPECIES_LIST:
     'https://services1.arcgis.com/7uJv7I3kgh2y7Pe0/arcgis/rest/services/species_to_remove/FeatureServer',
+  // use updated api, not dev-api.mol.org
   DATASET_LAYER_INFO:
     'https://dev-api-dot-api-2-x-dot-map-of-life.appspot.com/2.x/datasets/metadata?dataset_id=',
   DATASET_LAYER_GROUP_INFO: 'https://dev-api-dot-api-2-x-dot-map-of-life.appspot.com/2.x/datasets/type',
