@@ -254,7 +254,7 @@ function DashboardContainer(props) {
       lang: locale,
     };
     const dparams = new URLSearchParams(dataLayerParams);
-    const dataLayersURL = `https://dev-api.mol.org/2.x/species/datasets?${dparams}`;
+    const dataLayersURL = `https://dev-api-dot-api-2-x-dot-map-of-life.appspot.com/2.x/species/datasets?${dparams}`;
 
     const apiCalls = [dataLayersURL];
 
