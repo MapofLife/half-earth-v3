@@ -530,8 +530,8 @@ export const DASHBOARD_URLS = {
   IGNORE_SPECIES_LIST:
     'https://services1.arcgis.com/7uJv7I3kgh2y7Pe0/arcgis/rest/services/species_to_remove/FeatureServer',
   DATASET_LAYER_INFO:
-    'https://dev-api.mol.org/2.x/datasets/metadata?dataset_id=',
-  DATASET_LAYER_GROUP_INFO: 'https://dev-api.mol.org/2.x/datasets/type',
+    'https://dev-api-dot-api-2-x-dot-map-of-life.appspot.com/2.x/datasets/metadata?dataset_id=',
+  DATASET_LAYER_GROUP_INFO: 'https://dev-api-dot-api-2-x-dot-map-of-life.appspot.com/2.x/datasets/type',
   COD_REGIONAL_SPECIES_LAYER: 'd9b12607731a42e8b463612d7b51ffa5',
   PRIVATE_COD_OCCURENCE_LAYER:
     'https://services3.arcgis.com/Zyt0ectKCtAdsOa2/arcgis/rest/services/occurrences_RDC/FeatureServer',
