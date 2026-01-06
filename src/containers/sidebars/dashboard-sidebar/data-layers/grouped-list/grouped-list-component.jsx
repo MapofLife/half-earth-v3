@@ -605,7 +605,7 @@ function GroupedListComponent(props) {
                   />
                 }
               />
-              <span />
+              <span>{key.total_no_rows}</span>
               <span />
               <ToggleLayerInfoContainer layer={key} {...props} />
             </div>

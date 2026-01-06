@@ -260,7 +260,7 @@ function DataLayerComponent(props) {
             label: t('Habitat Loss/Gain'),
             items: [],
             id: LAYER_OPTIONS.HABITAT,
-            total_no_rows: '',
+            total_no_rows: 1,
             isActive: false,
             showChildren: false,
             type: DATA_POINT_TYPE.PUBLIC,
