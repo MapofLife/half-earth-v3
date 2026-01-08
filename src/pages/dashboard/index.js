@@ -668,6 +668,7 @@ function DashboardContainer(props) {
           const { GID_1, WDPA_PID, mgc, Int_ID, region_key } = selectedRegion;
           if (GID_1) {
             whereClause = `GID_1 = '${GID_1}'`;
+            url = LAYERS_URLS[GADM_1_ADMIN_AREAS_FEATURE_LAYER];
           }
 
           if (WDPA_PID) {
