@@ -171,8 +171,6 @@ function RegionsAnalysisComponent(props) {
       setHash(hash);
       setSelectedRegion({ name: t('Custom Area'), iso: countryISO });
     }, 1000);
-
-
   };
 
   const warningMessages = useMemo(
@@ -198,6 +196,18 @@ function RegionsAnalysisComponent(props) {
     shapeDrawTooBigAnalytics,
     sketchWidgetConfig: { postDrawCallback },
   });
+
+  const handleCancel = () => {
+    if (sketchTool.layer) {
+      // Remove geometry for 'Esc' press
+      sketchTool.layer.remove(sketchTool.layer.graphics.items[0]);
+    }
+    // Remove mask
+    setUpdatedGeometry(null);
+    sketchTool.delete();
+    sketchTool.cancel();
+    setSketchWidgetMode('create');
+  };
 
   const getLayerIcon = (layer, item) => {
     view.whenLayerView(layer).then(() => {
@@ -376,6 +386,9 @@ function RegionsAnalysisComponent(props) {
       setSelectedRegion(null);
       removeRegionLayers();
 
+      if(option !== REGION_OPTIONS.DRAW){
+handleCancel();
+      }
       setSelectedRegionOption(option);
       displayLayer(option);
     }
