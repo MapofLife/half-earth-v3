@@ -121,7 +121,7 @@ function DataLayerComponent(props) {
     '0ed89f4f-3ed2-41c2-9792-7c7314a55455',
     '98f229de-6131-41ef-aff1-7a52212b5a15',
     'd542e050-2ae5-457e-8476-027741538965',
-    '83cfa8fb-dd6e-4031-8215-1079abddb8a7',
+    // '83cfa8fb-dd6e-4031-8215-1079abddb8a7',
   ];
 
   const pointObservationIds = [
@@ -198,8 +198,6 @@ function DataLayerComponent(props) {
         obj.isActive = true;
         obj.parentId = grouped[groupKey].id;
         obj.id = obj.label;
-        grouped[groupKey].items.push(obj); // Push the current object into the 'item' array of the matching group
-
         // TODO: remove logic when not filtering out results
         const foundExpertRange = expertRangeMapIds.find(
           (id) => id === obj.dataset_id
@@ -208,9 +206,10 @@ function DataLayerComponent(props) {
           (id) => id === obj.dataset_id
         );
 
-        // if (foundExpertRange || foundPointOb) {
-        grouped[groupKey].total_no_rows += obj.no_rows || 0; // Summing the no_rows property
-        // }
+        if (foundExpertRange || foundPointOb) {
+          grouped[groupKey].items.push(obj); // Push the current object into the 'item' array of the matching group
+          grouped[groupKey].total_no_rows += obj.no_rows || 0; // Summing the no_rows property
+        }
       }
     });
 
