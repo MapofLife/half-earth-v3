@@ -198,15 +198,17 @@ function RegionsAnalysisComponent(props) {
   });
 
   const handleCancel = () => {
-    if (sketchTool.layer) {
-      // Remove geometry for 'Esc' press
-      sketchTool.layer.remove(sketchTool.layer.graphics.items[0]);
+    if(sketchTool) {
+      if (sketchTool.layer) {
+        // Remove geometry for 'Esc' press
+        sketchTool.layer.remove(sketchTool.layer.graphics.items[0]);
+      }
+      // Remove mask
+      setUpdatedGeometry(null);
+      sketchTool.delete();
+      sketchTool.cancel();
+      setSketchWidgetMode('create');
     }
-    // Remove mask
-    setUpdatedGeometry(null);
-    sketchTool.delete();
-    sketchTool.cancel();
-    setSketchWidgetMode('create');
   };
 
   const getLayerIcon = (layer, item) => {
@@ -387,7 +389,7 @@ function RegionsAnalysisComponent(props) {
       removeRegionLayers();
 
       if(option !== REGION_OPTIONS.DRAW){
-handleCancel();
+        handleCancel();
       }
       setSelectedRegionOption(option);
       displayLayer(option);
