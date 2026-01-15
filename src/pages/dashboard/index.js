@@ -75,7 +75,7 @@ function DashboardContainer(props) {
   const [filteredTaxaList, setFilteredTaxaList] = useState([]);
   const [scientificName, setScientificName] = useState(null);
   const [selectedIndex, setSelectedIndex] = useState(NAVIGATION.HOME);
-  const [loggedIn, setLoggedIn] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(true);
   const [selectedRegion, setSelectedRegion] = useState();
   const [selectedGeometryRings, setSelectedGeometryRings] = useState();
   const [fromTrends, setFromTrends] = useState(false);
@@ -611,392 +611,474 @@ function DashboardContainer(props) {
     setSpeciesListLoading(false);
   };
 
+  const loadSpecies = async (data) => {
+    let result = data;
+
+    if (data.file_url) {
+      const response = await fetch(result.file_url);
+      result = await response.json();
+    }
+
+    const seasons = [
+      '',
+      'Resident',
+      'Breeding',
+      'Non-breeding',
+      'Passage',
+      '',
+    ];
+
+    const {taxas, datasets} = result;
+
+    taxas.forEach(taxa => {
+      const taxaDatasetSet = new Set();
+      taxa.species.forEach(species => {
+        const speciesDatasets = Object.keys(species.dataset);
+        speciesDatasets.forEach(d => {
+          taxaDatasetSet.add(d);
+        });
+        const speciesDataset2 = {};
+        speciesDatasets.forEach(k => {
+          speciesDataset2[datasets[k].dataset_id] =
+            species.dataset[k];
+        });
+        species.datasetList = speciesDatasets.map(dsid => ({
+          dataset_id: datasets[dsid].dataset_id,
+          product_type: datasets[dsid].product_type,
+          title: datasets[dsid].title,
+          seasonality: species.dataset[dsid],
+          seasonalityString: species.dataset[dsid]
+            .map(s => (s === null ? 'Resident' : seasons[s]))
+            .filter(s => s.length > 0)
+            .join(', '),
+        }));
+        species.dataset = speciesDataset2;
+      });
+      taxa.datasets = {};
+      Array.from(taxaDatasetSet).forEach((d) => {
+        const ds = datasets[d];
+        taxa.datasets[ds.dataset_id] = ds;
+      });
+    });
+    return result;
+  }
+
   const getSpeciesList = async () => {
     setSpeciesListLoading(true);
 
-    if (hash && selectedRegionOption === REGION_OPTIONS.DRAW) {
-      const aoi = await getAoiFromDataBase(hash);
-      if (aoi) {
-        const { geometry } = aoi[0];
-        const [amphibianData, birdsData, reptilesData, mammalsData] =
-          await Promise.all([
-            getCustomAOISpeciesData(AMPHIBIANS, geometry),
-            getCustomAOISpeciesData(BIRDS, geometry),
-            getCustomAOISpeciesData(REPTILES, geometry),
-            getCustomAOISpeciesData(MAMMALS, geometry),
-          ]);
+    const speciesList = await fetch(DASHBOARD_URLS.REGIONS_MOL_DATA, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        lang: "en",
+        radius: "25000",
+        region_id: "6259f495-0124-4ebf-b721-04a2b9f54e27",
+        v2: "true"
+      }),
+    });
 
-        const ampSpecies = getCustomAreasSpeciesDetails(
-          amphibianData,
-          'amphibians'
-        );
-        const birdSpecies = getCustomAreasSpeciesDetails(birdsData, 'birds');
-        const repSpecies = getCustomAreasSpeciesDetails(
-          reptilesData,
-          'reptiles'
-        );
-        const mamSpecies = getCustomAreasSpeciesDetails(mammalsData, 'mammals');
+    const data = await speciesList.json();
+    console.log('Data from api call', data);
 
-        const speciesData = [ampSpecies, birdSpecies, repSpecies, mamSpecies];
 
-        setGeometry(geometry);
-        setTaxaList(speciesData);
-        setSpeciesListLoading(false);
-      }
-    } else {
-      let url = LAYERS_URLS[GADM_0_ADMIN_AREAS_FEATURE_LAYER];
-      let whereClause = `GID_0 = '${countryISO}'`;
+    const speciesLoaded = await loadSpecies(data);
+    console.log('Species loaded', speciesLoaded);
 
-      if (countryISO === 'EE') {
-        whereClause = `project = 'EEWWF'`; // '${countryISO.toLowerCase()}'`;
-        url = DASHBOARD_URLS.REGION_SPECIES_SEARCH_URL;
 
-        if (selectedRegion) {
-          const { region_key } = selectedRegion;
+setTaxaList(speciesLoaded.taxas);
 
-          if (region_key) {
-            whereClause = `region_key = '${region_key}'`;
-            url = DASHBOARD_URLS.ZONE_SPECIES;
-          }
-        }
-      } else {
-        if (exploreAllSpecies) {
-          url = LAYERS_URLS[GADM_0_ADMIN_AREAS_FEATURE_LAYER];
-        }
+setSpeciesListLoading(false);
 
-        if (selectedRegion) {
-          const { GID_1, WDPA_PID, mgc, Int_ID, region_key } = selectedRegion;
-          if (GID_1) {
-            whereClause = `GID_1 = '${GID_1}'`;
-            url = LAYERS_URLS[GADM_1_ADMIN_AREAS_FEATURE_LAYER];
-          }
 
-          if (WDPA_PID) {
-            whereClause = `WDPA_PID = '${WDPA_PID}'`;
-            url = LAYERS_URLS[WDPA_OECM_FEATURE_DATA_LAYER];
-          }
 
-          if (mgc) {
-            whereClause = `mgc_id = '${mgc}'`;
-            url = DASHBOARD_URLS.FOREST;
-          }
 
-          if (Int_ID) {
-            whereClause = `Int_ID = '${Int_ID}'`;
-            url = DASHBOARD_URLS.NBIS_URL;
-          }
 
-          if (region_key) {
-            whereClause = `region_key = '${region_key}'`;
-            if (selectedRegionOption === REGION_OPTIONS.RAPID_INVENTORY_32) {
-              url = DASHBOARD_URLS.RAPID_INVENTORY_SPECIES;
-            } else {
-              url = DASHBOARD_URLS.ZONE_SPECIES;
-            }
-          }
-        }
-      }
 
-      const features = await EsriFeatureService.getFeatures({
-        url,
-        whereClause,
-        returnGeometry: false,
-      });
+    // if (hash && selectedRegionOption === REGION_OPTIONS.DRAW) {
+    //   const aoi = await getAoiFromDataBase(hash);
+    //   if (aoi) {
+    //     const { geometry } = aoi[0];
+    //     const [amphibianData, birdsData, reptilesData, mammalsData] =
+    //       await Promise.all([
+    //         getCustomAOISpeciesData(AMPHIBIANS, geometry),
+    //         getCustomAOISpeciesData(BIRDS, geometry),
+    //         getCustomAOISpeciesData(REPTILES, geometry),
+    //         getCustomAOISpeciesData(MAMMALS, geometry),
+    //       ]);
 
-      if (features && features[0]) {
-        if (selectedRegion?.mgc) {
-          const speciesData = {
-            species: features.map((s) => {
-              const { scientificname, taxa, attributes } = s.attributes;
+    //     const ampSpecies = getCustomAreasSpeciesDetails(
+    //       amphibianData,
+    //       'amphibians'
+    //     );
+    //     const birdSpecies = getCustomAreasSpeciesDetails(birdsData, 'birds');
+    //     const repSpecies = getCustomAreasSpeciesDetails(
+    //       reptilesData,
+    //       'reptiles'
+    //     );
+    //     const mamSpecies = getCustomAreasSpeciesDetails(mammalsData, 'mammals');
 
-              const json = JSON.parse(attributes.replace(/NaN/g, 'null'));
+    //     const speciesData = [ampSpecies, birdSpecies, repSpecies, mamSpecies];
 
-              const isFound = speciesToAvoid
-                .map((item) => item.toUpperCase())
-                .includes(scientificname.toUpperCase());
+    //     setGeometry(geometry);
+    //     setTaxaList(speciesData);
+    //     setSpeciesListLoading(false);
+    //   }
+    // } else {
+    //   let url = LAYERS_URLS[GADM_0_ADMIN_AREAS_FEATURE_LAYER];
+    //   let whereClause = `GID_0 = '${countryISO}'`;
 
-              if (!isFound) {
-                return {
-                  common_name: scientificname,
-                  scientific_name: scientificname,
-                  threat_status: json[0].threat_status,
-                  source: json[0].source ?? '',
-                  taxa,
-                };
-              }
-            }),
-          };
+    //   if (countryISO === 'EE') {
+    //     whereClause = `project = 'EEWWF'`; // '${countryISO.toLowerCase()}'`;
+    //     url = DASHBOARD_URLS.REGION_SPECIES_SEARCH_URL;
 
-          const amphibians = speciesData.species.filter((item) => {
-            if (item) {
-              return item.taxa === 'amphibians';
-            }
-            return false;
-          });
-          const birds = speciesData.species.filter((item) => {
-            if (item) {
-              return item.taxa === 'birds';
-            }
-            return false;
-          });
-          const reptiles = speciesData.species.filter((item) => {
-            if (item) {
-              return item.taxa === 'reptiles';
-            }
-            return false;
-          });
-          const mammals = speciesData.species.filter((item) => {
-            if (item) {
-              return item.taxa === 'mammals';
-            }
-            return false;
-          });
+    //     if (selectedRegion) {
+    //       const { region_key } = selectedRegion;
 
-          const ampSpecies = {
-            count: amphibians.length,
-            species: amphibians,
-            taxa: 'amphibians',
-            title: t('amphibians'),
-          };
-          const birdSpecies = {
-            count: birds.length,
-            species: birds,
-            taxa: 'birds',
-            title: t('birds'),
-          };
-          const repSpecies = {
-            count: reptiles.length,
-            species: reptiles,
-            taxa: 'reptiles',
-            title: t('reptiles'),
-          };
-          const mamSpecies = {
-            count: mammals.length,
-            species: mammals,
-            taxa: 'mammals',
-            title: t('mammals'),
-          };
-          const groupData = [ampSpecies, birdSpecies, repSpecies, mamSpecies];
+    //       if (region_key) {
+    //         whereClause = `region_key = '${region_key}'`;
+    //         url = DASHBOARD_URLS.ZONE_SPECIES;
+    //       }
+    //     }
+    //   } else {
+    //     if (exploreAllSpecies) {
+    //       url = LAYERS_URLS[GADM_0_ADMIN_AREAS_FEATURE_LAYER];
+    //     }
 
-          getOccurenceSpecies(groupData);
-        } else if (selectedRegion?.region_key || countryISO === 'EE') {
-          let commonName = '';
+    //     if (selectedRegion) {
+    //       const { GID_1, WDPA_PID, mgc, Int_ID, region_key } = selectedRegion;
+    //       if (GID_1) {
+    //         whereClause = `GID_1 = '${GID_1}'`;
+    //         url = LAYERS_URLS[GADM_1_ADMIN_AREAS_FEATURE_LAYER];
+    //       }
 
-          const speciesData = {
-            species: features.map((s) => {
-              const {
-                species,
-                taxa,
-                attributes,
-                scientificname,
-                commonname_english,
-                commonname_french,
-                translations,
-                source,
-              } = s.attributes;
+    //       if (WDPA_PID) {
+    //         whereClause = `WDPA_PID = '${WDPA_PID}'`;
+    //         url = LAYERS_URLS[WDPA_OECM_FEATURE_DATA_LAYER];
+    //       }
 
-              const json = JSON.parse(attributes.replace(/NaN/g, 'null'));
+    //       if (mgc) {
+    //         whereClause = `mgc_id = '${mgc}'`;
+    //         url = DASHBOARD_URLS.FOREST;
+    //       }
 
-              let isFound = false;
-              if (species) {
-                isFound = speciesToAvoid
-                  .map((item) => item.toUpperCase())
-                  .includes(species.toUpperCase());
-              } else if (scientificname) {
-                isFound = speciesToAvoid
-                  .map((item) => item.toUpperCase())
-                  .includes(scientificname.toUpperCase());
-              }
+    //       if (Int_ID) {
+    //         whereClause = `Int_ID = '${Int_ID}'`;
+    //         url = DASHBOARD_URLS.NBIS_URL;
+    //       }
 
-              if (translations) {
-                const attr = JSON.parse(translations.replace(/NaN/g, 'null'));
-                commonName = attr.find((a) => a.lang === 'en')?.cmname;
-              } else {
-                commonName =
-                  commonname_english ||
-                  commonname_french ||
-                  species ||
-                  scientificname;
-              }
+    //       if (region_key) {
+    //         whereClause = `region_key = '${region_key}'`;
+    //         if (selectedRegionOption === REGION_OPTIONS.RAPID_INVENTORY_32) {
+    //           url = DASHBOARD_URLS.RAPID_INVENTORY_SPECIES;
+    //         } else {
+    //           url = DASHBOARD_URLS.ZONE_SPECIES;
+    //         }
+    //       }
+    //     }
+    //   }
 
-              if (!isFound) {
-                return {
-                  common_name: commonName,
-                  scientific_name: species ?? scientificname,
-                  threat_status: json[0].threat_status,
-                  source: source ?? json[0].source ?? '',
-                  species_url: json[0].species_url ?? '',
-                  taxa,
-                };
-              }
-            }),
-          };
+    //   const features = await EsriFeatureService.getFeatures({
+    //     url,
+    //     whereClause,
+    //     returnGeometry: false,
+    //   });
 
-          const amphibians = speciesData.species.filter((item) => {
-            if (item) {
-              return item.taxa === 'amphibians';
-            }
-            return false;
-          });
-          const birds = speciesData.species.filter((item) => {
-            if (item) {
-              return item.taxa === 'birds';
-            }
-            return false;
-          });
-          const reptiles = speciesData.species.filter((item) => {
-            if (item) {
-              return item.taxa === 'reptiles';
-            }
-            return false;
-          });
-          const mammals = speciesData.species.filter((item) => {
-            if (item) {
-              return item.taxa === 'mammals';
-            }
-            return false;
-          });
-          const plants = speciesData.species.filter((item) => {
-            if (item) {
-              return item.taxa === 'plants';
-            }
-            return false;
-          });
-          const fishes = speciesData.species.filter((item) => {
-            if (item) {
-              return item.taxa === 'fishes';
-            }
-            return false;
-          });
+    //   if (features && features[0]) {
+    //     if (selectedRegion?.mgc) {
+    //       const speciesData = {
+    //         species: features.map((s) => {
+    //           const { scientificname, taxa, attributes } = s.attributes;
 
-          const ampSpecies = {
-            count: amphibians.length,
-            species: amphibians,
-            taxa: 'amphibians',
-            title: t('amphibians'),
-          };
-          const birdSpecies = {
-            count: birds.length,
-            species: birds,
-            taxa: 'birds',
-            title: t('birds'),
-          };
-          const repSpecies = {
-            count: reptiles.length,
-            species: reptiles,
-            taxa: 'reptiles',
-            title: t('reptiles'),
-          };
-          const mamSpecies = {
-            count: mammals.length,
-            species: mammals,
-            taxa: 'mammals',
-            title: t('mammals'),
-          };
+    //           const json = JSON.parse(attributes.replace(/NaN/g, 'null'));
 
-          const plantSpecies = {
-            count: plants.length,
-            species: plants,
-            taxa: 'plants',
-            title: t('plants'),
-          };
+    //           const isFound = speciesToAvoid
+    //             .map((item) => item.toUpperCase())
+    //             .includes(scientificname.toUpperCase());
 
-          const fishSpecies = {
-            count: fishes.length,
-            species: fishes,
-            taxa: 'fishes',
-            title: t('fishes'),
-          };
+    //           if (!isFound) {
+    //             return {
+    //               common_name: scientificname,
+    //               scientific_name: scientificname,
+    //               threat_status: json[0].threat_status,
+    //               source: json[0].source ?? '',
+    //               taxa,
+    //             };
+    //           }
+    //         }),
+    //       };
 
-          const groupData = [
-            ampSpecies,
-            birdSpecies,
-            repSpecies,
-            mamSpecies,
-            plantSpecies,
-            fishSpecies,
-          ];
+    //       const amphibians = speciesData.species.filter((item) => {
+    //         if (item) {
+    //           return item.taxa === 'amphibians';
+    //         }
+    //         return false;
+    //       });
+    //       const birds = speciesData.species.filter((item) => {
+    //         if (item) {
+    //           return item.taxa === 'birds';
+    //         }
+    //         return false;
+    //       });
+    //       const reptiles = speciesData.species.filter((item) => {
+    //         if (item) {
+    //           return item.taxa === 'reptiles';
+    //         }
+    //         return false;
+    //       });
+    //       const mammals = speciesData.species.filter((item) => {
+    //         if (item) {
+    //           return item.taxa === 'mammals';
+    //         }
+    //         return false;
+    //       });
 
-          getOccurenceSpecies(groupData);
+    //       const ampSpecies = {
+    //         count: amphibians.length,
+    //         species: amphibians,
+    //         taxa: 'amphibians',
+    //         title: t('amphibians'),
+    //       };
+    //       const birdSpecies = {
+    //         count: birds.length,
+    //         species: birds,
+    //         taxa: 'birds',
+    //         title: t('birds'),
+    //       };
+    //       const repSpecies = {
+    //         count: reptiles.length,
+    //         species: reptiles,
+    //         taxa: 'reptiles',
+    //         title: t('reptiles'),
+    //       };
+    //       const mamSpecies = {
+    //         count: mammals.length,
+    //         species: mammals,
+    //         taxa: 'mammals',
+    //         title: t('mammals'),
+    //       };
+    //       const groupData = [ampSpecies, birdSpecies, repSpecies, mamSpecies];
 
-          setSpeciesListLoading(false);
-        } else {
-          const { attributes } = features[0];
+    //       getOccurenceSpecies(groupData);
+    //     } else if (selectedRegion?.region_key || countryISO === 'EE') {
+    //       let commonName = '';
 
-          const { amphibians, birds, reptiles, mammals } = attributes;
+    //       const speciesData = {
+    //         species: features.map((s) => {
+    //           const {
+    //             species,
+    //             taxa,
+    //             attributes,
+    //             scientificname,
+    //             commonname_english,
+    //             commonname_french,
+    //             translations,
+    //             source,
+    //           } = s.attributes;
 
-          if (amphibians || birds || reptiles || mammals) {
-            const [amphibianData, birdsData, reptilesData, mammalsData] =
-              await Promise.all([
-                getTaxaSpecies('amphibians', amphibians),
-                getTaxaSpecies('birds', birds),
-                getTaxaSpecies('reptiles', reptiles),
-                getTaxaSpecies('mammals', mammals),
-              ]);
+    //           const json = JSON.parse(attributes.replace(/NaN/g, 'null'));
 
-            const ampSpecies = getProtectAreasSpeciesDetails(
-              amphibianData,
-              'amphibians'
-            );
-            const birdSpecies = getProtectAreasSpeciesDetails(
-              birdsData,
-              'birds'
-            );
-            const repSpecies = getProtectAreasSpeciesDetails(
-              reptilesData,
-              'reptiles'
-            );
-            const mamSpecies = getProtectAreasSpeciesDetails(
-              mammalsData,
-              'mammals'
-            );
+    //           let isFound = false;
+    //           if (species) {
+    //             isFound = speciesToAvoid
+    //               .map((item) => item.toUpperCase())
+    //               .includes(species.toUpperCase());
+    //           } else if (scientificname) {
+    //             isFound = speciesToAvoid
+    //               .map((item) => item.toUpperCase())
+    //               .includes(scientificname.toUpperCase());
+    //           }
 
-            const speciesData = [
-              ampSpecies,
-              birdSpecies,
-              repSpecies,
-              mamSpecies,
-            ];
+    //           if (translations) {
+    //             const attr = JSON.parse(translations.replace(/NaN/g, 'null'));
+    //             commonName = attr.find((a) => a.lang === 'en')?.cmname;
+    //           } else {
+    //             commonName =
+    //               commonname_english ||
+    //               commonname_french ||
+    //               species ||
+    //               scientificname;
+    //           }
 
-            getOccurenceSpecies(speciesData);
-          } else {
-            const {
-              amph_nspecies,
-              bird_nspecies,
-              mamm_nspecies,
-              rept_nspecies,
-            } = attributes;
-            const species = [
-              {
-                count: amph_nspecies,
-                species: new Array(amph_nspecies),
-                taxa: 'amphibians',
-                title: 'Amphibians',
-              },
-              {
-                count: bird_nspecies,
-                species: new Array(bird_nspecies),
-                taxa: 'birds',
-                title: 'Birds',
-              },
-              {
-                count: mamm_nspecies,
-                species: new Array(mamm_nspecies),
-                taxa: 'mammals',
-                title: 'Mammals',
-              },
-              {
-                count: rept_nspecies,
-                species: new Array(rept_nspecies),
-                taxa: 'reptiles',
-                title: 'Reptiles',
-              },
-            ];
-            getOccurenceSpecies(species);
-          }
-        }
-      }
-    }
+    //           if (!isFound) {
+    //             return {
+    //               common_name: commonName,
+    //               scientific_name: species ?? scientificname,
+    //               threat_status: json[0].threat_status,
+    //               source: source ?? json[0].source ?? '',
+    //               species_url: json[0].species_url ?? '',
+    //               taxa,
+    //             };
+    //           }
+    //         }),
+    //       };
+
+    //       const amphibians = speciesData.species.filter((item) => {
+    //         if (item) {
+    //           return item.taxa === 'amphibians';
+    //         }
+    //         return false;
+    //       });
+    //       const birds = speciesData.species.filter((item) => {
+    //         if (item) {
+    //           return item.taxa === 'birds';
+    //         }
+    //         return false;
+    //       });
+    //       const reptiles = speciesData.species.filter((item) => {
+    //         if (item) {
+    //           return item.taxa === 'reptiles';
+    //         }
+    //         return false;
+    //       });
+    //       const mammals = speciesData.species.filter((item) => {
+    //         if (item) {
+    //           return item.taxa === 'mammals';
+    //         }
+    //         return false;
+    //       });
+    //       const plants = speciesData.species.filter((item) => {
+    //         if (item) {
+    //           return item.taxa === 'plants';
+    //         }
+    //         return false;
+    //       });
+    //       const fishes = speciesData.species.filter((item) => {
+    //         if (item) {
+    //           return item.taxa === 'fishes';
+    //         }
+    //         return false;
+    //       });
+
+    //       const ampSpecies = {
+    //         count: amphibians.length,
+    //         species: amphibians,
+    //         taxa: 'amphibians',
+    //         title: t('amphibians'),
+    //       };
+    //       const birdSpecies = {
+    //         count: birds.length,
+    //         species: birds,
+    //         taxa: 'birds',
+    //         title: t('birds'),
+    //       };
+    //       const repSpecies = {
+    //         count: reptiles.length,
+    //         species: reptiles,
+    //         taxa: 'reptiles',
+    //         title: t('reptiles'),
+    //       };
+    //       const mamSpecies = {
+    //         count: mammals.length,
+    //         species: mammals,
+    //         taxa: 'mammals',
+    //         title: t('mammals'),
+    //       };
+
+    //       const plantSpecies = {
+    //         count: plants.length,
+    //         species: plants,
+    //         taxa: 'plants',
+    //         title: t('plants'),
+    //       };
+
+    //       const fishSpecies = {
+    //         count: fishes.length,
+    //         species: fishes,
+    //         taxa: 'fishes',
+    //         title: t('fishes'),
+    //       };
+
+    //       const groupData = [
+    //         ampSpecies,
+    //         birdSpecies,
+    //         repSpecies,
+    //         mamSpecies,
+    //         plantSpecies,
+    //         fishSpecies,
+    //       ];
+
+    //       getOccurenceSpecies(groupData);
+
+    //       setSpeciesListLoading(false);
+    //     } else {
+    //       const { attributes } = features[0];
+
+    //       const { amphibians, birds, reptiles, mammals } = attributes;
+
+    //       if (amphibians || birds || reptiles || mammals) {
+    //         const [amphibianData, birdsData, reptilesData, mammalsData] =
+    //           await Promise.all([
+    //             getTaxaSpecies('amphibians', amphibians),
+    //             getTaxaSpecies('birds', birds),
+    //             getTaxaSpecies('reptiles', reptiles),
+    //             getTaxaSpecies('mammals', mammals),
+    //           ]);
+
+    //         const ampSpecies = getProtectAreasSpeciesDetails(
+    //           amphibianData,
+    //           'amphibians'
+    //         );
+    //         const birdSpecies = getProtectAreasSpeciesDetails(
+    //           birdsData,
+    //           'birds'
+    //         );
+    //         const repSpecies = getProtectAreasSpeciesDetails(
+    //           reptilesData,
+    //           'reptiles'
+    //         );
+    //         const mamSpecies = getProtectAreasSpeciesDetails(
+    //           mammalsData,
+    //           'mammals'
+    //         );
+
+    //         const speciesData = [
+    //           ampSpecies,
+    //           birdSpecies,
+    //           repSpecies,
+    //           mamSpecies,
+    //         ];
+
+    //         getOccurenceSpecies(speciesData);
+    //       } else {
+    //         const {
+    //           amph_nspecies,
+    //           bird_nspecies,
+    //           mamm_nspecies,
+    //           rept_nspecies,
+    //         } = attributes;
+    //         const species = [
+    //           {
+    //             count: amph_nspecies,
+    //             species: new Array(amph_nspecies),
+    //             taxa: 'amphibians',
+    //             title: 'Amphibians',
+    //           },
+    //           {
+    //             count: bird_nspecies,
+    //             species: new Array(bird_nspecies),
+    //             taxa: 'birds',
+    //             title: 'Birds',
+    //           },
+    //           {
+    //             count: mamm_nspecies,
+    //             species: new Array(mamm_nspecies),
+    //             taxa: 'mammals',
+    //             title: 'Mammals',
+    //           },
+    //           {
+    //             count: rept_nspecies,
+    //             species: new Array(rept_nspecies),
+    //             taxa: 'reptiles',
+    //             title: 'Reptiles',
+    //           },
+    //         ];
+    //         getOccurenceSpecies(species);
+    //       }
+    //     }
+    //   }
+    // }
   };
 
   const getSpiDataByCountry = (d) => {
