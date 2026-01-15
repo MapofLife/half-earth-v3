@@ -46,6 +46,9 @@ function TaxaImageComponent(props) {
         case TAXA_NAMES.CONIFERS:
           icon = <ConiferIcon />;
           break;
+        case TAXA_NAMES.DRAGONFLIES:
+          icon = <OdoanteIcon />;
+          break;
         case TAXA_NAMES.FISHES:
           icon = <FishesIcon />;
           break;

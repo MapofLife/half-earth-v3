@@ -469,7 +469,7 @@ function DashboardContainer(props) {
 
       return {
         common_name: commonnames,
-        scientific_name: attributes.species,
+        scientificname: attributes.species,
         threat_status,
         source,
         species_url,
@@ -574,13 +574,13 @@ function DashboardContainer(props) {
           occurrence.species.forEach((species) => {
             const isFound = speciesToAvoid
               .map((item) => item.toUpperCase())
-              .includes(species.scientific_name.toUpperCase());
+              .includes(species.scientificname.toUpperCase());
 
             if (!isFound) {
               const foundSpecies = foundTaxa?.species.find(
                 (speciesToFind) =>
-                  speciesToFind?.scientific_name.toUpperCase() ===
-                  species?.scientific_name.toUpperCase()
+                  speciesToFind?.scientificname.toUpperCase() ===
+                  species?.scientificname.toUpperCase()
               );
 
               if (!foundSpecies) {
@@ -686,10 +686,11 @@ function DashboardContainer(props) {
     const speciesLoaded = await loadSpecies(data);
     console.log('Species loaded', speciesLoaded);
 
+    getOccurenceSpecies(speciesLoaded.taxas);
 
-setTaxaList(speciesLoaded.taxas);
+    // setTaxaList(speciesLoaded.taxas);
 
-setSpeciesListLoading(false);
+    // setSpeciesListLoading(false);
 
 
 

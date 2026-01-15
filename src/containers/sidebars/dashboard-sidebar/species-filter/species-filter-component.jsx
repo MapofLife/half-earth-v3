@@ -65,7 +65,12 @@ function SpeciesFilterComponent(props) {
         {
           name: t('Refined Range Map'),
           active: false,
-          test: (species) => false,//species?.source.indexOf('range') > -1,
+          test: (species) => {
+            const {datasetList} = species;
+            if(!datasetList || datasetList.length === 0) return false;
+            return datasetList.map((d) => d.product_type).indexOf('range') >
+              -1;
+          },
           count: 0,
           type: 'and',
           result: false,
@@ -80,14 +85,16 @@ function SpeciesFilterComponent(props) {
           name: t('Occurrence'),
           active: false,
           test: (species) => {
-            return false;
+
+            const {datasetList} = species;
+
             if (selectedRegionOption === REGION_OPTIONS.RAPID_INVENTORY_32) {
               return species?.source.indexOf('Rapid') > -1;
             }
-            return (
-              species?.source.indexOf('GBIF') > -1 ||
-              species?.source.indexOf('eBird') > -1
-            );
+
+            if(!datasetList || datasetList.length === 0) return false;
+            return datasetList.map((d) => d.product_type).indexOf('points') >
+              -1;
           },
           count: 0,
           result: false,
@@ -124,8 +131,8 @@ function SpeciesFilterComponent(props) {
           result: false,
           active: false,
           test: (species) =>
-            species?.traits?.threat_status_code?.toUpperCase() ===
-            IUCNStatusTypes.EN.toUpperCase(),
+            species?.traits?.threat_status_code?.toUpperCase() === 'EN',
+            // IUCNStatusTypes.EN.toUpperCase(),
           count: 0,
           type: 'or',
         },
@@ -133,8 +140,8 @@ function SpeciesFilterComponent(props) {
           name: t('Vulnerable'),
           active: false,
           test: (species) =>
-            species?.traits?.threat_status_code?.toUpperCase() ===
-            IUCNStatusTypes.VU.toUpperCase(),
+            species?.traits?.threat_status_code?.toUpperCase() === 'VU',
+            // IUCNStatusTypes.VU.toUpperCase(),
           count: 0,
           type: 'or',
           result: false,
@@ -143,8 +150,8 @@ function SpeciesFilterComponent(props) {
           name: t('Near Threatened'),
           active: false,
           test: (species) =>
-            species?.traits?.threat_status_code?.toUpperCase() ===
-            IUCNStatusTypes.NT.toUpperCase(),
+            species?.traits?.threat_status_code?.toUpperCase() === 'NT',
+            // IUCNStatusTypes.NT.toUpperCase(),
           count: 0,
           type: 'or',
           result: false,
@@ -163,8 +170,8 @@ function SpeciesFilterComponent(props) {
           name: t('Data Deficient'),
           active: false,
           test: (species) =>
-            species?.traits?.threat_status_code?.toUpperCase() ===
-            IUCNStatusTypes.DD.toUpperCase(),
+            species?.traits?.threat_status_code?.toUpperCase() === 'DD',
+            // IUCNStatusTypes.DD.toUpperCase(),
           count: 0,
           type: 'or',
           result: false,
@@ -174,10 +181,11 @@ function SpeciesFilterComponent(props) {
           active: false,
           result: false,
           test: (species) =>
-            species?.traits?.threat_status_code?.toUpperCase() ===
-              IUCNStatusTypes.NE.toUpperCase() ||
-            species?.traits?.threat_status_code?.toUpperCase() ===
-              IUCNStatusTypes.UN.toUpperCase(),
+            species?.traits?.threat_status_code?.toUpperCase() === 'NE'
+              // IUCNStatusTypes.NE.toUpperCase()
+              ||
+            species?.traits?.threat_status_code?.toUpperCase() === 'UN',
+              // IUCNStatusTypes.UN.toUpperCase(),
           count: 0,
           type: 'or',
         },

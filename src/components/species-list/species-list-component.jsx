@@ -95,10 +95,10 @@ function SpeciesListComponent(props) {
 
   const sortFilteredSpecies = (species) => {
     return species?.sort((a, b) => {
-      if (a.scientific_name < b.scientific_name) {
+      if (a.scientificname < b.scientificname) {
         return -1;
       }
-      if (a.scientific_name > b.scientific_name) {
+      if (a.scientificname > b.scientificname) {
         return 1;
       }
       return 0;
@@ -110,7 +110,7 @@ function SpeciesListComponent(props) {
     const inFilterCheck = (sp) => {
       return (
         sp.common_name?.toLowerCase().indexOf(filter) > -1 ||
-        sp.scientific_name?.toLowerCase().indexOf(filter) > -1
+        sp.scientificname?.toLowerCase().indexOf(filter) > -1
       );
     };
     setInFilter(0);
@@ -126,7 +126,7 @@ function SpeciesListComponent(props) {
 
     // group by family common
     let groupByFamily = familySortedSpecies?.reduce((group, result) => {
-      const catName = result.scientific_name[0] ?? '__blank';
+      const catName = result.scientificname ?? '__blank';//.scientific_name[0] ?? '__blank';
 
       const updateResult = { ...result };
 
