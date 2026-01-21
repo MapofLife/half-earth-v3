@@ -460,7 +460,7 @@ function DashboardContainer(props) {
     };
   };
 
-  const getSpeciesDetails = (speciesData, taxa) => {
+  const getSpeciesDetails = (speciesData, taxa, productType = '') => {
     const results = speciesData.map(({ attributes }) => {
       const { source, species_url, threat_status, commonnames } =
         countryISO !== 'EEWWF'
@@ -469,11 +469,12 @@ function DashboardContainer(props) {
 
       return {
         common_name: commonnames,
-        scientificname: attributes.species,
+        scientificname: attributes.species ?? attributes.scientificname,
         threat_status,
         source,
         species_url,
         taxa,
+        product_type: productType,
       };
     });
 
@@ -486,6 +487,72 @@ function DashboardContainer(props) {
       title: taxa,
     };
   };
+
+  const getPrivateOccurrenceSpecies = async (speciesData) => {
+    const list = [...speciesData];
+
+    let url = 'https://services1.arcgis.com/7uJv7I3kgh2y7Pe0/arcgis/rest/services/occurrences_GUY_test/FeatureServer';//DASHBOARD_URLS.SPECIES_OCCURENCE_URL;
+    let whereClause = `1=1`;
+
+    let geoRings = null;
+      if (selectedGeometryRings) {
+        geoRings = {
+          rings: selectedGeometryRings,
+        };
+      }
+
+      const occurenceFeatures = await EsriFeatureService.getFeatures({
+        url,
+        whereClause,
+        returnDistinctValues: true,
+        geometry: geoRings,
+        returnGeometry: false,
+        outFields: ['*'],
+      });
+
+      // if (countryISO.toUpperCase() !== 'EE') {
+      const buckets = bucketByTaxa(occurenceFeatures);
+
+      // loop through buckets to get species info
+      // TODO: remove this for the count, but keep for searching species
+      const occurenceData = Object.keys(buckets).map((key) => {
+        return getSpeciesDetails(buckets[key], key, 'private');
+      });
+
+      occurenceData?.forEach((occurrence) => {
+        const foundTaxa = list.find((sp) => sp.taxa === occurrence.taxa);
+
+        if (foundTaxa) {
+          occurrence.species.forEach((species) => {
+            const isFound = speciesToAvoid
+              .map((item) => item.toUpperCase())
+              .includes(species.scientificname.toUpperCase());
+
+            if (!isFound) {
+              const foundSpecies = foundTaxa?.species.find(
+                (speciesToFind) =>
+                  speciesToFind?.scientificname.toUpperCase() ===
+                  species?.scientificname.toUpperCase()
+              );
+
+              if (!foundSpecies) {
+                foundTaxa?.species.push(species);
+              } else {
+                foundSpecies.source += `,${species.source}`;
+              }
+            }
+          });
+        } else {
+          list.push(occurrence);
+        }
+      });
+
+      list.forEach((l) => {
+        l.count = l.species.length;
+      });
+console.log('private list', list);
+      setTaxaList(list);
+  }
 
   const getOccurenceSpecies = async (speciesData) => {
     let url = DASHBOARD_URLS.SPECIES_OCCURENCE_URL;
@@ -564,7 +631,7 @@ function DashboardContainer(props) {
       // loop through buckets to get species info
       // TODO: remove this for the count, but keep for searching species
       const occurenceData = Object.keys(buckets).map((key) => {
-        return getSpeciesDetails(buckets[key], key);
+        return getSpeciesDetails(buckets[key], key, 'points');
       });
 
       occurenceData?.forEach((occurrence) => {
@@ -666,17 +733,34 @@ function DashboardContainer(props) {
   const getSpeciesList = async () => {
     setSpeciesListLoading(true);
 
+    const body = {
+        lang: "en",
+        radius: "25000",
+        v2: "true"
+    };
+
+    if (exploreAllSpecies) {
+      body.iso3 = countryISO;
+    }
+
+    if (selectedRegion) {
+      const { GID_1, WDPA_PID, mgc, Int_ID, region_key } = selectedRegion;
+      if (GID_1) {
+        body.gid1 = GID_1;
+      }
+
+      if (WDPA_PID) {
+        body.wdpaid = WDPA_PID;
+      }
+    }
+
+    //TODO: replace region id with table from Kalkidan
     const speciesList = await fetch(DASHBOARD_URLS.REGIONS_MOL_DATA, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        lang: "en",
-        radius: "25000",
-        region_id: "6259f495-0124-4ebf-b721-04a2b9f54e27",
-        v2: "true"
-      }),
+      body: JSON.stringify(body),
     });
 
     const data = await speciesList.json();
@@ -686,7 +770,10 @@ function DashboardContainer(props) {
     const speciesLoaded = await loadSpecies(data);
     console.log('Species loaded', speciesLoaded);
 
+
+    const privateDataAndSpecies = await getPrivateOccurrenceSpecies(speciesLoaded.taxas);
     getOccurenceSpecies(speciesLoaded.taxas);
+
 
     // setTaxaList(speciesLoaded.taxas);
 

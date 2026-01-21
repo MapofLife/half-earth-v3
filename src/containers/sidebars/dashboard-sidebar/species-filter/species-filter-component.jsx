@@ -85,15 +85,25 @@ function SpeciesFilterComponent(props) {
           name: t('Occurrence'),
           active: false,
           test: (species) => {
-
             const {datasetList} = species;
-
             if (selectedRegionOption === REGION_OPTIONS.RAPID_INVENTORY_32) {
               return species?.source.indexOf('Rapid') > -1;
             }
-
             if(!datasetList || datasetList.length === 0) return false;
             return datasetList.map((d) => d.product_type).indexOf('points') >
+              -1;
+          },
+          count: 0,
+          result: false,
+          type: 'and',
+        },
+        {
+          name: t('Private Occurrence'),
+          active: false,
+          test: (species) => {
+            const {product_type} = species;
+            if(!product_type)return false;
+            return product_type.indexOf('private') >
               -1;
           },
           count: 0,
