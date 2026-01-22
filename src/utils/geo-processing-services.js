@@ -402,7 +402,7 @@ export const setSpeciesJSONGeometryRings = (rings) => {
     },
     "geometryType": 'esriGeometryPolygon',
     // "spatialReference": {
-    //   "wkid": 102100,
+    //   "wkid": 3857,
     //   "latestWkid": 3857,
     // },
     "fields": [
