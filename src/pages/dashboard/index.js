@@ -697,7 +697,7 @@ function DashboardContainer(props) {
 
     const {taxas, datasets} = result;
 
-    taxas.forEach(taxa => {
+    taxas?.forEach(taxa => {
       const taxaDatasetSet = new Set();
       taxa.species.forEach(species => {
         const speciesDatasets = Object.keys(species.dataset);
@@ -744,6 +744,7 @@ function DashboardContainer(props) {
     }
 
     if (selectedRegion) {
+      delete body.iso3;
       const { GID_1, WDPA_PID, mgc, Int_ID, region_key, rings } = selectedRegion;
       if (GID_1) {
         body.gid1 = GID_1;
@@ -754,7 +755,6 @@ function DashboardContainer(props) {
       }
 
       if(rings){
-        delete body.iso3;
         body.geojson = {
           type: 'Polygon',
           coordinates: [...rings],
@@ -762,7 +762,6 @@ function DashboardContainer(props) {
       }
     }
 
-    //TODO: replace region id with table from Kalkidan
     const speciesList = await fetch(DASHBOARD_URLS.REGIONS_MOL_DATA, {
       method: 'POST',
       headers: {
@@ -772,15 +771,13 @@ function DashboardContainer(props) {
     });
 
     const data = await speciesList.json();
-    console.log('Data from api call', data);
-
-
     const speciesLoaded = await loadSpecies(data);
-    console.log('Species loaded', speciesLoaded);
-
-
-    const privateDataAndSpecies = await getPrivateOccurrenceSpecies(speciesLoaded.taxas);
-    getOccurenceSpecies(speciesLoaded.taxas);
+    if(speciesLoaded?.taxas){
+      const privateDataAndSpecies = await getPrivateOccurrenceSpecies(speciesLoaded.taxas);
+      getOccurenceSpecies(speciesLoaded.taxas);
+    } else {
+      setSpeciesListLoading(false);
+    }
 
 
     // setTaxaList(speciesLoaded.taxas);
