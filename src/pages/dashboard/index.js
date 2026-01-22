@@ -550,7 +550,7 @@ function DashboardContainer(props) {
       list.forEach((l) => {
         l.count = l.species.length;
       });
-console.log('private list', list);
+
       setTaxaList(list);
   }
 
@@ -734,9 +734,9 @@ console.log('private list', list);
     setSpeciesListLoading(true);
 
     const body = {
-        lang: "en",
-        radius: "25000",
-        v2: "true"
+      lang: "en",
+      radius: "25000",
+      v2: "true"
     };
 
     if (exploreAllSpecies) {
@@ -744,13 +744,21 @@ console.log('private list', list);
     }
 
     if (selectedRegion) {
-      const { GID_1, WDPA_PID, mgc, Int_ID, region_key } = selectedRegion;
+      const { GID_1, WDPA_PID, mgc, Int_ID, region_key, rings } = selectedRegion;
       if (GID_1) {
         body.gid1 = GID_1;
       }
 
       if (WDPA_PID) {
         body.wdpaid = WDPA_PID;
+      }
+
+      if(rings){
+        delete body.iso3;
+        body.geojson = {
+          type: 'Polygon',
+          coordinates: [...rings],
+        }
       }
     }
 

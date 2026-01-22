@@ -3,7 +3,7 @@ import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { DASHBOARD } from 'router';
 
 import { useLocale, useT } from '@transifex/react';
-
+import * as webMercatorUtils from "@arcgis/core/geometry/support/webMercatorUtils.js";
 import { createHashFromGeometry } from 'utils/analyze-areas-utils';
 import {
   GLOBAL_COUNTRY_OUTLINE_ID,
@@ -15,7 +15,6 @@ import {
   NBS_OP_INTERVENTIONS_FEATURE_ID,
 } from 'utils/dashboard-utils';
 import { getLocaleNumber } from 'utils/data-formatting-utils';
-import { postAoiToDataBase } from 'utils/geo-processing-services';
 
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Radio from '@mui/material/Radio';
@@ -46,6 +45,7 @@ import SketchTooltip from '../../data-global-sidebar/analyze-areas-sidebar-card/
 import SketchWidget from '../../data-global-sidebar/analyze-areas-sidebar-card/sketch-widget/sketch-widget-component';
 
 import styles from './regions-analysis-styles.module.scss';
+import Polygon from '@arcgis/core/geometry/Polygon'
 // import SearchInput from 'components/search-input';
 
 export const getWarningMessages = (t, locale) => ({
@@ -161,16 +161,23 @@ function RegionsAnalysisComponent(props) {
   ];
 
   const postDrawCallback = (geometry) => {
-    const hash = createHashFromGeometry(geometry);
-    setAoiGeometry({ hash, geometry });
-    postAoiToDataBase(geometry, { aoiId: hash });
+    // const hash = createHashFromGeometry(geometry);
+    // setAoiGeometry({ hash, geometry });
+    // postAoiToDataBase(geometry, { aoiId: hash });
+
+    // console.log('Geometry drawn', geometry);
+
+    const newGeometry = webMercatorUtils.webMercatorToGeographic(geometry);
+    console.log('WebMercator to Geographic', newGeometry);
 
     setTimeout(() => {
       setSelectedIndex(NAVIGATION.EXPLORE_SPECIES);
       setRegionName(t('Custom Area'));
-      setHash(hash);
-      setSelectedRegion({ name: t('Custom Area'), iso: countryISO });
+      // setHash(hash);
+      setSelectedRegion(newGeometry);
+      // setSelectedRegion({ name: t('Custom Area'), iso: countryISO });
     }, 1000);
+
   };
 
   const warningMessages = useMemo(

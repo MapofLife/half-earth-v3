@@ -46,7 +46,7 @@ function getFeatures({
     if (geometry) {
       const polygon = new Polygon({
         rings: geometry.rings,
-        spatialReference: { wkid: 3857 },
+        spatialReference: { wkid: 4326 },
       });
 
       featureQuery.geometry = polygon;
