@@ -231,10 +231,10 @@ function DataLayerComponent(props) {
     setScientificName(null);
     findMapLayersToRemove();
 
-    if (selectedRegion || exploreAllSpecies) {
-      setSelectedIndex(NAVIGATION.EXPLORE_SPECIES);
-    } else if (fromTrends) {
+    if (fromTrends) {
       setSelectedIndex(NAVIGATION.TRENDS);
+    } else if (selectedRegion || exploreAllSpecies) {
+      setSelectedIndex(NAVIGATION.EXPLORE_SPECIES);
     } else {
       setSelectedIndex(NAVIGATION.SPECIES);
     }
