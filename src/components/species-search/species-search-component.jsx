@@ -35,8 +35,8 @@ function SpeciesSearchComponent(props) {
   };
 
   const handleSearchSelect = (searchItem) => {
-    setScientificName(searchItem.scientific_name);
-    localStorage.setItem(SPECIES_SELECTED_COOKIE, searchItem.scientific_name);
+    setScientificName(searchItem.scientificname);
+    localStorage.setItem(SPECIES_SELECTED_COOKIE, searchItem.scientificname);
     setSelectedIndex(NAVIGATION.DATA_LAYER);
   };
 
@@ -57,11 +57,11 @@ function SpeciesSearchComponent(props) {
     allTaxa.forEach((taxa) => {
       const match = taxa.species.filter((item) => {
         return (
-          item.scientific_name
+          item.scientificname
             .toLowerCase()
             .includes(searchInput.toLowerCase()) ||
-          (item.common_name &&
-            item.common_name.toLowerCase().includes(searchInput.toLowerCase()))
+          (item.common &&
+            item.common[0]?.toLowerCase().includes(searchInput.toLowerCase()))
         );
       });
       results.push(...match);
@@ -91,14 +91,14 @@ function SpeciesSearchComponent(props) {
         <ul className={styles.searchResults}>
           {searchResults.map(
             (item) =>
-              item.scientific_name && (
-                <li key={`${item.scientific_name} - ${item.common_name}`}>
+              item.scientificname && (
+                <li key={`${item.scientificname} - ${item.common}`}>
                   <button
                     type="button"
                     onClick={() => handleSearchSelect(item)}
                   >
-                    <b>{item.scientific_name}</b> -{' '}
-                    <span>{item.common_name}</span>
+                    <b>{item.scientificname}</b> -{' '}
+                    <span>{item.common}</span>
                   </button>
                 </li>
               )
