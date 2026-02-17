@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import {
   createDefaultDashboardLayers,
   GUY_RIVER_ID,
+  GUY_RIVER_NAME_ID,
 } from 'utils/dashboard-utils';
 
 import Map from '@arcgis/core/Map';
@@ -96,6 +97,16 @@ function ViewContainer(props) {
     );
 
     map.add(layer);
+
+    const riverLayer = await EsriFeatureService.getFeatureLayer(
+      GUY_RIVER_NAME_ID,
+      countryISO,
+      'GUY-RIVER'
+    );
+
+    map.add(riverLayer);
+
+
   };
 
   useEffect(() => {

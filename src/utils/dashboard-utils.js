@@ -96,7 +96,8 @@ export const PROTECTED_AREA_GUY_FEATURE_URL =
 
 export const GBIF_OCCURENCE_URL = '41fc325e009a46f08c1e3026d14a47ae';//'1ccb994557a74bc6bd773250d8eebc15';
 export const GUY_RIVER_ID = 'e7557c32f8a2475e95aab9471fc9b4c5';
-
+export const GUY_RIVER_NAME_ID = '4182314c3f9c4b4db823618b501f914c';
+export const GUY_RIVER_NAME_URL = 'https://services1.arcgis.com/7uJv7I3kgh2y7Pe0/arcgis/rest/services/Rivers_Guyana/FeatureServer'
 export const REGION_OCCURENCE_ID = '9f732963e1a7495f889577ca30e44562';
 
 export const DASHBOARD_TABLE_URL =
