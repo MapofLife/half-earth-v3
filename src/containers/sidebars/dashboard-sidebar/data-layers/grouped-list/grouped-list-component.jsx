@@ -87,7 +87,7 @@ function GroupedListComponent(props) {
       const { renderer } = layer; // Get the renderer
 
       if(layer.id.match(/GBIF/)){
-        item.color = {r: 111, g: 10, b: 111, a: 0.8};
+        item.color = {r: 255, g: 165, b: 0, a: 0.8};
       }
 
       if (renderer) {
@@ -407,7 +407,7 @@ function GroupedListComponent(props) {
                 source: 'species-occurrence',
                 'source-layer': 'occurrence',
                 paint: {
-                  'fill-color': '#6F0A6F',
+                  'fill-color': '#FFA500',
                   'fill-opacity': 0.8
                 }
               },
@@ -418,7 +418,7 @@ function GroupedListComponent(props) {
                 source: 'species-occurrence',
                 'source-layer': 'occurrence',
                 paint: {
-                  'line-color': '#6F0A6F',
+                  'line-color': '#FFA500',
                   'line-width': 2,
                   'line-opacity': 0.9
                 }
@@ -429,9 +429,9 @@ function GroupedListComponent(props) {
                 source: 'species-occurrence',
                 'source-layer': 'points',
                 paint: {
-                  'circle-color': '#6F0A6F',
+                  'circle-color': '#FFA500',
                   'circle-radius': 8,
-                  'circle-stroke-color': '#6F0A6F',
+                  'circle-stroke-color': '#FFA500',
                   'circle-stroke-width': 2,
                   'circle-opacity': 1
                 }
