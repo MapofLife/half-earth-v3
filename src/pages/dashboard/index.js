@@ -75,7 +75,7 @@ function DashboardContainer(props) {
   const [filteredTaxaList, setFilteredTaxaList] = useState([]);
   const [scientificName, setScientificName] = useState(null);
   const [selectedIndex, setSelectedIndex] = useState(NAVIGATION.HOME);
-  const [loggedIn, setLoggedIn] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(true);
   const [selectedRegion, setSelectedRegion] = useState();
   const [selectedGeometryRings, setSelectedGeometryRings] = useState();
   const [fromTrends, setFromTrends] = useState(false);
@@ -192,11 +192,11 @@ function DashboardContainer(props) {
         returnGeometry: false,
       });
     } else {
-      gbifResponse = await EsriFeatureService.getFeatures({
-        url: DASHBOARD_URLS.GUY_SPECIES_OCCURENCE_URL,
-        whereClause: `species = '${scientificName}' and source = 'GBIF' and iso3 = '${countryISO}'`,
-        returnGeometry: false,
-      });
+      // gbifResponse = await EsriFeatureService.getFeatures({
+      //   url: DASHBOARD_URLS.GUY_SPECIES_OCCURENCE_URL,
+      //   whereClause: `species = '${scientificName}' and source = 'GBIF' and iso3 = '${countryISO}'`,
+      //   returnGeometry: false,
+      // });
     }
 
     const gbifResponseItems = gbifResponse?.map((item) => item.attributes);
@@ -277,7 +277,7 @@ function DashboardContainer(props) {
         if (uniqueEBirdObjects.length > 0) {
           dld.no_rows = uniqueEBirdObjects.length;
         } else {
-          dld.no_rows = 0;
+          // dld.no_rows = 0;
         }
       }
 
@@ -285,7 +285,7 @@ function DashboardContainer(props) {
         if (uniqueGbifObjects.length > 0) {
           dld.no_rows = uniqueGbifObjects.length;
         } else {
-          dld.no_rows = 0;
+          // dld.no_rows = 0;
         }
       }
 

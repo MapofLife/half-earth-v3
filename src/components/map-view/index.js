@@ -105,8 +105,6 @@ function ViewContainer(props) {
     );
 
     map.add(riverLayer);
-
-
   };
 
   useEffect(() => {
