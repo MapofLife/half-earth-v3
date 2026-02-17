@@ -362,6 +362,26 @@ function SpeciesFilterComponent(props) {
       default:
         break;
     }
+
+    if(selectedRegion.rings){
+      const polygon = {
+        type: "polygon",
+        rings: [...selectedRegion.rings]
+      };
+
+      const fillSymbol = {
+        type: "simple-fill",
+        color: [255,255,255, 0.2], // White, 80% opacity
+        outline: { color: [255, 255, 255], width: 2 }
+      };
+
+      const polygonGraphic = new Graphic({
+        geometry: polygon,
+        symbol: fillSymbol
+      });
+
+      view.graphics.add(polygonGraphic);
+    }
   }, [selectedRegionOption, selectedRegion]);
 
   useEffect(() => {

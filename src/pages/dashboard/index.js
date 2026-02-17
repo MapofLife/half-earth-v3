@@ -75,7 +75,7 @@ function DashboardContainer(props) {
   const [filteredTaxaList, setFilteredTaxaList] = useState([]);
   const [scientificName, setScientificName] = useState(null);
   const [selectedIndex, setSelectedIndex] = useState(NAVIGATION.HOME);
-  const [loggedIn, setLoggedIn] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(true);
   const [selectedRegion, setSelectedRegion] = useState();
   const [selectedGeometryRings, setSelectedGeometryRings] = useState();
   const [fromTrends, setFromTrends] = useState(false);
@@ -760,6 +760,7 @@ function DashboardContainer(props) {
           coordinates: [...rings],
         }
       }
+
     }
 
     const speciesList = await fetch(DASHBOARD_URLS.REGIONS_MOL_DATA, {

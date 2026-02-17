@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 
 import { DASHBOARD } from 'router';
-
+import * as webMercatorUtils from "@arcgis/core/geometry/support/webMercatorUtils.js";
 import * as promiseUtils from '@arcgis/core/core/promiseUtils.js';
 
 import DashboardPopupComponent from 'components/dashboard-popup/dashboard-popup-component';
@@ -199,10 +199,15 @@ function AreaHighlightManagerComponent(props) {
                 if (
                   selectedRegionOption === REGION_OPTIONS.ZONE_3 ||
                   selectedRegionOption === REGION_OPTIONS.ZONE_5 ||
-                  selectedRegionOption === REGION_OPTIONS.ACC_REGION ||
                   selectedRegionOption === REGION_OPTIONS.RAPID_INVENTORY_32
                 ) {
                   setSelectedRegion({ region_key });
+                }
+
+                if(selectedRegionOption === REGION_OPTIONS.ACC_REGION){
+
+                  const newGeometry = webMercatorUtils.webMercatorToGeographic(hits.graphic.geometry);
+                  setSelectedRegion({rings: newGeometry.rings });
                 }
 
                 // eslint-disable-next-line camelcase

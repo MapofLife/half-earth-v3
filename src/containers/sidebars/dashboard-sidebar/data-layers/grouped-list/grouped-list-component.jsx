@@ -29,6 +29,7 @@ import { DASHBOARD_URLS } from 'constants/layers-urls.js';
 import ArrowIcon from 'icons/arrow_right.svg?react';
 
 import styles from './grouped-list-styles.module.scss';
+import VectorTileLayer from '@arcgis/core/layers/VectorTileLayer'
 
 function GroupedListComponent(props) {
   const {
@@ -84,6 +85,10 @@ function GroupedListComponent(props) {
   const getLayerIcon = (layer, item) => {
     view.whenLayerView(layer).then(() => {
       const { renderer } = layer; // Get the renderer
+
+      if(layer.id.match(/GBIF/)){
+        item.color = {r: 162, g: 95, b: 231, a: 0.8};
+      }
 
       if (renderer) {
         const { symbol, uniqueValueGroups } = renderer;
@@ -379,6 +384,67 @@ function GroupedListComponent(props) {
           }
 
           item.isActive = true;
+          // map.add(layer);
+
+          const mvtTileUrlTemplate = `https://production-dot-tiler-dot-map-of-life.appspot.com/0.x/tiles/species/occurrences/3857/{z}/{x}/{y}.mvt?scientificname=${speciesInfo.scientificname}&dsids=9905692e-6a28-4310-b01e-476a471e5bf8,794adb49-7458-41c4-a1c0-56537fdbec1d`;
+
+          const mvtStyle = {
+            version: 8,
+            glyphs: 'https://basemaps.arcgis.com/arcgis/rest/services/World_Basemap/VectorTileServer/resources/fonts/{fontstack}/{range}.pbf',
+            sources: {
+              'species-occurrence': {
+                type: 'vector',
+                tiles: [mvtTileUrlTemplate],
+                minzoom: 0,
+                maxzoom: 22
+              }
+            },
+            layers: [
+              // Fill layer for polygons
+              {
+                id: 'occurren-fill',
+                type: 'fill',
+                source: 'species-occurrence',
+                'source-layer': 'occurrence',
+                paint: {
+                  'fill-color': '#A25FE7',
+                  'fill-opacity': 0.8
+                }
+              },
+              // Outline layer for polygon boundaries
+              {
+                id: 'occurrence-outline',
+                type: 'line',
+                source: 'species-occurrence',
+                'source-layer': 'occurrence',
+                paint: {
+                  'line-color': '#A25FE7',
+                  'line-width': 2,
+                  'line-opacity': 0.9
+                }
+              },
+              {
+                id: 'points-circles',
+                type: 'circle',
+                source: 'species-occurrence',
+                'source-layer': 'points',
+                paint: {
+                  'circle-color': '#e74c3c',
+                  'circle-radius': 8,
+                  'circle-stroke-color': '#c0392b',
+                  'circle-stroke-width': 2,
+                  'circle-opacity': 0.9
+                }
+              }
+            ]
+          };
+          layer = new VectorTileLayer({
+            style: mvtStyle,
+            title: `${speciesInfo.scientificname} Occurrences`,
+            visible: true,
+            opacity: 0.7,
+            id: layerName,
+          });
           map.add(layer);
 
           view.whenLayerView(layer).then(() => {

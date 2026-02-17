@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 
 import { DASHBOARD } from 'router';
-
+import MinimizeIcon from 'icons/closes.svg?react';
 import { useLocale, useT } from '@transifex/react';
 import * as webMercatorUtils from "@arcgis/core/geometry/support/webMercatorUtils.js";
 import { createHashFromGeometry } from 'utils/analyze-areas-utils';
@@ -15,7 +15,7 @@ import {
   NBS_OP_INTERVENTIONS_FEATURE_ID,
 } from 'utils/dashboard-utils';
 import { getLocaleNumber } from 'utils/data-formatting-utils';
-
+import popUpStyles from 'components/image-popup/image-popup-component-styles.module.scss';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
@@ -46,6 +46,7 @@ import SketchWidget from '../../data-global-sidebar/analyze-areas-sidebar-card/s
 
 import styles from './regions-analysis-styles.module.scss';
 import Polygon from '@arcgis/core/geometry/Polygon'
+import Graphic from '@arcgis/core/Graphic'
 // import SearchInput from 'components/search-input';
 
 export const getWarningMessages = (t, locale) => ({
@@ -89,6 +90,7 @@ export const getWarningMessages = (t, locale) => ({
       t('An error ocurred during the file upload. Please try again'),
   },
 });
+
 function RegionsAnalysisComponent(props) {
   const t = useT();
   const locale = useLocale();
@@ -111,6 +113,11 @@ function RegionsAnalysisComponent(props) {
     countryISO,
     countryName,
     setHash,
+    showUploadPopup,
+    setShowUploadPopup,
+    closeUploadModal,
+    uploadedShape,
+    setUploadedShape,
   } = props;
   const { lightMode } = useContext(LightModeContext);
   const [sketchWidgetMode, setSketchWidgetMode] = useState('create');
@@ -440,6 +447,18 @@ function RegionsAnalysisComponent(props) {
   }, [regionLayers, selectedRegionOption, selectedIndex]);
 
   useEffect(() => {
+    if (uploadedShape) {
+      removeRegionLayers();
+      const newGeometry = webMercatorUtils.webMercatorToGeographic(uploadedShape.features[0].geometry);
+      setSelectedRegion({rings: newGeometry.coordinates });
+      setRegionName(t('Custom Area'));
+      setSelectedIndex(NAVIGATION.EXPLORE_SPECIES);
+      setShowUploadPopup(false);
+      setUploadedShape(null);
+    }
+  }, [uploadedShape]);
+
+  useEffect(() => {
     if (selectedRegionOption && selectedRegion) {
       setSelectedIndex(NAVIGATION.EXPLORE_SPECIES);
     } else {
@@ -522,11 +541,10 @@ function RegionsAnalysisComponent(props) {
           )}
           <div className={styles.comingSoon}>
             <Button
-              className={styles.disabled}
               type="rectangular"
               label={t('Upload a shapefile')}
+              handleClick={() => setShowUploadPopup(true)}
             />
-            <span className="text-size-2">{t('Coming soon')}</span>
           </div>
         </div>
         {selectedRegionOption === REGION_OPTIONS.DRAW && (
