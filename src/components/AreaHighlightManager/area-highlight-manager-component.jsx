@@ -169,6 +169,7 @@ function AreaHighlightManagerComponent(props) {
                   Intrvnt,
                   iso3,
                   name,
+                  nbis_id
                 } = hits.attributes;
 
                 if (
@@ -188,8 +189,10 @@ function AreaHighlightManagerComponent(props) {
                   setSelectedRegion({ GID_1 });
                 }
 
-                if (selectedRegionOption === REGION_OPTIONS.FORESTS) {
-                  setSelectedRegion({ mgc });
+                if (selectedRegionOption === REGION_OPTIONS.FORESTS ||
+                  selectedRegionOption === REGION_OPTIONS.ACC_REGION
+                ) {
+                  setSelectedRegion({ nbis_id });
                 }
 
                 if (selectedRegionOption === REGION_OPTIONS.DISSOLVED_NBS) {
@@ -204,11 +207,10 @@ function AreaHighlightManagerComponent(props) {
                   setSelectedRegion({ region_key });
                 }
 
-                if(selectedRegionOption === REGION_OPTIONS.ACC_REGION){
-
-                  const newGeometry = webMercatorUtils.webMercatorToGeographic(hits.graphic.geometry);
-                  setSelectedRegion({rings: newGeometry.rings });
-                }
+                // if(selectedRegionOption === REGION_OPTIONS.ACC_REGION){
+                //   const newGeometry = webMercatorUtils.webMercatorToGeographic(hits.graphic.geometry);
+                //   setSelectedRegion({rings: newGeometry.rings });
+                // }
 
                 // eslint-disable-next-line camelcase
                 setRegionName(

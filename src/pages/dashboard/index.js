@@ -75,7 +75,7 @@ function DashboardContainer(props) {
   const [filteredTaxaList, setFilteredTaxaList] = useState([]);
   const [scientificName, setScientificName] = useState(null);
   const [selectedIndex, setSelectedIndex] = useState(NAVIGATION.HOME);
-  const [loggedIn, setLoggedIn] = useState(true);
+  const [loggedIn, setLoggedIn] = useState(false);
   const [selectedRegion, setSelectedRegion] = useState();
   const [selectedGeometryRings, setSelectedGeometryRings] = useState();
   const [fromTrends, setFromTrends] = useState(false);
@@ -745,7 +745,7 @@ function DashboardContainer(props) {
 
     if (selectedRegion) {
       delete body.iso3;
-      const { GID_1, WDPA_PID, mgc, Int_ID, region_key, rings } = selectedRegion;
+      const { GID_1, WDPA_PID, mgc, Int_ID, region_key, rings, nbis_id } = selectedRegion;
       if (GID_1) {
         body.gid1 = GID_1;
       }
@@ -759,6 +759,10 @@ function DashboardContainer(props) {
           type: 'Polygon',
           coordinates: [...rings],
         }
+      }
+
+      if(nbis_id){
+        body.nbis_id = nbis_id;
       }
 
     }
