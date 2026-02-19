@@ -102,7 +102,7 @@ function SpeciesFilterComponent(props) {
           active: false,
           test: (species) => {
             const {product_type} = species;
-            if(!product_type)return false;
+            if (!product_type) return false;
             return product_type.indexOf('private') >
               -1;
           },

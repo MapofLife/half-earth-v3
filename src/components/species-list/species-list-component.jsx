@@ -134,6 +134,9 @@ function SpeciesListComponent(props) {
       if (updateResult.visible) {
         let inf = inFilter;
         setInFilter((inf += 1));
+        if (!fc[updateResult.family]) {
+          fc[updateResult.family] = { total: 0, visibleCount: 0 };
+        }
         fc[updateResult.family].visibleCount += 1;
 
         group[catName] = group[catName] ?? [];

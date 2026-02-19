@@ -163,12 +163,17 @@ function DashboardContainer(props) {
   };
 
   const getDataLayersData = async () => {
-    if (countryISO === 'COD' || countryISO === 'GIN') {
-      const url =
-        countryISO === 'COD'
-          ? DASHBOARD_URLS.PRIVATE_COD_OCCURENCE_LAYER
-          : DASHBOARD_URLS.PRIVATE_GIN_OCCURENCE_LAYER;
-      const privateOccurrenceDataResponse =
+    if (countryISO === 'COD' || countryISO === 'GIN' || countryISO === 'GUY') {
+      let url = '';
+      if (countryISO === 'COD') {
+        url = DASHBOARD_URLS.PRIVATE_COD_OCCURENCE_LAYER;
+      } else if(countryISO === 'GUY') {
+        url = DASHBOARD_URLS.PRIVATE_RDC_OCCURENCE_LAYER;
+      } else if(countryISO === 'GIN') {
+        url = DASHBOARD_URLS.PRIVATE_GIN_OCCURENCE_LAYER;
+      }
+
+    const privateOccurrenceDataResponse =
         await EsriFeatureService.getFeatures({
           url,
           whereClause: `scientificname = '${scientificName}'`,
@@ -491,7 +496,16 @@ function DashboardContainer(props) {
   const getPrivateOccurrenceSpecies = async (speciesData) => {
     const list = [...speciesData];
 
-    let url = 'https://services1.arcgis.com/7uJv7I3kgh2y7Pe0/arcgis/rest/services/occurrences_GUY_test/FeatureServer';//DASHBOARD_URLS.SPECIES_OCCURENCE_URL;
+    let url = '';
+
+    if (countryISO === 'COD') {
+      url = DASHBOARD_URLS.PRIVATE_COD_OCCURENCE_LAYER;
+    } else if(countryISO === 'GUY') {
+      url = DASHBOARD_URLS.PRIVATE_RDC_OCCURENCE_LAYER;
+    } else if(countryISO === 'GIN') {
+      url = DASHBOARD_URLS.PRIVATE_GIN_OCCURENCE_LAYER;
+    }
+
     let whereClause = `1=1`;
 
     let geoRings = null;
