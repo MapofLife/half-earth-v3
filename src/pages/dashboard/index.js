@@ -168,7 +168,7 @@ function DashboardContainer(props) {
       if (countryISO === 'COD') {
         url = DASHBOARD_URLS.PRIVATE_COD_OCCURENCE_LAYER;
       } else if(countryISO === 'GUY') {
-        url = DASHBOARD_URLS.PRIVATE_RDC_OCCURENCE_LAYER;
+        url = DASHBOARD_URLS.PRIVATE_GUY_OCCURENCE_LAYER;
       } else if(countryISO === 'GIN') {
         url = DASHBOARD_URLS.PRIVATE_GIN_OCCURENCE_LAYER;
       }
@@ -501,7 +501,7 @@ function DashboardContainer(props) {
     if (countryISO === 'COD') {
       url = DASHBOARD_URLS.PRIVATE_COD_OCCURENCE_LAYER;
     } else if(countryISO === 'GUY') {
-      url = DASHBOARD_URLS.PRIVATE_RDC_OCCURENCE_LAYER;
+      url = DASHBOARD_URLS.PRIVATE_GUY_OCCURENCE_LAYER;
     } else if(countryISO === 'GIN') {
       url = DASHBOARD_URLS.PRIVATE_GIN_OCCURENCE_LAYER;
     }

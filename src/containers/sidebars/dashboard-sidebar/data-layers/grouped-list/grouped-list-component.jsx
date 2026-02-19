@@ -347,105 +347,116 @@ function GroupedListComponent(props) {
           setIsLoading(true);
           loadingCount += 1;
 
-          let layerId = GBIF_OCCURENCE_URL;
-          if (countryISO === 'EE') {
-            layerId = REGION_OCCURENCE_ID;
-          } else if (countryISO === 'GUY') {
-            layerId = '5239b39a253c4ab69bb931044406b431';
-          }
+          // let layerId = GBIF_OCCURENCE_URL;
+          // if (countryISO === 'EE') {
+          //   layerId = REGION_OCCURENCE_ID;
+          // } else if (countryISO === 'GUY') {
+          //   layerId = '5239b39a253c4ab69bb931044406b431';
+          // } else if(countryISO === 'GIN') {
+          //   layerId = '34e596f26f3b4203937e872e91c630b1';
+          // } else if(countryISO === 'COD') {
+          //   layerId = '34e596f26f3b4203937e872e91c630b1';
+          // }
 
-          if (layerName.match(/EBIRD/)) {
-            layer = await EsriFeatureService.getFeatureOccurenceLayer(
-              layerId,
-              speciesInfo.scientificname,
-              layerName,
-              'eBird',
-              countryISO
-            );
-          } else if (layerName.match(/GBIF/)) {
-            layer = await EsriFeatureService.getFeatureOccurenceLayer(
-              layerId,
-              speciesInfo.scientificname,
-              layerName,
-              'GBIF',
-              countryISO
-            );
-          } else if (item.type === 'PRIVATE') {
-            const portalId =
-              countryISO === 'COD'
-                ? '34e596f26f3b4203937e872e91c630b1'
-                : 'e2a38114c9734e888a89a699b4ba305f';
+          // if (layerName.match(/EBIRD/)) {
+          //   layer = await EsriFeatureService.getFeatureOccurenceLayer(
+          //     layerId,
+          //     speciesInfo.scientificname,
+          //     layerName,
+          //     'eBird',
+          //     countryISO
+          //   );
+          // } else if (layerName.match(/GBIF/)) {
+          //   layer = await EsriFeatureService.getFeatureOccurenceLayer(
+          //     layerId,
+          //     speciesInfo.scientificname,
+          //     layerName,
+          //     'GBIF',
+          //     countryISO
+          //   );
+          // } else
+
+            if (item.type === 'PRIVATE') {
+            let portalId = '';
+
+            if (countryISO === 'GUY') {
+              portalId = '56b7ab3ca9e74495ae6534ea965ca368';
+            } else if(countryISO === 'GIN') {
+              portalId = '34e596f26f3b4203937e872e91c630b1';
+            } else if(countryISO === 'COD') {
+              portalId = '34e596f26f3b4203937e872e91c630b1';
+            }
+
             layer = await EsriFeatureService.getFeaturePrivateOccurenceLayer(
               portalId,
               speciesInfo.scientificname,
               layerName,
               item.dataset_title
             );
-          }
-
           item.isActive = true;
-          // map.add(layer);
-
-          const mvtTileUrlTemplate = `https://production-dot-tiler-dot-map-of-life.appspot.com/0.x/tiles/species/occurrences/3857/{z}/{x}/{y}.mvt?scientificname=${speciesInfo.scientificname}&dsids=9905692e-6a28-4310-b01e-476a471e5bf8,794adb49-7458-41c4-a1c0-56537fdbec1d`;
-
-          const mvtStyle = {
-            version: 8,
-            glyphs: 'https://basemaps.arcgis.com/arcgis/rest/services/World_Basemap/VectorTileServer/resources/fonts/{fontstack}/{range}.pbf',
-            sources: {
-              'species-occurrence': {
-                type: 'vector',
-                tiles: [mvtTileUrlTemplate],
-                minzoom: 0,
-                maxzoom: 22
-              }
-            },
-            layers: [
-              // Fill layer for polygons
-              {
-                id: 'occurren-fill',
-                type: 'fill',
-                source: 'species-occurrence',
-                'source-layer': 'occurrence',
-                paint: {
-                  'fill-color': '#FFA500',
-                  'fill-opacity': 0.8
-                }
-              },
-              // Outline layer for polygon boundaries
-              {
-                id: 'occurrence-outline',
-                type: 'line',
-                source: 'species-occurrence',
-                'source-layer': 'occurrence',
-                paint: {
-                  'line-color': '#FFA500',
-                  'line-width': 2,
-                  'line-opacity': 0.9
-                }
-              },
-              {
-                id: 'points-circles',
-                type: 'circle',
-                source: 'species-occurrence',
-                'source-layer': 'points',
-                paint: {
-                  'circle-color': '#FFA500',
-                  'circle-radius': 8,
-                  'circle-stroke-color': '#FFA500',
-                  'circle-stroke-width': 2,
-                  'circle-opacity': 1
-                }
-              }
-            ]
-          };
-          layer = new VectorTileLayer({
-            style: mvtStyle,
-            title: `${speciesInfo.scientificname} Occurrences`,
-            visible: true,
-            opacity: 0.7,
-            id: layerName,
-          });
           map.add(layer);
+          } else {
+            const mvtTileUrlTemplate = `https://production-dot-tiler-dot-map-of-life.appspot.com/0.x/tiles/species/occurrences/3857/{z}/{x}/{y}.mvt?scientificname=${speciesInfo.scientificname}&dsids=9905692e-6a28-4310-b01e-476a471e5bf8,794adb49-7458-41c4-a1c0-56537fdbec1d`;
+
+            const mvtStyle = {
+              version: 8,
+              glyphs: 'https://basemaps.arcgis.com/arcgis/rest/services/World_Basemap/VectorTileServer/resources/fonts/{fontstack}/{range}.pbf',
+              sources: {
+                'species-occurrence': {
+                  type: 'vector',
+                  tiles: [mvtTileUrlTemplate],
+                  minzoom: 0,
+                  maxzoom: 22
+                }
+              },
+              layers: [
+                // Fill layer for polygons
+                {
+                  id: 'occurren-fill',
+                  type: 'fill',
+                  source: 'species-occurrence',
+                  'source-layer': 'occurrence',
+                  paint: {
+                    'fill-color': '#FFA500',
+                    'fill-opacity': 0.8
+                  }
+                },
+                // Outline layer for polygon boundaries
+                {
+                  id: 'occurrence-outline',
+                  type: 'line',
+                  source: 'species-occurrence',
+                  'source-layer': 'occurrence',
+                  paint: {
+                    'line-color': '#FFA500',
+                    'line-width': 2,
+                    'line-opacity': 0.9
+                  }
+                },
+                {
+                  id: 'points-circles',
+                  type: 'circle',
+                  source: 'species-occurrence',
+                  'source-layer': 'points',
+                  paint: {
+                    'circle-color': '#FFA500',
+                    'circle-radius': 8,
+                    'circle-stroke-color': '#FFA500',
+                    'circle-stroke-width': 2,
+                    'circle-opacity': 1
+                  }
+                }
+              ]
+            };
+            layer = new VectorTileLayer({
+              style: mvtStyle,
+              title: `${speciesInfo.scientificname} Occurrences`,
+              visible: true,
+              opacity: 0.7,
+              id: layerName,
+            });
+            map.add(layer);
+          }
 
           view.whenLayerView(layer).then(() => {
             setRegionLayers((rl) => ({
