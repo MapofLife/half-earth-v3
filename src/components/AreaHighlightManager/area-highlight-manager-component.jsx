@@ -190,7 +190,8 @@ function AreaHighlightManagerComponent(props) {
                 }
 
                 if (selectedRegionOption === REGION_OPTIONS.FORESTS ||
-                  selectedRegionOption === REGION_OPTIONS.ACC_REGION
+                  selectedRegionOption === REGION_OPTIONS.ACC_REGION ||
+                  selectedRegionOption === REGION_OPTIONS.RAPID_INVENTORY_32
                 ) {
                   setSelectedRegion({ nbis_id });
                 }
@@ -201,8 +202,7 @@ function AreaHighlightManagerComponent(props) {
 
                 if (
                   selectedRegionOption === REGION_OPTIONS.ZONE_3 ||
-                  selectedRegionOption === REGION_OPTIONS.ZONE_5 ||
-                  selectedRegionOption === REGION_OPTIONS.RAPID_INVENTORY_32
+                  selectedRegionOption === REGION_OPTIONS.ZONE_5
                 ) {
                   setSelectedRegion({ region_key });
                 }

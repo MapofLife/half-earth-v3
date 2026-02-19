@@ -163,7 +163,7 @@ function FilterComponent(props) {
               <div className={styles.filterbox}>
                 {filterGroup.filters.map((filter) => {
                   return (
-                    <Chip
+                    filter.count > 0 && <Chip
                       key={filter.name}
                       icon={filter.active ? <DoneIcon /> : <span />}
                       color={filter.active ? 'success' : 'primary'}

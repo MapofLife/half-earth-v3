@@ -75,7 +75,7 @@ function DashboardContainer(props) {
   const [filteredTaxaList, setFilteredTaxaList] = useState([]);
   const [scientificName, setScientificName] = useState(null);
   const [selectedIndex, setSelectedIndex] = useState(NAVIGATION.HOME);
-  const [loggedIn, setLoggedIn] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(true);
   const [selectedRegion, setSelectedRegion] = useState();
   const [selectedGeometryRings, setSelectedGeometryRings] = useState();
   const [fromTrends, setFromTrends] = useState(false);
@@ -798,15 +798,9 @@ function DashboardContainer(props) {
       setSpeciesListLoading(false);
     }
 
-
     // setTaxaList(speciesLoaded.taxas);
 
     // setSpeciesListLoading(false);
-
-
-
-
-
 
     // if (hash && selectedRegionOption === REGION_OPTIONS.DRAW) {
     //   const aoi = await getAoiFromDataBase(hash);

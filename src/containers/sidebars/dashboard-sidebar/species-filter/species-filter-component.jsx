@@ -86,9 +86,9 @@ function SpeciesFilterComponent(props) {
           active: false,
           test: (species) => {
             const {datasetList} = species;
-            if (selectedRegionOption === REGION_OPTIONS.RAPID_INVENTORY_32) {
-              return species?.source.indexOf('Rapid') > -1;
-            }
+            // if (selectedRegionOption === REGION_OPTIONS.RAPID_INVENTORY_32) {
+            //   return species?.source.indexOf('Rapid') > -1;
+            // }
             if(!datasetList || datasetList.length === 0) return false;
             return datasetList.map((d) => d.product_type).indexOf('points') >
               -1;
@@ -104,6 +104,19 @@ function SpeciesFilterComponent(props) {
             const {product_type} = species;
             if (!product_type) return false;
             return product_type.indexOf('private') >
+              -1;
+          },
+          count: 0,
+          result: false,
+          type: 'and',
+        },
+        {
+          name: t('Rapid Inventory Assessment'),
+          active: false,
+          test: (species) => {
+            const {datasetList} = species;
+            if(!datasetList || datasetList.length === 0) return false;
+            return datasetList.map((d) => d.product_type).indexOf('rapid_inventory') >
               -1;
           },
           count: 0,
