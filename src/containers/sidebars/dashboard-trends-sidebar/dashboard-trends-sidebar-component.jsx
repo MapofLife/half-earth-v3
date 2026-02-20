@@ -207,8 +207,16 @@ function DashboardTrendsSidebar(props) {
       (item) => item.id === `GUY-RIVER`
     );
 
+    const guyRiverName = map.layers.items.find(
+      (item) => item.id === `GUY-RIVER-NAME`
+    );
+
     if(guyRiver){
       guyRiver.visible = false;
+    }
+
+    if(guyRiverName){
+      guyRiverName.visible = false;
     }
 
     return () => {
@@ -216,8 +224,15 @@ function DashboardTrendsSidebar(props) {
         (item) => item.id === `GUY-RIVER`
       );
 
+      const guyRiverName = map.layers.items.find(
+      (item) => item.id === `GUY-RIVER-NAME`
+    );
+
       if(guyRiver){
         guyRiver.visible = true;
+      }
+      if(guyRiverName){
+        guyRiverName.visible = true;
       }
     }
   });

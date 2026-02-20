@@ -101,7 +101,7 @@ function ViewContainer(props) {
     const riverLayer = await EsriFeatureService.getFeatureLayer(
       GUY_RIVER_NAME_ID,
       countryISO,
-      'GUY-RIVER'
+      'GUY-RIVER-NAME'
     );
 
     map.add(riverLayer);

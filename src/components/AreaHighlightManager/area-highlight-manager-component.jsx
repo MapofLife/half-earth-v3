@@ -117,7 +117,8 @@ function AreaHighlightManagerComponent(props) {
           x.graphic.attributes?.territoire ||
           x.graphic.attributes?.Int_ID
       );
-      if (foundLayer && foundLayer.layer.id !== `map-${countryISO}`) {
+      if (foundLayer && foundLayer.layer.id !== `map-${countryISO}` &&
+        foundLayer.layer.id !== 'GUY-RIVER' && foundLayer.layer.id !== 'GUY-RIVER-NAME') {
         const { graphic } = foundLayer;
         const { attributes } = graphic;
         if (
@@ -172,12 +173,16 @@ function AreaHighlightManagerComponent(props) {
                   nbis_id
                 } = hits.attributes;
 
+
                 if (
                   hits.graphic &&
                   hits.graphic.geometry &&
                   hits.graphic.geometry.rings
                 ) {
-                  setSelectedGeometryRings(hits.graphic.geometry.rings);
+                  const newGeometry = webMercatorUtils.webMercatorToGeographic(hits.graphic.geometry);
+                  setSelectedGeometryRings(newGeometry.rings);
+                } else {
+                  setSelectedGeometryRings(null);
                 }
 
                 setSelectedIndex(NAVIGATION.EXPLORE_SPECIES);
