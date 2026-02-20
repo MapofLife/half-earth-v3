@@ -381,6 +381,10 @@ function RegionsAnalysisComponent(props) {
       (layer) => layer.id === LAYER_OPTIONS.ACC_REGION
     );
 
+    const customAreaLayer = map.layers.items.find(
+      (layer) => layer.id === 'custom-area'
+    );
+
     const rapidLayer = map.layers.items.find(
       (layer) => layer.id === LAYER_OPTIONS.RAPID_INVENTORY_32
     );
@@ -391,6 +395,7 @@ function RegionsAnalysisComponent(props) {
     map.remove(dissolvedLayer);
     map.remove(accRegionLayer);
     map.remove(rapidLayer);
+    map.remove(customAreaLayer);
     setRegionLayers({});
   };
 

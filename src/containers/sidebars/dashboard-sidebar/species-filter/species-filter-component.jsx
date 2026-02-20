@@ -393,7 +393,17 @@ function SpeciesFilterComponent(props) {
         symbol: fillSymbol
       });
 
-      view.graphics.add(polygonGraphic);
+      const graphicsLayer = new GraphicsLayer({
+        id: 'custom-area'
+      });
+      graphicsLayer.add(polygonGraphic);
+      setRegionLayers((rl) => ({
+          ...rl,
+          'custom-area': graphicsLayer,
+        }));
+      map.add(graphicsLayer);
+
+      // view.graphics.add(polygonGraphic);
     }
   }, [selectedRegionOption, selectedRegion]);
 
