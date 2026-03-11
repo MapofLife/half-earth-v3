@@ -52,14 +52,18 @@ function TemporalTrendsSpiComponent(props) {
   const [areaProtectedPercent, setAreaProtectedPercent] = useState();
   const [areaProtected, setAreaProtected] = useState(0);
   const [startYear, setStartYear] = useState('1980');
+  const [filteredCountryData, setFilteredCountryData] = useState([]);
 
   const eewwfRegions = ['MEX', 'PER', 'BRA', 'MDG', 'VNM', 'LND', 'INT'];
 
   const getNationalData = async () => {
     if (countryData) {
-      const firstScore = countryData[0];
+      const filterData = countryData.filter((data) => data.level === 'country');
+      setFilteredCountryData(filterData);
+      const firstData = filterData[0];
+      const firstScore = firstData;
       setStartYear(firstScore.year);
-      const currentScore = last(countryData);
+      const currentScore = last(filterData);
       const currentAreaProtectedPercent =
         (currentScore.area_protected / currentScore.area_km2) * 100;
       setAreaProtectedPercent(currentAreaProtectedPercent.toFixed(1));
@@ -283,7 +287,7 @@ function TemporalTrendsSpiComponent(props) {
       {!showTable && countryISO.toLowerCase() !== 'ee' && (
         <>
           {activeTrend === NATIONAL_TREND && (
-            <NationalChartContainer {...props} />
+            <NationalChartContainer {...props} countryData={filteredCountryData} />
           )}
           {activeTrend === PROVINCE_TREND && (
             <ProvinceChartContainer {...props} />

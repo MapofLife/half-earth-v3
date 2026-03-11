@@ -41,7 +41,7 @@ function TemporalTrendsSiiComponent(props) {
   const getNationalData = async () => {
     if (countryData.length) {
       const allVertValues = countryData
-        .filter((r) => r.year <= SII_LATEST_YEAR)
+        .filter((r) => r.year <= SII_LATEST_YEAR && r.level === 'country')
         .map((c) => ({
           year: c.year,
           globalRanking: c.sii_rank,

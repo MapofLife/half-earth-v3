@@ -335,7 +335,7 @@ function ScoreDistributionsShiComponent(props) {
 
       zoneData.forEach((item) => {
         if (item.species_shs) {
-          const values = JSON.parse(item.species_shs);
+          const values = item.species_shs;
 
           values.forEach((value) => {
             const val = value[''];
@@ -370,7 +370,7 @@ function ScoreDistributionsShiComponent(props) {
     } else {
       shiSelectSpeciesData.forEach((item) => {
         if (item.species_shs) {
-          const values = JSON.parse(item.species_shs);
+          const values = item.species_shs;
 
           values.forEach((value) => {
             const val = value;
@@ -521,35 +521,37 @@ function ScoreDistributionsShiComponent(props) {
         {!isSpeciesLoading && (
           <ul className={styles.spsSpecies}>
             {spsSpecies.map((s) => {
-              return (
-                <li key={s.scientificname ?? s.ScientificName}>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      selectSpecies(s.scientificname ?? s.ScientificName)
-                    }
-                  >
-                    {s.species_url && (
-                      <img
-                        src={s.species_url ?? s.SpeciesImage}
-                        alt="species"
-                      />
-                    )}
-                    {!s.species_url && <TaxaImageComponent taxa={s?.taxa} />}
-                    <div className={styles.spsInfo}>
-                      <span className={styles.name}>
-                        {s.scientificname ?? s.ScientificName}
+              if(s){
+                return (
+                  <li key={s.scientificname ?? s.ScientificName}>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        selectSpecies(s.scientificname ?? s.ScientificName)
+                      }
+                    >
+                      {s.species_url && (
+                        <img
+                          src={s.species_url ?? s.SpeciesImage}
+                          alt="species"
+                        />
+                      )}
+                      {!s.species_url && <TaxaImageComponent taxa={s?.taxa} />}
+                      <div className={styles.spsInfo}>
+                        <span className={styles.name}>
+                          {s.scientificname ?? s.ScientificName}
+                        </span>
+                        <span className={styles.scientificname}>
+                          {s.scientificname ?? s.ScientificName}
+                        </span>
+                      </div>
+                      <span className={styles.spsScore}>
+                        {s.habitat_score.toFixed(1)}
                       </span>
-                      <span className={styles.scientificname}>
-                        {s.scientificname ?? s.ScientificName}
-                      </span>
-                    </div>
-                    <span className={styles.spsScore}>
-                      {s.habitat_score.toFixed(1)}
-                    </span>
-                  </button>
-                </li>
-              );
+                    </button>
+                  </li>
+                );
+              }
             })}
           </ul>
         )}

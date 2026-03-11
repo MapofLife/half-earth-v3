@@ -513,12 +513,15 @@ export const DASHBOARD_URLS = {
     'https://services1.arcgis.com/7uJv7I3kgh2y7Pe0/arcgis/rest/services/guy_occurences_w_attributes/FeatureServer',
   WDPA_OCCURENCE_URL:
     'https://services9.arcgis.com/IkktFdUAcY3WrH25/arcgis/rest/services/cd_occ_province_join/FeatureServer',
+  // SPI_PROVINCE_TREND_URL:
+    // 'https://services1.arcgis.com/7uJv7I3kgh2y7Pe0/arcgis/rest/services/country_shi_spi_trend_table/FeatureServer',
   SPI_PROVINCE_TREND_URL:
-    'https://services1.arcgis.com/7uJv7I3kgh2y7Pe0/arcgis/rest/services/country_shi_spi_trend_table/FeatureServer',
+    'https://test-api-dot-api-2-x-dot-map-of-life.appspot.com/2.x/nbis/get-indicators',
   SPI_REGION_SPECIES_URL:
     'https://services9.arcgis.com/IkktFdUAcY3WrH25/arcgis/rest/services/regional_species_spi_scores_year_2024_v1_2/FeatureServer',
   SPI_HISTOGRAM_URL:
-    'https://services1.arcgis.com/7uJv7I3kgh2y7Pe0/arcgis/rest/services/country_sps_shs_binned_shsoutof120_GUY_COD_GIN_LBR_SLE_COL_update/FeatureServer',
+    // 'https://services1.arcgis.com/7uJv7I3kgh2y7Pe0/arcgis/rest/services/country_sps_shs_binned_shsoutof120_GUY_COD_GIN_LBR_SLE_COL_update/FeatureServer',
+    'https://test-api-dot-api-2-x-dot-map-of-life.appspot.com/2.x/nbis/get-bar-data',
   SHI_COUNTRY_DATA_URL:
     'https://services9.arcgis.com/IkktFdUAcY3WrH25/arcgis/rest/services/national_and_province_shs_by_taxa/FeatureServer',
   PRECALC_AOI_COUNTRY:

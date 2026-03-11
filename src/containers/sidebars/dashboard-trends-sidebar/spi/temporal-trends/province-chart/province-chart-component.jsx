@@ -107,7 +107,7 @@ function ProvinceChartComponent(props) {
 
   const getLastValueForProvince = (provName) => {
     if (!provinces || provinces.length === 0) return null;
-    return last(provinces.filter((prov) => prov.name === provName));
+    return last(provinces.filter((prov) => prov.level === 'states' && prov.name === provName));
   };
 
   const getChartData = (name) => {

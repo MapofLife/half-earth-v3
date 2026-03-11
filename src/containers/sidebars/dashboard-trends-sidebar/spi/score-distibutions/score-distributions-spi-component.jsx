@@ -231,7 +231,7 @@ function ScoreDistributionsSpiComponent(props) {
 
       zoneData.forEach((item) => {
         if (item.species_sps) {
-          const values = JSON.parse(item.species_sps);
+          const values = item.species_sps;
           values.forEach((value) => {
             const val = value;
             if (
@@ -253,7 +253,7 @@ function ScoreDistributionsSpiComponent(props) {
     } else {
       spiSelectSpeciesData.forEach((item) => {
         if (item.species_sps) {
-          const values = JSON.parse(item.species_sps);
+          const values = item.species_sps;
 
           values.forEach((value) => {
             const val = value;
@@ -261,7 +261,7 @@ function ScoreDistributionsSpiComponent(props) {
               species.push({
                 species: val.species,
                 species_url: val.species_url,
-                species_protection_score_all: val.spi_score,
+                species_protection_score_all: val.sps_score,
                 taxa: val.taxa,
               });
             }
@@ -386,30 +386,32 @@ function ScoreDistributionsSpiComponent(props) {
           <ul className={styles.spsSpecies}>
             {spsSpecies &&
               spsSpecies.map((s) => {
-                return (
-                  <li key={`${s.species}`}>
-                    <button
-                      type="button"
-                      onClick={() => selectSpecies(s.species)}
-                    >
-                      {s.species_url && (
-                        <img src={s.species_url} alt="species" />
-                      )}
-                      {!s.species_url && <TaxaImageComponent taxa={s?.taxa} />}
-                      <div className={styles.spsInfo}>
-                        <span className={styles.name}>{s.species}</span>
-                        <span className={styles.scientificname}>
-                          {s.species}
-                        </span>
-                      </div>
-                      <span
-                        className={styles.spsScore}
-                      >{s.species_protection_score_all?.toFixed(
-                        1
-                      )}</span>
-                    </button>
-                  </li>
-                );
+                if(s){
+                  return (
+                    <li key={`${s.species}`}>
+                      <button
+                        type="button"
+                        onClick={() => selectSpecies(s.species)}
+                      >
+                        {s.species_url && (
+                          <img src={s.species_url} alt="species" />
+                        )}
+                        {!s?.species_url && <TaxaImageComponent taxa={s?.taxa} />}
+                        <div className={styles.spsInfo}>
+                          <span className={styles.name}>{s.species}</span>
+                          <span className={styles.scientificname}>
+                            {s.species}
+                          </span>
+                        </div>
+                        <span
+                          className={styles.spsScore}
+                        >{s.species_protection_score_all?.toFixed(
+                          1
+                        )}</span>
+                      </button>
+                    </li>
+                  );
+                }
               })}
           </ul>
         )}

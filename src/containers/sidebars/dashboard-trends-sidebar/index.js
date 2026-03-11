@@ -74,49 +74,77 @@ function DashboardTrendsSidebarContainer(props) {
   const [spiValue, setSpiValue] = useState(0);
   const [siiValue, setSiiValue] = useState(0);
 
-  const getCountryData = (countryURL) => {
-    EsriFeatureService.getFeatures(countryURL).then((features) => {
-      const response = features.map((f) => f.attributes);
-
-      setProvinces(response);
-      setShiProvinceTrendData(response);
-
-      const countries = response.filter(
-        (item) => item.region_key === countryISO
-      );
-
-      setSpiValue(last(countries).spi.toFixed(1));
-
-      const shiValues =
-        countries.find((item) => item.year === SHI_LATEST_YEAR).habitat_index ||
+  const getCountryData = async (countryURL) => {
+    const response = await fetch(countryURL);
+    const data = await response.json();
+    setProvinces(data.filter(item => item.level === 'states'));
+    setShiProvinceTrendData(data);
+    setSpiValue(last(data.filter(item => item.level === 'country')).spi.toFixed(1));
+    const shiValues =
+        data.find((item) => item.year === SHI_LATEST_YEAR && item.level === 'country').habitat_index ||
         0;
       const siiValues =
-        countries.find((item) => item.year === SII_LATEST_YEAR).sii || 0;
+        data.find((item) => item.year === SII_LATEST_YEAR && item.level === 'country').sii || 0;
       setShiValue(parseFloat(shiValues).toFixed(1));
       setSiiValue(parseFloat(siiValues).toFixed(1));
-      setCountryData(countries);
-      setShiCountryData(countries);
-    });
+    setCountryData(data);
+    setShiCountryData(data);
+
+    // EsriFeatureService.getFeatures(countryURL).then((features) => {
+    //   const response = features.map((f) => f.attributes);
+
+    //   setProvinces(response);
+    //   setShiProvinceTrendData(response);
+
+    //   const countries = response.filter(
+    //     (item) => item.region_key === countryISO
+    //   );
+
+    //   setSpiValue(last(countries).spi.toFixed(1));
+
+    //   const shiValues =
+    //     countries.find((item) => item.year === SHI_LATEST_YEAR).habitat_index ||
+    //     0;
+    //   const siiValues =
+    //     countries.find((item) => item.year === SII_LATEST_YEAR).sii || 0;
+    //   setShiValue(parseFloat(shiValues).toFixed(1));
+    //   setSiiValue(parseFloat(siiValues).toFixed(1));
+    //   // setCountryData(countries);
+    //   // setShiCountryData(countries);
+    // });
   };
 
-  const getHistogramData = (whereClause) => {
-    const scoresDataURL = {
-      url: DASHBOARD_URLS.SPI_HISTOGRAM_URL,
-      whereClause: `${whereClause}`,
-    };
-    EsriFeatureService.getFeatures(scoresDataURL).then((features) => {
-      const data = features?.map((f) => f.attributes);
-      setSpiScoresData(data);
-      setShiScoresData(data);
-      setSiiScoresData(data);
-      if (countryISO.toLowerCase() === 'ee') {
-        setSpiSelectSpeciesData(zoneHistrogramData[0]);
-      } else {
-        setSpiSelectSpeciesData(data);
-        setShiSelectSpeciesData(data);
-        setSiiSelectSpeciesData(data);
-      }
-    });
+  const getHistogramData = async(histogramURL) => {
+    const response = await fetch(histogramURL);
+    const data = await response.json();
+    setSpiScoresData(data);
+    setShiScoresData(data);
+    setSiiScoresData(data);
+    if (countryISO.toLowerCase() === 'ee') {
+      setSpiSelectSpeciesData(zoneHistrogramData[0]);
+    } else {
+      setSpiSelectSpeciesData(data);
+      setShiSelectSpeciesData(data);
+      setSiiSelectSpeciesData(data);
+    }
+
+    // const scoresDataURL = {
+    //   url: DASHBOARD_URLS.SPI_HISTOGRAM_URL,
+    //   whereClause: `${whereClause}`,
+    // };
+    // EsriFeatureService.getFeatures(scoresDataURL).then((features) => {
+    //   const data = features?.map((f) => f.attributes);
+    //   setSpiScoresData(data);
+    //   setShiScoresData(data);
+    //   setSiiScoresData(data);
+    //   if (countryISO.toLowerCase() === 'ee') {
+    //     setSpiSelectSpeciesData(zoneHistrogramData[0]);
+    //   } else {
+    //     setSpiSelectSpeciesData(data);
+    //     setShiSelectSpeciesData(data);
+    //     setSiiSelectSpeciesData(data);
+    //   }
+    // });
   };
 
   const getZoneData = () => {
@@ -451,15 +479,11 @@ function DashboardTrendsSidebarContainer(props) {
     if (countryISO.toLowerCase() !== 'ee') {
       const countryCode = countryISO;
 
-      const countryURL = {
-        url: DASHBOARD_URLS.SPI_PROVINCE_TREND_URL,
-        whereClause: `iso3 = '${countryCode}'`,
-        orderByFields: ['name', 'year'],
-      };
+      const countryURL = `${DASHBOARD_URLS.SPI_PROVINCE_TREND_URL}?iso3=${countryCode}`;
       getCountryData(countryURL);
 
-      const whereClause = `iso3 = '${countryCode}' and region_key = '${countryCode}'`;
-      getHistogramData(whereClause);
+      const histogramURL = `${DASHBOARD_URLS.SPI_HISTOGRAM_URL}?iso3=${countryCode}&region_key=${countryCode}`;
+      getHistogramData(histogramURL);
     } else {
       getZoneData();
       getZoneHistogramData();
@@ -470,7 +494,7 @@ function DashboardTrendsSidebarContainer(props) {
     const countryCode = countryISO;
 
     if (countryISO.toLowerCase() !== 'ee') {
-      let whereClause = `iso3 = '${countryCode}' and region_key = '${countryCode}'`;
+      let whereClause = `iso3=${countryCode}&region_key=${countryCode}`;
 
       const zone5Layer = map.layers.items.find(
         (item) => item.id === `${countryISO}-zone5-spi`
@@ -501,7 +525,7 @@ function DashboardTrendsSidebarContainer(props) {
         if (foundProvinceLayer) {
           foundProvinceLayer.visible = true;
         }
-        getHistogramData(whereClause);
+        getHistogramData(`${DASHBOARD_URLS.SPI_HISTOGRAM_URL}?${whereClause}`);
       } else if (shiActiveTrend === ZONE_3 && tabOption === TABS.SHI) {
         if (zone5ShiLayer) {
           zone5ShiLayer.visible = false;
@@ -549,10 +573,10 @@ function DashboardTrendsSidebarContainer(props) {
             (tabOption === TABS.SHI && shiActiveTrend === PROVINCE_TREND)
           ) {
             // TODO: iso3_regional does not exist in all provinces
-            whereClause = `region_key = '${selectedProvince.region_key}'`;
+            whereClause = `region_key=${selectedProvince.region_key}`;
           }
 
-          getHistogramData(whereClause);
+          getHistogramData(`${DASHBOARD_URLS.SPI_HISTOGRAM_URL}?iso3=${countryCode}&${whereClause}`);
         }
       }
     } else {
