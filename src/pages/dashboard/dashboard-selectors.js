@@ -25,7 +25,7 @@ export const getActiveLayers = createSelector(
 
 export const getCountryISO = createSelector(
   selectCountryIso,
-  (countryISO) => countryISO
+  (countryISO) => 'GUY'//countryISO
 );
 
 const getCountryData = createSelector(
