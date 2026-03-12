@@ -58,7 +58,7 @@ function ScoreDistributionsSpiComponent(props) {
 
   const toolTipTitle = (tooltipItems) => {
     const bucket = parseInt(tooltipItems[0].label, 10);
-    return `${bucket - 5} - ${bucket}`;
+    return `${bucket} - ${bucket + 5}`;
   };
 
   const options = {
@@ -171,7 +171,7 @@ function ScoreDistributionsSpiComponent(props) {
     // Loop through each number and place it in the appropriate bucket
     locationData?.forEach((a) => {
       const group = a.bin.split(',');
-      const bin = group[1] ? group[1].replace(/ /gi, '') : a.bin;
+      const bin = group[0] ? group[0].replace(/ /gi, '') : a.bin;
 
       taxaSet.amphibians[bin] = a.amphibians_spi_count || a.amphibians;
       taxaSet.birds[bin] = a.birds_spi_count || a.birds;

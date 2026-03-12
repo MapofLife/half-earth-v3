@@ -274,7 +274,7 @@ function ScoreDistributionsShiComponent(props) {
 
       shiData?.forEach((a) => {
         const group = a.bin.split(',');
-        const bin = group[1] ? group[1].replace(/ /gi, '') : a.bin;
+        const bin = group[0] ? group[0].replace(/ /gi, '') : a.bin;
 
         taxaSet.amphibians[bin] = a.amphibians_shi_count || a.amphibians;
         taxaSet.birds[bin] = a.birds_shi_count || a.birds;
