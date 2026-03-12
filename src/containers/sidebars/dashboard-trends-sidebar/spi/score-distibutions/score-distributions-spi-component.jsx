@@ -58,7 +58,7 @@ function ScoreDistributionsSpiComponent(props) {
 
   const toolTipTitle = (tooltipItems) => {
     const bucket = parseInt(tooltipItems[0].label, 10);
-    return `${bucket - 5} - ${bucket}`;
+    return `${bucket} - ${bucket + 5}`;
   };
 
   const options = {
@@ -171,7 +171,7 @@ function ScoreDistributionsSpiComponent(props) {
     // Loop through each number and place it in the appropriate bucket
     locationData?.forEach((a) => {
       const group = a.bin.split(',');
-      const bin = group[1] ? group[1].replace(/ /gi, '') : a.bin;
+      const bin = group[0] ? group[0].replace(/ /gi, '') : a.bin;
 
       taxaSet.amphibians[bin] = a.amphibians_spi_count || a.amphibians;
       taxaSet.birds[bin] = a.birds_spi_count || a.birds;
@@ -231,7 +231,7 @@ function ScoreDistributionsSpiComponent(props) {
 
       zoneData.forEach((item) => {
         if (item.species_sps) {
-          const values = JSON.parse(item.species_sps);
+          const values = item.species_sps;
           values.forEach((value) => {
             const val = value;
             if (
@@ -240,6 +240,7 @@ function ScoreDistributionsSpiComponent(props) {
             ) {
               species.push({
                 species: val.species,
+                commonname: val.commonname,
                 species_url: val.species_url,
                 species_protection_score_all: val.spi_score,
                 taxa: val.taxa,
@@ -253,15 +254,16 @@ function ScoreDistributionsSpiComponent(props) {
     } else {
       spiSelectSpeciesData.forEach((item) => {
         if (item.species_sps) {
-          const values = JSON.parse(item.species_sps);
+          const values = item.species_sps;
 
           values.forEach((value) => {
             const val = value;
             if (!threatStatuses.includes(val.threat_status?.toUpperCase()) && val.species_url) {
               species.push({
                 species: val.species,
+                commonname: val.commonname,
                 species_url: val.species_url,
-                species_protection_score_all: val.spi_score,
+                species_protection_score_all: val.sps_score,
                 taxa: val.taxa,
               });
             }
@@ -276,6 +278,7 @@ function ScoreDistributionsSpiComponent(props) {
         setSpsSpecies([
           {
             species: 'Pyrrhura egregia',
+            commonname: 'Fiery-shouldered Parakeet',
             species_url:
               'https://storage.googleapis.com/mol-assets2/mid/e585b18f9fa2414e9f21d89565aed3f8.jpg',
             species_protection_score_all: 1.2,
@@ -283,6 +286,7 @@ function ScoreDistributionsSpiComponent(props) {
           },
           {
             species: 'Atractus tamessari',
+            commonname: 'Atractus tamessari',
             species_url:
               'https://storage.googleapis.com/mol-assets2/mid/4a935fc0-c90c-4072-9aec-6a13230d822b.jpg',
             species_protection_score_all: 3.0,
@@ -290,6 +294,7 @@ function ScoreDistributionsSpiComponent(props) {
           },
           {
             species: 'Cavia aperea',
+            commonname: 'Brazilian Guinea Pig',
             species_url:
               'https://storage.googleapis.com/mol-assets2/mid/a446804666354990afe0bfcca05203b3.jpg',
             species_protection_score_all: 9.6,
@@ -297,6 +302,7 @@ function ScoreDistributionsSpiComponent(props) {
           },
           {
             species: 'Pleurodema brachyops',
+            commonname: 'Colombian Four-eyed Frog',
             species_url:
               'https://storage.googleapis.com/mol-assets2/mid/b96100653b474533920c3ba368fbaf7d.jpg',
             species_protection_score_all: 10.5,
@@ -386,30 +392,32 @@ function ScoreDistributionsSpiComponent(props) {
           <ul className={styles.spsSpecies}>
             {spsSpecies &&
               spsSpecies.map((s) => {
-                return (
-                  <li key={`${s.species}`}>
-                    <button
-                      type="button"
-                      onClick={() => selectSpecies(s.species)}
-                    >
-                      {s.species_url && (
-                        <img src={s.species_url} alt="species" />
-                      )}
-                      {!s.species_url && <TaxaImageComponent taxa={s?.taxa} />}
-                      <div className={styles.spsInfo}>
-                        <span className={styles.name}>{s.species}</span>
-                        <span className={styles.scientificname}>
-                          {s.species}
-                        </span>
-                      </div>
-                      <span
-                        className={styles.spsScore}
-                      >{s.species_protection_score_all?.toFixed(
-                        1
-                      )}</span>
-                    </button>
-                  </li>
-                );
+                if(s){
+                  return (
+                    <li key={`${s.species}`}>
+                      <button
+                        type="button"
+                        onClick={() => selectSpecies(s.species)}
+                      >
+                        {s.species_url && (
+                          <img src={s.species_url} alt="species" />
+                        )}
+                        {!s?.species_url && <TaxaImageComponent taxa={s?.taxa} />}
+                        <div className={styles.spsInfo}>
+                          <span className={styles.name}>{s.commonname}</span>
+                          <span className={styles.scientificname}>
+                            {s.species}
+                          </span>
+                        </div>
+                        <span
+                          className={styles.spsScore}
+                        >{s.species_protection_score_all?.toFixed(
+                          1
+                        )}</span>
+                      </button>
+                    </li>
+                  );
+                }
               })}
           </ul>
         )}
