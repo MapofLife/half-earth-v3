@@ -81,37 +81,14 @@ function DashboardTrendsSidebarContainer(props) {
     setShiProvinceTrendData(data);
     setSpiValue(last(data.filter(item => item.level === 'country')).spi.toFixed(1));
     const shiValues =
-        data.find((item) => item.year === SHI_LATEST_YEAR && item.level === 'country').habitat_index ||
-        0;
-      const siiValues =
-        data.find((item) => item.year === SII_LATEST_YEAR && item.level === 'country').sii || 0;
-      setShiValue(parseFloat(shiValues).toFixed(1));
-      setSiiValue(parseFloat(siiValues).toFixed(1));
+      data.find((item) => item.year === SHI_LATEST_YEAR && item.level === 'country').habitat_index ||
+      0;
+    const siiValues =
+      data.find((item) => item.year === SII_LATEST_YEAR && item.level === 'country').sii || 0;
+    setShiValue(parseFloat(shiValues).toFixed(1));
+    setSiiValue(parseFloat(siiValues).toFixed(1));
     setCountryData(data);
     setShiCountryData(data);
-
-    // EsriFeatureService.getFeatures(countryURL).then((features) => {
-    //   const response = features.map((f) => f.attributes);
-
-    //   setProvinces(response);
-    //   setShiProvinceTrendData(response);
-
-    //   const countries = response.filter(
-    //     (item) => item.region_key === countryISO
-    //   );
-
-    //   setSpiValue(last(countries).spi.toFixed(1));
-
-    //   const shiValues =
-    //     countries.find((item) => item.year === SHI_LATEST_YEAR).habitat_index ||
-    //     0;
-    //   const siiValues =
-    //     countries.find((item) => item.year === SII_LATEST_YEAR).sii || 0;
-    //   setShiValue(parseFloat(shiValues).toFixed(1));
-    //   setSiiValue(parseFloat(siiValues).toFixed(1));
-    //   // setCountryData(countries);
-    //   // setShiCountryData(countries);
-    // });
   };
 
   const getHistogramData = async(histogramURL) => {
@@ -127,24 +104,6 @@ function DashboardTrendsSidebarContainer(props) {
       setShiSelectSpeciesData(data);
       setSiiSelectSpeciesData(data);
     }
-
-    // const scoresDataURL = {
-    //   url: DASHBOARD_URLS.SPI_HISTOGRAM_URL,
-    //   whereClause: `${whereClause}`,
-    // };
-    // EsriFeatureService.getFeatures(scoresDataURL).then((features) => {
-    //   const data = features?.map((f) => f.attributes);
-    //   setSpiScoresData(data);
-    //   setShiScoresData(data);
-    //   setSiiScoresData(data);
-    //   if (countryISO.toLowerCase() === 'ee') {
-    //     setSpiSelectSpeciesData(zoneHistrogramData[0]);
-    //   } else {
-    //     setSpiSelectSpeciesData(data);
-    //     setShiSelectSpeciesData(data);
-    //     setSiiSelectSpeciesData(data);
-    //   }
-    // });
   };
 
   const getZoneData = () => {

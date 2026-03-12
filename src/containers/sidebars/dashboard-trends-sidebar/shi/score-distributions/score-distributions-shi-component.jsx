@@ -345,6 +345,7 @@ function ScoreDistributionsShiComponent(props) {
             ) {
               species.push({
                 scientificname: val.species,
+                commonname: val.commonname,
                 species_url: val.species_url,
                 habitat_score: val.shs_score,
                 taxa: val.taxa,
@@ -377,6 +378,7 @@ function ScoreDistributionsShiComponent(props) {
             if (!threatStatuses.includes(val.threat_status?.toUpperCase()) && val.species_url) {
               species.push({
                 scientificname: val.species,
+                commonname: val.commonname,
                 species_url: val.species_url,
                 habitat_score: val.shs_score,
                 taxa: val.taxa,
@@ -405,6 +407,7 @@ function ScoreDistributionsShiComponent(props) {
         setSpsSpecies([
           {
             scientificname: 'Pipra aureola',
+            commonname: 'Crimson-hooded Manakin',
             species_url:
               'https://storage.googleapis.com/mol-assets2/mid/712f124b5e3a4259890d2ed58bf49059.jpg',
             habitat_score: 84.6,
@@ -416,12 +419,14 @@ function ScoreDistributionsShiComponent(props) {
               'https://storage.googleapis.com/mol-assets2/mid/46f5bcb2fce4455aae6964ea69c10342.jpg',
             habitat_score: 85,
             taxa: 'reptiles',
+            commonname: 'Commissaris\'s long-tongued bat',
           },
           {
             scientificname: 'Boana sibleszi',
             species_url:
               'https://storage.googleapis.com/mol-assets2/mid/3cad5f2a725c41d19a9fa306edde5b7e.jpg',
             habitat_score: 90.6,
+            commonname: 'La Escalera Tree Frog',
             taxa: 'amphibians',
           },
           {
@@ -430,6 +435,7 @@ function ScoreDistributionsShiComponent(props) {
               'https://storage.googleapis.com/mol-assets2/mid/7663ecebf87f45349d07dd8fc5eac210.jpg',
             habitat_score: 91.2,
             taxa: 'reptiles',
+            commonname: 'Annulated Gecko',
           },
         ]);
       } else {
@@ -539,7 +545,7 @@ function ScoreDistributionsShiComponent(props) {
                       {!s.species_url && <TaxaImageComponent taxa={s?.taxa} />}
                       <div className={styles.spsInfo}>
                         <span className={styles.name}>
-                          {s.scientificname ?? s.ScientificName}
+                          {s.commonname}
                         </span>
                         <span className={styles.scientificname}>
                           {s.scientificname ?? s.ScientificName}
