@@ -28,6 +28,7 @@ function TemporalTrendsSiiComponent(props) {
     siiActiveTrend,
     setSiiActiveTrend,
     setClickedRegion,
+    handleRegionSelected,
     view,
   } = props;
   const [nationalChartData, setNationalChartData] = useState([]);
@@ -70,6 +71,7 @@ function TemporalTrendsSiiComponent(props) {
   const handleActionChange = (option) => {
     setClickedRegion(null);
     setSiiActiveTrend(option);
+    handleRegionSelected(null);
 
     // if (countryISO.toLowerCase() === 'ee') {
     //   if (option !== LND && option !== INT) {

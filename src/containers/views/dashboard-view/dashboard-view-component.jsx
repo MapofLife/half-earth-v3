@@ -77,7 +77,9 @@ function DashboardViewComponent(props) {
 
   const handleRegionSelected = (foundRegion) => {
     highlight?.remove();
-    highlight = layerView?.highlight(foundRegion.graphic);
+    if(foundRegion){
+      highlight = layerView?.highlight(foundRegion.graphic);
+    }
   };
 
   const previewFile = (event) => {

@@ -38,12 +38,14 @@ function DashboardTrendsSidebar(props) {
     tabOption,
     setTabOption,
     regionLayers,
+    handleRegionSelected,
     countryISO,
     map,
     setMapLegendLayers,
   } = props;
 
   const showHideLayers = (tabClicked) => {
+    handleRegionSelected(null);
     const layers = regionLayers;
 
     const foundProvinceLayer = map.layers.items.find(

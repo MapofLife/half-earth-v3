@@ -45,6 +45,7 @@ function TemporalTrendsSpiComponent(props) {
     countryISO,
     clickedRegion,
     setClickedRegion,
+    handleRegionSelected,
     view,
   } = props;
 
@@ -77,6 +78,7 @@ function TemporalTrendsSpiComponent(props) {
 
   const handleActionChange = (option) => {
     setClickedRegion(null);
+    handleRegionSelected(null);
     setShowTable(false);
     setActiveTrend(option);
 
