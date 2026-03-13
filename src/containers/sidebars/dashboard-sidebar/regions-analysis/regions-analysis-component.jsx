@@ -1,11 +1,12 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 
 import { DASHBOARD } from 'router';
-
+import MinimizeIcon from 'icons/closes.svg?react';
 import { useLocale, useT } from '@transifex/react';
-
+import * as webMercatorUtils from "@arcgis/core/geometry/support/webMercatorUtils.js";
 import { createHashFromGeometry } from 'utils/analyze-areas-utils';
 import {
+  GLOBAL_COUNTRY_OUTLINE_ID,
   PROVINCE_FEATURE_GLOBAL_OUTLINE_ID,
   DRC_REGION_FEATURE_ID,
   GUY_FM_RAPID_INVENTORY_32_FEATURE_ID,
@@ -14,8 +15,7 @@ import {
   NBS_OP_INTERVENTIONS_FEATURE_ID,
 } from 'utils/dashboard-utils';
 import { getLocaleNumber } from 'utils/data-formatting-utils';
-import { postAoiToDataBase } from 'utils/geo-processing-services';
-
+import popUpStyles from 'components/image-popup/image-popup-component-styles.module.scss';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
@@ -45,6 +45,8 @@ import SketchTooltip from '../../data-global-sidebar/analyze-areas-sidebar-card/
 import SketchWidget from '../../data-global-sidebar/analyze-areas-sidebar-card/sketch-widget/sketch-widget-component';
 
 import styles from './regions-analysis-styles.module.scss';
+import Polygon from '@arcgis/core/geometry/Polygon'
+import Graphic from '@arcgis/core/Graphic'
 // import SearchInput from 'components/search-input';
 
 export const getWarningMessages = (t, locale) => ({
@@ -88,6 +90,7 @@ export const getWarningMessages = (t, locale) => ({
       t('An error ocurred during the file upload. Please try again'),
   },
 });
+
 function RegionsAnalysisComponent(props) {
   const t = useT();
   const locale = useLocale();
@@ -110,6 +113,11 @@ function RegionsAnalysisComponent(props) {
     countryISO,
     countryName,
     setHash,
+    showUploadPopup,
+    setShowUploadPopup,
+    closeUploadModal,
+    uploadedShape,
+    setUploadedShape,
   } = props;
   const { lightMode } = useContext(LightModeContext);
   const [sketchWidgetMode, setSketchWidgetMode] = useState('create');
@@ -137,7 +145,7 @@ function RegionsAnalysisComponent(props) {
     },
     {
       title: t('Forest Titles'),
-      value: REGION_OPTIONS.FOREST_TITLES,
+      value: REGION_OPTIONS.FORESTS,
     },
     {
       title: t('NBS-OP Interventions'),
@@ -160,14 +168,23 @@ function RegionsAnalysisComponent(props) {
   ];
 
   const postDrawCallback = (geometry) => {
-    const hash = createHashFromGeometry(geometry);
-    setAoiGeometry({ hash, geometry });
-    postAoiToDataBase(geometry, { aoiId: hash });
+    // const hash = createHashFromGeometry(geometry);
+    // setAoiGeometry({ hash, geometry });
+    // postAoiToDataBase(geometry, { aoiId: hash });
 
-    setSelectedIndex(NAVIGATION.EXPLORE_SPECIES);
-    setRegionName(t('Custom Area'));
-    setHash(hash);
-    setSelectedRegion({ name: t('Custom Area'), iso: countryISO });
+    // console.log('Geometry drawn', geometry);
+
+    const newGeometry = webMercatorUtils.webMercatorToGeographic(geometry);
+    console.log('WebMercator to Geographic', newGeometry);
+
+    setTimeout(() => {
+      setSelectedIndex(NAVIGATION.EXPLORE_SPECIES);
+      setRegionName(t('Custom Area'));
+      // setHash(hash);
+      setSelectedRegion(newGeometry);
+      // setSelectedRegion({ name: t('Custom Area'), iso: countryISO });
+    }, 1000);
+
   };
 
   const warningMessages = useMemo(
@@ -194,6 +211,20 @@ function RegionsAnalysisComponent(props) {
     sketchWidgetConfig: { postDrawCallback },
   });
 
+  const handleCancel = () => {
+    if(sketchTool) {
+      if (sketchTool.layer) {
+        // Remove geometry for 'Esc' press
+        sketchTool.layer.remove(sketchTool.layer.graphics.items[0]);
+      }
+      // Remove mask
+      setUpdatedGeometry(null);
+      sketchTool.delete();
+      sketchTool.cancel();
+      setSketchWidgetMode('create');
+    }
+  };
+
   const getLayerIcon = (layer, item) => {
     view.whenLayerView(layer).then(() => {
       const { renderer } = layer; // Get the renderer
@@ -218,6 +249,19 @@ function RegionsAnalysisComponent(props) {
 
       setMapLegendLayers((ml) => [...ml, item]);
     });
+  };
+
+  const addRegionLayersToMap = async () => {
+    const featureLayer = await EsriFeatureService.getFeatureLayer(
+      GLOBAL_COUNTRY_OUTLINE_ID,
+      countryISO,
+      `map-${countryISO}`
+    );
+
+    setRegionLayers(() => ({
+      [`map-${countryISO}`]: featureLayer,
+    }));
+    map.add(featureLayer);
   };
 
   const displayLayer = async (option) => {
@@ -337,6 +381,10 @@ function RegionsAnalysisComponent(props) {
       (layer) => layer.id === LAYER_OPTIONS.ACC_REGION
     );
 
+    const customAreaLayer = map.layers.items.find(
+      (layer) => layer.id === 'custom-area'
+    );
+
     const rapidLayer = map.layers.items.find(
       (layer) => layer.id === LAYER_OPTIONS.RAPID_INVENTORY_32
     );
@@ -347,6 +395,7 @@ function RegionsAnalysisComponent(props) {
     map.remove(dissolvedLayer);
     map.remove(accRegionLayer);
     map.remove(rapidLayer);
+    map.remove(customAreaLayer);
     setRegionLayers({});
   };
 
@@ -358,6 +407,9 @@ function RegionsAnalysisComponent(props) {
       setSelectedRegion(null);
       removeRegionLayers();
 
+      if(option !== REGION_OPTIONS.DRAW){
+        handleCancel();
+      }
       setSelectedRegionOption(option);
       displayLayer(option);
     }
@@ -393,17 +445,30 @@ function RegionsAnalysisComponent(props) {
       payload: { iso: countryISO.toLowerCase() },
       query: {
         selectedIndex,
-        regionLayers,
         selectedRegionOption,
+        regionLayers,
       },
     });
-  }, [regionLayers]);
+  }, [regionLayers, selectedRegionOption, selectedIndex]);
+
+  useEffect(() => {
+    if (uploadedShape) {
+      removeRegionLayers();
+      const newGeometry = webMercatorUtils.webMercatorToGeographic(uploadedShape.features[0].geometry);
+      setSelectedRegion({rings: newGeometry.coordinates });
+      setRegionName(t('Custom Area'));
+      setSelectedIndex(NAVIGATION.EXPLORE_SPECIES);
+      setShowUploadPopup(false);
+      setUploadedShape(null);
+    }
+  }, [uploadedShape]);
 
   useEffect(() => {
     if (selectedRegionOption && selectedRegion) {
       setSelectedIndex(NAVIGATION.EXPLORE_SPECIES);
     } else {
       removeRegionLayers();
+      addRegionLayersToMap();
       if (countryISO.toUpperCase() === 'EE') {
         setSelectedRegionOption(REGION_OPTIONS.DISSOLVED_NBS);
         displayLayer(REGION_OPTIONS.DISSOLVED_NBS);
@@ -481,11 +546,10 @@ function RegionsAnalysisComponent(props) {
           )}
           <div className={styles.comingSoon}>
             <Button
-              className={styles.disabled}
               type="rectangular"
               label={t('Upload a shapefile')}
+              handleClick={() => setShowUploadPopup(true)}
             />
-            <span className="text-size-2">{t('Coming soon')}</span>
           </div>
         </div>
         {selectedRegionOption === REGION_OPTIONS.DRAW && (

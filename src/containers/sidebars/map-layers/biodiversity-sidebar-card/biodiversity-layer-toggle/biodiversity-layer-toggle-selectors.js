@@ -16,6 +16,11 @@ const getSelectedResolutions = (state, { selectedResolutions }) =>
 const getBiodiversityLayerVariant = (state, { biodiversityLayerVariant }) =>
   biodiversityLayerVariant;
 
+const selectQueryParams = ({ location }) => location.query;
+
+const selectAoiId = ({ location }) =>
+  location.query && location.query.ui?.aoiId;
+
 const parsedGroupOptions = (layerOptions) => {
   const groupedOptions = GROUPED_OPTIONS(layerOptions).filter(
     (go) => go.options.length > 0
@@ -93,8 +98,15 @@ const getSelectedLayerOption = createSelector(
   }
 );
 
+const getQueryParams = createSelector(
+  selectQueryParams,
+  (queryParams) => queryParams
+);
+
 export default createStructuredSelector({
   layerOptions: getGroupedLayerOptions,
   selectedLayerOption: getSelectedLayerOption,
   allActiveLayerTitles: getAllBiodiversityActiveLayers,
+  aoiId: selectAoiId,
+  queryParams: getQueryParams,
 });

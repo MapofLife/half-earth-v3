@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { DATA } from 'router';
 
 import { useT, useLocale, T } from '@transifex/react';
-
+import { Loading } from 'he-components';
 import { writeToForageItem } from 'utils/local-forage-utils';
 
 import cx from 'classnames';
@@ -73,6 +73,7 @@ function AOISidebar({
   contextualData,
   shareAoiAnalytics,
   handleClose,
+  values,
   sidebarTabActive,
   setSidebarTabActive,
   isShareModalOpen,
@@ -114,6 +115,7 @@ function AOISidebar({
 
   const [isEditingName, setIsEditingName] = useState(false);
   const [updatedAreaName, setUpdatedAreaName] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const isCustomArea = contextualData?.isCustom;
 
@@ -150,7 +152,16 @@ function AOISidebar({
     countryNamesTranslations[contextualData.areaName] ||
     contextualData.areaName;
 
+    useEffect(() => {
+      if(values){
+        setLoading(false);
+      }
+    }, [values])
+
+
   return (
+    <>
+    {loading && <div style={{position: 'absolute', left: '50%', top: 0}}><Loading height={200} /></div>}
     <div className={styles.sidebarContainer}>
       <TabsSidebar
         activeLayers={activeLayers}
@@ -302,11 +313,12 @@ function AOISidebar({
                   </div>
                 </TitleTooltip>
               </div>
-              <SpeciesCard
+              {speciesData.species?.length && <SpeciesCard
                 area={area}
                 speciesData={speciesData}
                 contextualData={contextualData}
-              />
+                areaName={areaName}
+              />}
               <SidebarCard
                 map={map}
                 toggleType="radio"
@@ -414,7 +426,7 @@ function AOISidebar({
                 </p>
                 <a
                   className={styles.link}
-                  href="https://mol.org/upload"
+                  href="mailto:info@mol.org.?subject=Half-Earth Project Map Database Contribution"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -455,6 +467,7 @@ function AOISidebar({
         )}
       </AnimatePresence>
     </div>
+    </>
   );
 }
 

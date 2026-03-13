@@ -97,12 +97,20 @@ function SpeciesRichnessComponent(props) {
   };
 
   const populateScores = (formattedData) => {
-    let data = JSON.parse(formattedData.richness_taxa_spi)[0];
-    let spiData = JSON.parse(formattedData.spi_taxa)[0];
+    // let data = JSON.parse(formattedData.richness_taxa_spi)[0];
+    // let spiData = JSON.parse(formattedData.spi_taxa)[0];
+
+    // if (shi) {
+    //   data = JSON.parse(formattedData.richness_taxa_shi)[0];
+    //   spiData = JSON.parse(formattedData.habitat_index_taxa)[0];
+    // }
+
+    let data = formattedData.richness_taxa_spi;
+    let spiData = formattedData.spi_taxa;
 
     if (shi) {
-      data = JSON.parse(formattedData.richness_taxa_shi)[0];
-      spiData = JSON.parse(formattedData.habitat_index_taxa)[0];
+      data = formattedData.richness_taxa_shi;
+      spiData = formattedData.habitat_index_taxa;
     }
 
     const { reptiles, amphibians, mammals, birds } = data;

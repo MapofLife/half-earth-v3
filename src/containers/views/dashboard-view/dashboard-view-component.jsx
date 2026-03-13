@@ -4,7 +4,7 @@ import loadable from '@loadable/component';
 
 import { LightModeProvider } from 'context/light-mode';
 import { Loading } from 'he-components';
-
+import * as shapefile from 'shapefile';
 import CountryLabelsLayer from 'containers/layers/country-labels-layer';
 import RegionsLabelsLayer from 'containers/layers/regions-labels-layer';
 import SideMenu from 'containers/menus/sidemenu';
@@ -25,7 +25,6 @@ import MinimizeIcon from 'icons/closes.svg?react';
 import LayerLegendContainer from '../../../components/layer-legend';
 import {
   MEX,
-  NATIONAL_TREND,
   PROVINCE_TREND,
 } from '../../sidebars/dashboard-trends-sidebar/dashboard-trends-sidebar-component';
 
@@ -65,6 +64,9 @@ function DashboardViewComponent(props) {
   const [clickedRegion, setClickedRegion] = useState();
   const [layerView, setLayerView] = useState();
   const [imagePopup, setImagePopup] = useState();
+
+  const [uploadedShape, setUploadedShape] = useState(null);
+  const [showUploadPopup, setShowUploadPopup] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [layerInfo, setLayerInfo] = useState();
   const [showLegend, setShowLegend] = useState(false);
@@ -75,11 +77,47 @@ function DashboardViewComponent(props) {
 
   const handleRegionSelected = (foundRegion) => {
     highlight?.remove();
-    highlight = layerView?.highlight(foundRegion.graphic);
+    if(foundRegion){
+      highlight = layerView?.highlight(foundRegion.graphic);
+    }
   };
+
+  const previewFile = (event) => {
+    const reader = new FileReader();
+    const filename = event.target.files[0].name;
+    // geojson
+    if (filename.match(/\.geojson$/)) {
+      reader.onload = (e) => {
+        // this.uploaded = atob(e.target.result)
+        const result = JSON.parse(e.target.result);
+        if (result.features.length > 1) {
+          result.features = [ result.features[0] ];
+        }
+        setUploadedShape(result);
+      };
+
+      reader.readAsText(event.target.files[0]);
+    }
+
+    if (filename.match(/\.shp$/)) {
+      reader.onload = e => {
+        shapefile.read(e.target.result).then(source => {
+          if (source.features.length > 1) {
+            source.features = [ source.features[0] ];
+          }
+          setUploadedShape(source);
+        });
+      };
+      reader.readAsArrayBuffer(event.target.files[0]);
+    }
+  }
 
   const closeModal = () => {
     setImagePopup(null);
+  };
+
+  const closeUploadModal = () => {
+    setShowUploadPopup(false);
   };
 
   useEffect(() => {
@@ -149,6 +187,38 @@ function DashboardViewComponent(props) {
           </div>
         </>
       )}
+      {showUploadPopup && (
+        <>
+          <div
+            className={popUpStyles.overlay}
+            role="button"
+            aria-label="overlay"
+            onClick={closeUploadModal}
+            onKeyDown={closeUploadModal}
+            tabIndex={0}
+          />
+          <div className={popUpStyles.popUp}>
+            <button
+              type="button"
+              onClick={() => closeUploadModal()}
+              aria-label="Close popup"
+            >
+              <MinimizeIcon />
+            </button>
+            <div style={{display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '10px'}}>
+              <b>Upload an Area</b>
+              <span>Select a <b>.geojson</b> or a <b>.shp</b> file to get a species list.</span>
+
+              <span>If the file contains multiple features, only the first feature will be used. If multiple features are required, please dissolve them into a single feature.</span>
+
+              <span>Please ensure your shapefile is in <b>WGS84 EPSG:4326 (latitude, longitude) projection</b>.</span>
+
+              <span>The area must be less than 25,000km2.</span>
+            </div>
+            <input type="file" onChange={(e) => previewFile(e)} accept=".geojson, .shp" />
+          </div>
+        </>
+      )}
       <AreaHighlightManagerComponent
         layerView={layerView}
         setLayerView={setLayerView}
@@ -164,6 +234,7 @@ function DashboardViewComponent(props) {
         setSelectedProvince={setSelectedProvince}
         activeTrend={activeTrend}
         shiActiveTrend={shiActiveTrend}
+        siiActiveTrend={siiActiveTrend}
         handleRegionSelected={handleRegionSelected}
         {...props}
       />
@@ -195,6 +266,11 @@ function DashboardViewComponent(props) {
           setShiActiveTrend={setShiActiveTrend}
           siiActiveTrend={siiActiveTrend}
           setSiiActiveTrend={setSiiActiveTrend}
+          showUploadPopup={showUploadPopup}
+          setShowUploadPopup={setShowUploadPopup}
+          closeUploadModal={closeUploadModal}
+          uploadedShape={uploadedShape}
+          setUploadedShape={setUploadedShape}
           {...props}
         />
       </LightModeProvider>

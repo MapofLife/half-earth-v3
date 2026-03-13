@@ -35,6 +35,8 @@ export const PROVINCE_FEATURE_GLOBAL_SPI_LAYER_ID =
 export const PROVINCE_FEATURE_GLOBAL_OUTLINE_ID =
   'c6bc2248f053422da9d8d30ce591ca16';
 
+export const GLOBAL_COUNTRY_OUTLINE_ID = 'dda66f1c1e9c4e62abcd043206c19e81';
+
 // DRC LAYERS
 export const PROTECTED_AREA_FEATURE_URL = '175c41cfa552401c83d07201732c303f';
 // Yale AGOL - 36370bcf99884301bca92ea8eb91f78f
@@ -92,9 +94,10 @@ export const PROTECTED_AREA_SLE_FEATURE_URL =
 export const PROTECTED_AREA_GUY_FEATURE_URL =
   'd610d9ad96bc4071a31b3aacdfbf844d';
 
-export const GBIF_OCCURENCE_URL = '1ccb994557a74bc6bd773250d8eebc15';
+export const GBIF_OCCURENCE_URL = '41fc325e009a46f08c1e3026d14a47ae';//'1ccb994557a74bc6bd773250d8eebc15';
 export const GUY_RIVER_ID = 'e7557c32f8a2475e95aab9471fc9b4c5';
-
+export const GUY_RIVER_NAME_ID = '4182314c3f9c4b4db823618b501f914c';
+export const GUY_RIVER_NAME_URL = 'https://services1.arcgis.com/7uJv7I3kgh2y7Pe0/arcgis/rest/services/Rivers_Guyana/FeatureServer'
 export const REGION_OCCURENCE_ID = '9f732963e1a7495f889577ca30e44562';
 
 export const DASHBOARD_TABLE_URL =

@@ -27,6 +27,8 @@ function TemporalTrendsSiiComponent(props) {
     countryISO,
     siiActiveTrend,
     setSiiActiveTrend,
+    setClickedRegion,
+    handleRegionSelected,
     view,
   } = props;
   const [nationalChartData, setNationalChartData] = useState([]);
@@ -40,7 +42,7 @@ function TemporalTrendsSiiComponent(props) {
   const getNationalData = async () => {
     if (countryData.length) {
       const allVertValues = countryData
-        .filter((r) => r.year <= SII_LATEST_YEAR)
+        .filter((r) => r.year <= SII_LATEST_YEAR && r.level === 'country')
         .map((c) => ({
           year: c.year,
           globalRanking: c.sii_rank,
@@ -67,8 +69,9 @@ function TemporalTrendsSiiComponent(props) {
   };
 
   const handleActionChange = (option) => {
-    // setClickedRegion(null);
+    setClickedRegion(null);
     setSiiActiveTrend(option);
+    handleRegionSelected(null);
 
     // if (countryISO.toLowerCase() === 'ee') {
     //   if (option !== LND && option !== INT) {

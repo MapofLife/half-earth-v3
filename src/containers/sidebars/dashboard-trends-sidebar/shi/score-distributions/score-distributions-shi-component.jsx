@@ -77,6 +77,9 @@ function ScoreDistributionsShiComponent(props) {
 
   const toolTipTitle = (tooltipItems) => {
     const bucket = parseInt(tooltipItems[0].label, 10);
+    if(bucket === 120){
+      return '> 120';
+    }
     return `${bucket} - ${bucket + 5}`;
   };
 
@@ -188,7 +191,8 @@ function ScoreDistributionsShiComponent(props) {
 
       // Loop through each number and place it in the appropriate bucket
       shiData?.forEach((a) => {
-        const bin = a.bin.split(',')[1].replace(/ /gi, '');
+        const group = a.bin.split(',');
+        const bin = group[1] ? group[1].replace(/ /gi, '') : a.bin;
 
         taxaSet.amphibians[bin] = a.amphibians_shi_count || a.amphibians;
         taxaSet.birds[bin] = a.birds_shi_count || a.birds;
@@ -269,7 +273,8 @@ function ScoreDistributionsShiComponent(props) {
       }
 
       shiData?.forEach((a) => {
-        const bin = a.bin.split(',')[1].replace(/ /gi, '');
+        const group = a.bin.split(',');
+        const bin = group[0] ? group[0].replace(/ /gi, '') : a.bin;
 
         taxaSet.amphibians[bin] = a.amphibians_shi_count || a.amphibians;
         taxaSet.birds[bin] = a.birds_shi_count || a.birds;
@@ -330,7 +335,7 @@ function ScoreDistributionsShiComponent(props) {
 
       zoneData.forEach((item) => {
         if (item.species_shs) {
-          const values = JSON.parse(item.species_shs);
+          const values = item.species_shs;
 
           values.forEach((value) => {
             const val = value[''];
@@ -340,6 +345,7 @@ function ScoreDistributionsShiComponent(props) {
             ) {
               species.push({
                 scientificname: val.species,
+                commonname: val.commonname,
                 species_url: val.species_url,
                 habitat_score: val.shs_score,
                 taxa: val.taxa,
@@ -365,13 +371,14 @@ function ScoreDistributionsShiComponent(props) {
     } else {
       shiSelectSpeciesData.forEach((item) => {
         if (item.species_shs) {
-          const values = JSON.parse(item.species_shs);
+          const values = item.species_shs;
 
           values.forEach((value) => {
             const val = value;
-            if (!threatStatuses.includes(val.threat_status?.toUpperCase())) {
+            if (!threatStatuses.includes(val.threat_status?.toUpperCase()) && val.species_url) {
               species.push({
                 scientificname: val.species,
+                commonname: val.commonname,
                 species_url: val.species_url,
                 habitat_score: val.shs_score,
                 taxa: val.taxa,
@@ -400,6 +407,7 @@ function ScoreDistributionsShiComponent(props) {
         setSpsSpecies([
           {
             scientificname: 'Pipra aureola',
+            commonname: 'Crimson-hooded Manakin',
             species_url:
               'https://storage.googleapis.com/mol-assets2/mid/712f124b5e3a4259890d2ed58bf49059.jpg',
             habitat_score: 84.6,
@@ -411,12 +419,14 @@ function ScoreDistributionsShiComponent(props) {
               'https://storage.googleapis.com/mol-assets2/mid/46f5bcb2fce4455aae6964ea69c10342.jpg',
             habitat_score: 85,
             taxa: 'reptiles',
+            commonname: 'Commissaris\'s long-tongued bat',
           },
           {
             scientificname: 'Boana sibleszi',
             species_url:
               'https://storage.googleapis.com/mol-assets2/mid/3cad5f2a725c41d19a9fa306edde5b7e.jpg',
             habitat_score: 90.6,
+            commonname: 'La Escalera Tree Frog',
             taxa: 'amphibians',
           },
           {
@@ -425,6 +435,7 @@ function ScoreDistributionsShiComponent(props) {
               'https://storage.googleapis.com/mol-assets2/mid/7663ecebf87f45349d07dd8fc5eac210.jpg',
             habitat_score: 91.2,
             taxa: 'reptiles',
+            commonname: 'Annulated Gecko',
           },
         ]);
       } else {
@@ -516,35 +527,37 @@ function ScoreDistributionsShiComponent(props) {
         {!isSpeciesLoading && (
           <ul className={styles.spsSpecies}>
             {spsSpecies.map((s) => {
-              return (
-                <li key={s.scientificname ?? s.ScientificName}>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      selectSpecies(s.scientificname ?? s.ScientificName)
-                    }
-                  >
-                    {s.species_url && (
-                      <img
-                        src={s.species_url ?? s.SpeciesImage}
-                        alt="species"
-                      />
-                    )}
-                    {!s.species_url && <TaxaImageComponent taxa={s?.taxa} />}
-                    <div className={styles.spsInfo}>
-                      <span className={styles.name}>
-                        {s.scientificname ?? s.ScientificName}
+              if(s){
+                return (
+                  <li key={s.scientificname ?? s.ScientificName}>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        selectSpecies(s.scientificname ?? s.ScientificName)
+                      }
+                    >
+                      {s.species_url && (
+                        <img
+                          src={s.species_url ?? s.SpeciesImage}
+                          alt="species"
+                        />
+                      )}
+                      {!s.species_url && <TaxaImageComponent taxa={s?.taxa} />}
+                      <div className={styles.spsInfo}>
+                        <span className={styles.name}>
+                          {s.commonname}
+                        </span>
+                        <span className={styles.scientificname}>
+                          {s.scientificname ?? s.ScientificName}
+                        </span>
+                      </div>
+                      <span className={styles.spsScore}>
+                        {s.habitat_score.toFixed(1)}
                       </span>
-                      <span className={styles.scientificname}>
-                        {s.scientificname ?? s.ScientificName}
-                      </span>
-                    </div>
-                    <span className={styles.spsScore}>
-                      SHS: {s.habitat_score.toFixed(1)}
-                    </span>
-                  </button>
-                </li>
-              );
+                    </button>
+                  </li>
+                );
+              }
             })}
           </ul>
         )}

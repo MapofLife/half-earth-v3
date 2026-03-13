@@ -46,7 +46,7 @@ function getFeatures({
     if (geometry) {
       const polygon = new Polygon({
         rings: geometry.rings,
-        spatialReference: { wkid: 3857 },
+        spatialReference: { wkid: 4326 },
       });
 
       featureQuery.geometry = polygon;
@@ -85,6 +85,7 @@ async function getFeatureLayer(portalItemId, countryISO, id, classType = null) {
     id === 'GUY-zone3-shi' ||
     id === 'GUY-zone5-shi' ||
     id === 'GUY-RIVER' ||
+    id === 'GUY-RIVER-NAME' ||
     countryISO === 'EE'
   ) {
     definitionExpression = '';
@@ -197,6 +198,23 @@ function getMVTSource(scientificname) {
   };
 }
 
+function getOccurrenceTileLayer(scientificname) {
+  const dataLayerParams = {
+    scientificname: scientificname,
+    dsids: '9905692e-6a28-4310-b01e-476a471e5bf8,794adb49-7458-41c4-a1c0-56537fdbec1d',
+  };
+  const dparams = new URLSearchParams(dataLayerParams);
+
+  return {
+    type: 'vector',
+    tiles: [
+      `https://production-dot-tiler-dot-map-of-life.appspot.com/0.x/tiles/species/occurrences/3857/{z}/{x}/{y}.mvt?${dparams.toString()}`,
+    ],
+    minzoom: 0,
+    maxzoom: 22
+  };
+}
+
 function getTileLayer(url, id) {
   return new TileLayer({
     url,
@@ -287,4 +305,5 @@ export default {
   getCSVLayer,
   getFeatureOccurenceLayer,
   getFeaturePrivateOccurenceLayer,
+  getOccurrenceTileLayer,
 };

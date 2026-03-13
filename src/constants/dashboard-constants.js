@@ -6,6 +6,7 @@ export const TAXA_NAMES = {
   BUTTERFLIES: 'BUTTERFLIES',
   CACTI: 'CACTI',
   CONIFERS: 'CONIFERS',
+  DRAGONFLIES: 'DRAGONFLIES',
   FISHES: 'FISHES',
   INSECTS: 'INSECTS',
   MAMMALS: 'MAMMALS',
@@ -15,6 +16,8 @@ export const TAXA_NAMES = {
   PALMS: 'PALMS',
   REPTILES: 'REPTILES',
 };
+
+export const MOL_IMAGES_THUMBS_BASE = 'https://storage.googleapis.com/mol-assets2/thumbs/';
 
 export const LAYER_TITLE_TYPES = {
   EXPERT_RANGE_MAPS: 'EXPERT RANGE MAPS',
@@ -69,6 +72,7 @@ export const NAVIGATION = {
   TRENDS: 7,
   EXPLORE_SPECIES: 8,
   INFO: 9,
+  PLANNING: 10,
 };
 
 export const LAYER_OPTIONS = {

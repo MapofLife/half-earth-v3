@@ -40,6 +40,7 @@ function TemporalTrendsShiComponent(props) {
     setShiActiveTrend,
     setClickedRegion,
     clickedRegion,
+    handleRegionSelected,
     view,
   } = props;
 
@@ -52,6 +53,7 @@ function TemporalTrendsShiComponent(props) {
 
   const handleActionChange = (option) => {
     setClickedRegion(null);
+    handleRegionSelected(null);
     setShiActiveTrend(option);
 
     if (countryISO.toLowerCase() === 'ee') {

@@ -139,7 +139,7 @@ function NationalChartComponent(props) {
     if (!countryData.length) return;
 
     const filteredData = countryData.filter(
-      (item) => item.year >= shiStartYear && item.year <= SHI_LATEST_YEAR
+      (item) => item.level === 'country' &&  item.year >= shiStartYear && item.year <= SHI_LATEST_YEAR
     );
 
     setData({

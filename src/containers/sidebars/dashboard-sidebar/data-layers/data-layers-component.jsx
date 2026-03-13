@@ -121,7 +121,7 @@ function DataLayerComponent(props) {
     '0ed89f4f-3ed2-41c2-9792-7c7314a55455',
     '98f229de-6131-41ef-aff1-7a52212b5a15',
     'd542e050-2ae5-457e-8476-027741538965',
-    '83cfa8fb-dd6e-4031-8215-1079abddb8a7',
+    // '83cfa8fb-dd6e-4031-8215-1079abddb8a7',
   ];
 
   const pointObservationIds = [
@@ -198,8 +198,6 @@ function DataLayerComponent(props) {
         obj.isActive = true;
         obj.parentId = grouped[groupKey].id;
         obj.id = obj.label;
-        grouped[groupKey].items.push(obj); // Push the current object into the 'item' array of the matching group
-
         // TODO: remove logic when not filtering out results
         const foundExpertRange = expertRangeMapIds.find(
           (id) => id === obj.dataset_id
@@ -208,9 +206,10 @@ function DataLayerComponent(props) {
           (id) => id === obj.dataset_id
         );
 
-        // if (foundExpertRange || foundPointOb) {
-        grouped[groupKey].total_no_rows += obj.no_rows || 0; // Summing the no_rows property
-        // }
+        if (foundExpertRange || foundPointOb) {
+          grouped[groupKey].items.push(obj); // Push the current object into the 'item' array of the matching group
+          grouped[groupKey].total_no_rows += obj.no_rows || 0; // Summing the no_rows property
+        }
       }
     });
 
@@ -232,10 +231,10 @@ function DataLayerComponent(props) {
     setScientificName(null);
     findMapLayersToRemove();
 
-    if (selectedRegion || exploreAllSpecies) {
-      setSelectedIndex(NAVIGATION.EXPLORE_SPECIES);
-    } else if (fromTrends) {
+    if (fromTrends) {
       setSelectedIndex(NAVIGATION.TRENDS);
+    } else if (selectedRegion || exploreAllSpecies) {
+      setSelectedIndex(NAVIGATION.EXPLORE_SPECIES);
     } else {
       setSelectedIndex(NAVIGATION.SPECIES);
     }
@@ -246,19 +245,26 @@ function DataLayerComponent(props) {
   };
 
   const getHabitatMapData = async () => {
-    // const habitatMapUrl = `https://dev-api-dot-api-2-x-dot-map-of-life.appspot.com/2.x/species/indicators/habitat-trends/tile-urls?species=${speciesInfo.scientificname}&taxa=${speciesInfo.taxa}`;
-    let habitatMapUrl = `https://dev-api-dot-api-2-x-dot-map-of-life.appspot.com/2.x/species/indicators/habitat-trends/map?scientificname=${speciesInfo.scientificname}`;
-
-    if (countryISO === 'EE') {
-      habitatMapUrl = `${REGION_RANGE_MAP_URL}?species=${speciesInfo.scientificname}&taxa=${speciesInfo.taxa}`;
-    }
+    const habitatMapUrl = `${REGION_RANGE_MAP_URL}?species=${speciesInfo.scientificname}&taxa=${speciesInfo.taxa}`;
     const response = await fetch(habitatMapUrl);
     const d = await response.json();
 
-    if (d.points) {
+    const { trend_data, data } = d;
+
+    if (trend_data) {
       setDataPoints((prevDataPoints) => {
         if (Array.isArray(prevDataPoints)) {
           const updatedDataPoints = [...prevDataPoints];
+          updatedDataPoints.push({
+            label: t('Habitat Loss/Gain'),
+            items: [],
+            id: LAYER_OPTIONS.HABITAT,
+            total_no_rows: 1,
+            isActive: false,
+            showChildren: false,
+            type: DATA_POINT_TYPE.PUBLIC,
+          });
+
           const habitatLayer = updatedDataPoints.find(
             (dp) => dp.id === LAYER_OPTIONS.HABITAT
           );
@@ -271,10 +277,7 @@ function DataLayerComponent(props) {
         }
         return [];
       });
-    }
 
-    if (d.trend_data) {
-      const { trend_data } = d;
       trend_data.shift();
       setValuesExists(true);
 
@@ -297,27 +300,27 @@ function DataLayerComponent(props) {
           },
         ],
       });
-    } else if (d.data?.length > 1) {
+    } else if (data?.length > 1) {
       // remove Year row
-      d.data.shift();
+      data.shift();
       setValuesExists(true);
 
       setChartData({
-        labels: d.data.map((item) => item[0]),
+        labels: data.map((item) => item[0]),
         datasets: [
           {
             fill: false,
             backgroundColor: 'rgba(24, 186, 180, 1)',
             borderColor: 'rgba(24, 186, 180, 1)',
             pointStyle: false,
-            data: d.data.map((item) => item[2]),
+            data: data.map((item) => item[2]),
           },
           {
             fill: '-1',
             backgroundColor: 'rgba(24, 186, 180, 0.7)',
             borderColor: 'rgba(24, 186, 180, 1)',
             pointStyle: false,
-            data: d.data.map((item) => item[3]),
+            data: data.map((item) => item[3]),
           },
         ],
       });
@@ -344,16 +347,6 @@ function DataLayerComponent(props) {
         type: DATA_POINT_TYPE.PUBLIC,
       });
     }
-
-    publicData.push({
-      label: t('Habitat Loss/Gain'),
-      items: [],
-      id: LAYER_OPTIONS.HABITAT,
-      total_no_rows: '',
-      isActive: false,
-      showChildren: false,
-      type: DATA_POINT_TYPE.PUBLIC,
-    });
 
     setDataPoints(publicData);
 
@@ -420,6 +413,18 @@ function DataLayerComponent(props) {
   }, [dataPoints, dataByCountry]);
 
   useEffect(() => {
+    if(countryISO.toUpperCase() === 'GUY'){
+      setRegionsData(prev => [...prev,
+        {
+        label: t('Indigenous Territories'),
+        items: [],
+        total_no_rows: '',
+        isActive: false,
+        showChildren: false,
+        type: DATA_POINT_TYPE.REGIONS_DATA,
+        id: LAYER_OPTIONS.INDIGENOUS_LANDS,
+      }]);
+    }
     setSpeciesDataLoading(true);
   }, []);
 
@@ -491,7 +496,7 @@ function DataLayerComponent(props) {
                 type="button"
                 onClick={() => {}}
               >
-                <span>{t('Regions Data')}</span>
+                <span>{t('Other Data')}</span>
               </button>
               <DataLayersGroupedList
                 dataPoints={regionsData}

@@ -31,12 +31,26 @@ import siiProvinceFRImg from 'images/dashboard/tutorials/tutorial_spi_provinces-
 import { SECTION_INFO } from '../../../../dashboard-sidebar/tutorials/sections/sections-info';
 
 import styles from './province-chart-styles.module.scss';
+import { useWatchUtils } from 'hooks/esri';
 
 ChartJS.register(LinearScale, ArcElement, PointElement, Tooltip, Legend);
+
+function getUniqueProvinces(provinces) {
+  const provinceSet = new Set()
+  provinces.forEach((item) => {
+    if (item.name && item.iso3 !== item.region_key) {
+      provinceSet.add(JSON.stringify({ name: item.name }))
+    }
+  })
+  const uniqueProvinces = Array.from(provinceSet).map((item) => JSON.parse(item)
+  )
+  return uniqueProvinces
+}
 
 function ProvinceChartComponent(props) {
   const bubbleDataCountryList = ['EE', 'GUY-FM'];
   const t = useT();
+  const watchUtils = useWatchUtils();
   const locale = useLocale();
   const chartRef = useRef(null);
   const { lightMode } = useContext(LightModeContext);
@@ -52,6 +66,8 @@ function ProvinceChartComponent(props) {
     layerView,
     countryISO,
     lang,
+    view,
+    regionLayers,
   } = props;
 
   const blankData = {
@@ -380,15 +396,33 @@ function ProvinceChartComponent(props) {
   };
 
   useEffect(() => {
-    if (provinces.length === 0) return;
+    if (!view || regionLayers.length === 0 ||provinces.length === 0) return;
     setIsLoading(false);
 
-    if (countryISO === 'EE' || countryISO === 'GUY-FM') {
-      getChartData();
-    } else if (!selectedProvince) {
-      handleProvinceSelected(provinces[0]);
+    const watchHandle = watchUtils.watch(() =>
+      view.map.allLayers.forEach((layer) => {
+        if (layer.id === `${countryISO}-sii` && layer.visible) {
+          if(provinceList.length === 0){
+            const uniqueProvinces = getUniqueProvinces(provinces)
+            setProvinceList(uniqueProvinces);
+          }
+
+          if (selectedProvince) {
+            handleProvinceSelected(selectedProvince);
+            setFoundIndex(provinceList.findIndex((region) => region.name === selectedProvince.name));
+            getChartData(selectedProvince.name);
+          } else {
+            setSelectedProvince(provinces[0]);
+            handleProvinceSelected(provinces[0]);
+          }
+        }
+      })
+    );
+
+    return () => {
+      watchHandle.remove();
     }
-  }, [provinces]);
+  }, [view, regionLayers, provinces]);
 
   useEffect(() => {
     if (provinces.length && bubbleData && !clickedRegion) {
@@ -398,6 +432,7 @@ function ProvinceChartComponent(props) {
       } else if (selectedProvince) {
         handleProvinceSelected(selectedProvince);
       } else {
+        setSelectedProvince(provinces[0]);
         handleProvinceSelected(provinces[0]);
       }
     }
@@ -410,7 +445,7 @@ function ProvinceChartComponent(props) {
         provinces.findIndex((prov) => prov.name === selectedProvince.name)
       );
     }
-  }, [selectedProvince]);
+  }, [selectedProvince, provinces]);
 
   useEffect(() => {
     if (clickedRegion && provinces.length) {

@@ -8,6 +8,7 @@ import { tx, PseudoTranslationPolicy } from '@transifex/native';
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
+import Banner from 'components/banner';
 import ThirdParty from 'containers/third-party';
 
 import { useMobile } from 'constants/responsive';
@@ -94,10 +95,12 @@ function App(props) {
   return (
     <QueryClientProvider client={queryClient}>
       <div className={styles.app}>
+        <div className={styles.content}>
         <Suspense fallback={null}>
           <AppLayout {...props} />
         </Suspense>
         {/* <ThirdParty /> */}
+        </div>
       </div>
     </QueryClientProvider>
   );

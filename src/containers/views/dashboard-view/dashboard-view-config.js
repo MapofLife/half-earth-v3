@@ -6,6 +6,7 @@ import {
   LANDSCAPE_FEATURES_LABELS_LAYER,
   FIREFLY_BASEMAP_LAYER,
   SATELLITE_BASEMAP_LAYER,
+  ADMIN_AREAS_FEATURE_LAYER,
 } from 'constants/layers-slugs';
 import { DASHBOARD_URLS } from 'constants/layers-urls';
 
@@ -17,7 +18,7 @@ export default {
       { title: REGIONS_LABELS_LAYER, opacity: 0 },
       { title: COUNTRIES_LABELS_FEATURE_LAYER },
       { title: LANDSCAPE_FEATURES_LABELS_LAYER },
-      { title: DASHBOARD_URLS.ADMIN_AREAS_FEATURE_LAYER },
+      // { title: ADMIN_AREAS_FEATURE_LAYER },
     ],
     highlightOptions: {
       color: [22, 186, 180, 1],
@@ -57,6 +58,6 @@ export default {
     isFullscreenActive: false,
     activeCategory: '',
     sceneMode: 'data',
-    selectedAnalysisLayer: DASHBOARD_URLS.ADMIN_AREAS_FEATURE_LAYER,
+    selectedAnalysisLayer: ADMIN_AREAS_FEATURE_LAYER,
   },
 };

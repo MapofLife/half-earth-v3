@@ -30,6 +30,8 @@ import {
 import styles from '../dashboard-sidebar-styles.module.scss';
 
 import filterStyles from './species-filter-styles.module.scss';
+import GraphicsLayer from '@arcgis/core/layers/GraphicsLayer'
+import Graphic from '@arcgis/core/Graphic'
 
 function SpeciesFilterComponent(props) {
   const t = useT();
@@ -49,6 +51,7 @@ function SpeciesFilterComponent(props) {
     setMapLegendLayers,
     setRegionLayers,
     regionLayers,
+    geometry,
     view,
     map,
     countryISO,
@@ -62,7 +65,12 @@ function SpeciesFilterComponent(props) {
         {
           name: t('Refined Range Map'),
           active: false,
-          test: (species) => species.source.indexOf('range') > -1,
+          test: (species) => {
+            const {datasetList} = species;
+            if(!datasetList || datasetList.length === 0) return false;
+            return datasetList.map((d) => d.product_type).indexOf('range') >
+              -1;
+          },
           count: 0,
           type: 'and',
           result: false,
@@ -77,13 +85,39 @@ function SpeciesFilterComponent(props) {
           name: t('Occurrence'),
           active: false,
           test: (species) => {
-            if (selectedRegionOption === REGION_OPTIONS.RAPID_INVENTORY_32) {
-              return species.source.indexOf('Rapid') > -1;
-            }
-            return (
-              species.source.indexOf('GBIF') > -1 ||
-              species.source.indexOf('eBird') > -1
-            );
+            const {datasetList} = species;
+            // if (selectedRegionOption === REGION_OPTIONS.RAPID_INVENTORY_32) {
+            //   return species?.source.indexOf('Rapid') > -1;
+            // }
+            if(!datasetList || datasetList.length === 0) return false;
+            return datasetList.map((d) => d.product_type).indexOf('points') >
+              -1;
+          },
+          count: 0,
+          result: false,
+          type: 'and',
+        },
+        {
+          name: t('Private Occurrence'),
+          active: false,
+          test: (species) => {
+            const {product_type} = species;
+            if (!product_type) return false;
+            return product_type.indexOf('private') >
+              -1;
+          },
+          count: 0,
+          result: false,
+          type: 'and',
+        },
+        {
+          name: t('Rapid Inventory Assessment'),
+          active: false,
+          test: (species) => {
+            const {datasetList} = species;
+            if(!datasetList || datasetList.length === 0) return false;
+            return datasetList.map((d) => d.product_type).indexOf('rapid_inventory') >
+              -1;
           },
           count: 0,
           result: false,
@@ -109,8 +143,8 @@ function SpeciesFilterComponent(props) {
           name: t('Critically Endangered'),
           active: false,
           test: (species) =>
-            species.threat_status?.toUpperCase() ===
-            IUCNStatusTypes.CR.toUpperCase(),
+            species?.traits?.threat_status_code?.toUpperCase() === 'CR',
+            // IUCNStatusTypes.CR.toUpperCase(),
           count: 0,
           result: false,
           type: 'or',
@@ -120,8 +154,8 @@ function SpeciesFilterComponent(props) {
           result: false,
           active: false,
           test: (species) =>
-            species.threat_status?.toUpperCase() ===
-            IUCNStatusTypes.EN.toUpperCase(),
+            species?.traits?.threat_status_code?.toUpperCase() === 'EN',
+            // IUCNStatusTypes.EN.toUpperCase(),
           count: 0,
           type: 'or',
         },
@@ -129,8 +163,8 @@ function SpeciesFilterComponent(props) {
           name: t('Vulnerable'),
           active: false,
           test: (species) =>
-            species.threat_status?.toUpperCase() ===
-            IUCNStatusTypes.VU.toUpperCase(),
+            species?.traits?.threat_status_code?.toUpperCase() === 'VU',
+            // IUCNStatusTypes.VU.toUpperCase(),
           count: 0,
           type: 'or',
           result: false,
@@ -139,8 +173,8 @@ function SpeciesFilterComponent(props) {
           name: t('Near Threatened'),
           active: false,
           test: (species) =>
-            species.threat_status?.toUpperCase() ===
-            IUCNStatusTypes.NT.toUpperCase(),
+            species?.traits?.threat_status_code?.toUpperCase() === 'NT',
+            // IUCNStatusTypes.NT.toUpperCase(),
           count: 0,
           type: 'or',
           result: false,
@@ -149,8 +183,8 @@ function SpeciesFilterComponent(props) {
           name: t('Least Concern'),
           active: false,
           test: (species) =>
-            species.threat_status?.toUpperCase() ===
-            IUCNStatusTypes.LC.toUpperCase(),
+            species?.traits?.threat_status_code?.toUpperCase() === 'LC',
+            // IUCNStatusTypes.LC.toUpperCase(),
           count: 0,
           type: 'or',
           result: false,
@@ -159,8 +193,8 @@ function SpeciesFilterComponent(props) {
           name: t('Data Deficient'),
           active: false,
           test: (species) =>
-            species.threat_status?.toUpperCase() ===
-            IUCNStatusTypes.DD.toUpperCase(),
+            species?.traits?.threat_status_code?.toUpperCase() === 'DD',
+            // IUCNStatusTypes.DD.toUpperCase(),
           count: 0,
           type: 'or',
           result: false,
@@ -170,10 +204,11 @@ function SpeciesFilterComponent(props) {
           active: false,
           result: false,
           test: (species) =>
-            species.threat_status?.toUpperCase() ===
-              IUCNStatusTypes.NE.toUpperCase() ||
-            species.threat_status?.toUpperCase() ===
-              IUCNStatusTypes.UN.toUpperCase(),
+            species?.traits?.threat_status_code?.toUpperCase() === 'NE'
+              // IUCNStatusTypes.NE.toUpperCase()
+              ||
+            species?.traits?.threat_status_code?.toUpperCase() === 'UN',
+              // IUCNStatusTypes.UN.toUpperCase(),
           count: 0,
           type: 'or',
         },
@@ -340,7 +375,65 @@ function SpeciesFilterComponent(props) {
       default:
         break;
     }
+
+    if(selectedRegion.rings){
+      const polygon = {
+        type: "polygon",
+        rings: [...selectedRegion.rings]
+      };
+
+      const fillSymbol = {
+        type: "simple-fill",
+        color: [255,255,255, 0.2], // White, 80% opacity
+        outline: { color: [255, 255, 255], width: 2 }
+      };
+
+      const polygonGraphic = new Graphic({
+        geometry: polygon,
+        symbol: fillSymbol
+      });
+
+      const graphicsLayer = new GraphicsLayer({
+        id: 'custom-area'
+      });
+      graphicsLayer.add(polygonGraphic);
+      setRegionLayers((rl) => ({
+          ...rl,
+          'custom-area': graphicsLayer,
+        }));
+      map.add(graphicsLayer);
+
+      // view.graphics.add(polygonGraphic);
+    }
   }, [selectedRegionOption, selectedRegion]);
+
+  useEffect(() => {
+    if(geometry && selectedRegionOption === REGION_OPTIONS.DRAW) {
+      const graphic = new Graphic({
+        geometry: geometry,
+        symbol: {
+          type: "simple-fill",
+          color: [0, 255, 255, 0.5],
+          style: "solid",
+          outline: {
+            color: [0, 255, 255, 0.5],
+            width: 2,
+          },
+        },
+      });
+
+      const graphicsLayer = new GraphicsLayer({
+        id: 'custom-area'
+      });
+      graphicsLayer.add(graphic);
+      setRegionLayers((rl) => ({
+          ...rl,
+          'custom-area': graphicsLayer,
+        }));
+      map.add(graphicsLayer);
+    }
+  }, [geometry]);
+
 
   useEffect(() => {
     displayLayer(selectedRegionOption);

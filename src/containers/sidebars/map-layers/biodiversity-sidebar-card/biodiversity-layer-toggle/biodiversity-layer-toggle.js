@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { connect } from 'react-redux';
 import metadataActions from 'redux_modules/metadata';
-
+import { DATA } from 'router';
 import { useLocale } from '@transifex/react';
 
 import { layerToggleAnalytics } from 'actions/google-analytics-actions';
@@ -40,8 +40,11 @@ function BiodiversityLayerToggle(props) {
     setSelectedLayer,
     allActiveLayerTitles,
     category,
+    browsePage,
     setSelectedCategory,
-    selectedCategory
+    queryParams,
+    selectedCategory,
+    aoiId,
   } = props;
   const locale = useLocale();
   const layersToggleConfig = useMemo(() => getLayersToggleConfig(), [locale]);
@@ -65,8 +68,14 @@ function BiodiversityLayerToggle(props) {
     setSelectedCategory(category);
     const layer = layersConfig[option.layer];
     if (!allActiveLayerTitles) {
+
+      browsePage({
+        type: DATA,
+        query: { centerOn: { ...queryParams.centerOn } },
+      });
+
       // Add layer to empty selection
-      if (layer.bbox) flyToLayerExtent(layer.bbox, view);
+      if (layer.bbox && !aoiId) flyToLayerExtent(layer.bbox, view);
       layerManagerToggle(
         option.layer,
         activeLayers,
@@ -92,7 +101,7 @@ function BiodiversityLayerToggle(props) {
     }
 
     // Add selected layer and toggle the rest
-    if (layer.bbox) {
+    if (layer.bbox && !aoiId) {
       flyToLayerExtent(layer.bbox, view);
     }
 

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 
 import { DASHBOARD } from 'router';
-
+import * as webMercatorUtils from "@arcgis/core/geometry/support/webMercatorUtils.js";
 import * as promiseUtils from '@arcgis/core/core/promiseUtils.js';
 
 import DashboardPopupComponent from 'components/dashboard-popup/dashboard-popup-component';
@@ -71,6 +71,12 @@ function AreaHighlightManagerComponent(props) {
               regionLayers[`${countryISO}-shi-int`]
           );
         }
+
+        if(tabOption === TABS.SII){
+          return view.whenLayerView(
+            regionLayers[`${countryISO}-sii`]
+          );
+        }
       } else {
         return view.whenLayerView(
           regionLayers[LAYER_OPTIONS.DISSOLVED_NBS] ||
@@ -95,8 +101,7 @@ function AreaHighlightManagerComponent(props) {
         regionLayers[LAYER_OPTIONS.PROTECTED_AREAS] ||
         regionLayers[LAYER_OPTIONS.FORESTS] ||
         regionLayers[LAYER_OPTIONS.INDIGENOUS_LANDS] ||
-        regionLayers[`${countryISO}-outline`] ||
-        regionLayers[`${countryISO}-sii`]
+        regionLayers[`${countryISO}-outline`]
     );
   };
 
@@ -112,7 +117,8 @@ function AreaHighlightManagerComponent(props) {
           x.graphic.attributes?.territoire ||
           x.graphic.attributes?.Int_ID
       );
-      if (foundLayer) {
+      if (foundLayer && foundLayer.layer.id !== `map-${countryISO}` &&
+        foundLayer.layer.id !== 'GUY-RIVER' && foundLayer.layer.id !== 'GUY-RIVER-NAME') {
         const { graphic } = foundLayer;
         const { attributes } = graphic;
         if (
@@ -164,14 +170,19 @@ function AreaHighlightManagerComponent(props) {
                   Intrvnt,
                   iso3,
                   name,
+                  nbis_id
                 } = hits.attributes;
+
 
                 if (
                   hits.graphic &&
                   hits.graphic.geometry &&
                   hits.graphic.geometry.rings
                 ) {
-                  setSelectedGeometryRings(hits.graphic.geometry.rings);
+                  const newGeometry = webMercatorUtils.webMercatorToGeographic(hits.graphic.geometry);
+                  setSelectedGeometryRings(newGeometry.rings);
+                } else {
+                  setSelectedGeometryRings(null);
                 }
 
                 setSelectedIndex(NAVIGATION.EXPLORE_SPECIES);
@@ -183,8 +194,11 @@ function AreaHighlightManagerComponent(props) {
                   setSelectedRegion({ GID_1 });
                 }
 
-                if (selectedRegionOption === REGION_OPTIONS.FORESTS) {
-                  setSelectedRegion({ mgc });
+                if (selectedRegionOption === REGION_OPTIONS.FORESTS ||
+                  selectedRegionOption === REGION_OPTIONS.ACC_REGION ||
+                  selectedRegionOption === REGION_OPTIONS.RAPID_INVENTORY_32
+                ) {
+                  setSelectedRegion({ nbis_id });
                 }
 
                 if (selectedRegionOption === REGION_OPTIONS.DISSOLVED_NBS) {
@@ -193,12 +207,15 @@ function AreaHighlightManagerComponent(props) {
 
                 if (
                   selectedRegionOption === REGION_OPTIONS.ZONE_3 ||
-                  selectedRegionOption === REGION_OPTIONS.ZONE_5 ||
-                  selectedRegionOption === REGION_OPTIONS.ACC_REGION ||
-                  selectedRegionOption === REGION_OPTIONS.RAPID_INVENTORY_32
+                  selectedRegionOption === REGION_OPTIONS.ZONE_5
                 ) {
                   setSelectedRegion({ region_key });
                 }
+
+                // if(selectedRegionOption === REGION_OPTIONS.ACC_REGION){
+                //   const newGeometry = webMercatorUtils.webMercatorToGeographic(hits.graphic.geometry);
+                //   setSelectedRegion({rings: newGeometry.rings });
+                // }
 
                 // eslint-disable-next-line camelcase
                 setRegionName(
@@ -348,7 +365,9 @@ function AreaHighlightManagerComponent(props) {
             );
           }
         } else if (tabOption === TABS.SII) {
-          if (siiActiveTrend !== PROVINCE_TREND) {
+          if (countryISO.toLowerCase() === 'ee') {
+            layer = await getLayerView();
+          } else if (siiActiveTrend !== PROVINCE_TREND) {
             layer = await getLayerView();
           } else {
             layer = await view.whenLayerView(regionLayers[`${countryISO}-sii`]);
@@ -365,7 +384,7 @@ function AreaHighlightManagerComponent(props) {
 
       setLayerView(layer);
     }
-  }, [regionLayers, view, tabOption, mapLegendLayers]);
+  }, [regionLayers, view, tabOption, mapLegendLayers, selectedIndex]);
 
   useEffect(() => {
     if (!layerView) return;
@@ -394,6 +413,11 @@ function AreaHighlightManagerComponent(props) {
           view.on('click', (event) => handleRegionClicked(event))
         );
         setOnPointerMoveHandler(view.on('pointer-move', handlePointerMove));
+      } else if (tabOption === TABS.SII && siiActiveTrend !== NATIONAL_TREND) {
+        setOnClickHandler(
+          view.on('click', (event) => handleRegionClicked(event))
+        );
+        setOnPointerMoveHandler(view.on('pointer-move', handlePointerMove));
       }
     } else {
       setOnClickHandler(
@@ -401,7 +425,7 @@ function AreaHighlightManagerComponent(props) {
       );
       setOnPointerMoveHandler(view.on('pointer-move', handlePointerMove));
     }
-  }, [layerView, tabOption, activeTrend, shiActiveTrend]);
+  }, [layerView, tabOption, activeTrend, shiActiveTrend, siiActiveTrend, selectedIndex]);
   return <div />;
 }
 

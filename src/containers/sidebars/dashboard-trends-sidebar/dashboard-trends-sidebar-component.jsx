@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { useT } from '@transifex/react';
 
@@ -38,12 +38,14 @@ function DashboardTrendsSidebar(props) {
     tabOption,
     setTabOption,
     regionLayers,
+    handleRegionSelected,
     countryISO,
     map,
     setMapLegendLayers,
   } = props;
 
   const showHideLayers = (tabClicked) => {
+    handleRegionSelected(null);
     const layers = regionLayers;
 
     const foundProvinceLayer = map.layers.items.find(
@@ -90,6 +92,14 @@ function DashboardTrendsSidebar(props) {
     const siiLayer = map.layers.items.find(
       (item) => item.id === `${countryISO}-sii`
     );
+
+    // const guyRiver = map.layers.items.find(
+    //   (item) => item.id === 'GUY-RIVER'
+    // );
+
+    // if(guyRiver){
+    //   guyRiver.visible = false;
+    // }
 
     if (tabClicked === TABS.SII) {
       if (foundProvinceLayer) {
@@ -193,6 +203,41 @@ function DashboardTrendsSidebar(props) {
 
     setTabOption(tabClicked);
   };
+
+  useEffect(() => {
+    const guyRiver = map.layers.items.find(
+      (item) => item.id === `GUY-RIVER`
+    );
+
+    const guyRiverName = map.layers.items.find(
+      (item) => item.id === `GUY-RIVER-NAME`
+    );
+
+    if(guyRiver){
+      guyRiver.visible = false;
+    }
+
+    if(guyRiverName){
+      guyRiverName.visible = false;
+    }
+
+    return () => {
+      const guyRiver = map.layers.items.find(
+        (item) => item.id === `GUY-RIVER`
+      );
+
+      const guyRiverName = map.layers.items.find(
+      (item) => item.id === `GUY-RIVER-NAME`
+    );
+
+      if(guyRiver){
+        guyRiver.visible = true;
+      }
+      if(guyRiverName){
+        guyRiverName.visible = true;
+      }
+    }
+  });
 
   return (
     <div id="dashboard-sidebar" className={styles.container}>

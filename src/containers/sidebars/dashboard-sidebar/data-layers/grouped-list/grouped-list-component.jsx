@@ -5,6 +5,7 @@ import { useT } from '@transifex/react';
 import {
   PROVINCE_FEATURE_GLOBAL_OUTLINE_ID,
   GBIF_OCCURENCE_URL,
+  INDIGENOUS_LANDS_FEATURE_ID,
   REGION_OCCURENCE_ID,
   EEWWF_COUNTRY_LINES_FEATURE_ID,
 } from 'utils/dashboard-utils';
@@ -28,6 +29,7 @@ import { DASHBOARD_URLS } from 'constants/layers-urls.js';
 import ArrowIcon from 'icons/arrow_right.svg?react';
 
 import styles from './grouped-list-styles.module.scss';
+import VectorTileLayer from '@arcgis/core/layers/VectorTileLayer'
 
 function GroupedListComponent(props) {
   const {
@@ -56,6 +58,7 @@ function GroupedListComponent(props) {
     '0ed89f4f-3ed2-41c2-9792-7c7314a55455',
     '98f229de-6131-41ef-aff1-7a52212b5a15',
     'd542e050-2ae5-457e-8476-027741538965',
+    // '83cfa8fb-dd6e-4031-8215-1079abddb8a7',
   ];
 
   const pointObservationIds = [
@@ -82,6 +85,10 @@ function GroupedListComponent(props) {
   const getLayerIcon = (layer, item) => {
     view.whenLayerView(layer).then(() => {
       const { renderer } = layer; // Get the renderer
+
+      if(layer.id.match(/GBIF/)){
+        item.color = {r: 255, g: 165, b: 0, a: 0.8};
+      }
 
       if (renderer) {
         const { symbol, uniqueValueGroups } = renderer;
@@ -160,6 +167,15 @@ function GroupedListComponent(props) {
         setIsLoading(true);
         layer = await EsriFeatureService.getFeatureLayer(
           PROVINCE_FEATURE_GLOBAL_OUTLINE_ID,
+          countryISO,
+          id
+        );
+      }
+    } else if (id === LAYER_OPTIONS.INDIGENOUS_LANDS) {
+      if (!item.isActive) {
+        setIsLoading(true);
+        layer = await EsriFeatureService.getFeatureLayer(
+          INDIGENOUS_LANDS_FEATURE_ID,
           countryISO,
           id
         );
@@ -331,44 +347,116 @@ function GroupedListComponent(props) {
           setIsLoading(true);
           loadingCount += 1;
 
-          let layerId = GBIF_OCCURENCE_URL;
-          if (countryISO === 'EE') {
-            layerId = REGION_OCCURENCE_ID;
-          } else if (countryISO === 'GUY') {
-            layerId = '5239b39a253c4ab69bb931044406b431';
-          }
+          // let layerId = GBIF_OCCURENCE_URL;
+          // if (countryISO === 'EE') {
+          //   layerId = REGION_OCCURENCE_ID;
+          // } else if (countryISO === 'GUY') {
+          //   layerId = '5239b39a253c4ab69bb931044406b431';
+          // } else if(countryISO === 'GIN') {
+          //   layerId = '34e596f26f3b4203937e872e91c630b1';
+          // } else if(countryISO === 'COD') {
+          //   layerId = '34e596f26f3b4203937e872e91c630b1';
+          // }
 
-          if (layerName.match(/EBIRD/)) {
-            layer = await EsriFeatureService.getFeatureOccurenceLayer(
-              layerId,
-              speciesInfo.scientificname,
-              layerName,
-              'eBird',
-              countryISO
-            );
-          } else if (layerName.match(/GBIF/)) {
-            layer = await EsriFeatureService.getFeatureOccurenceLayer(
-              layerId,
-              speciesInfo.scientificname,
-              layerName,
-              'GBIF',
-              countryISO
-            );
-          } else if (item.type === 'PRIVATE') {
-            const portalId =
-              countryISO === 'COD'
-                ? '34e596f26f3b4203937e872e91c630b1'
-                : 'e2a38114c9734e888a89a699b4ba305f';
+          // if (layerName.match(/EBIRD/)) {
+          //   layer = await EsriFeatureService.getFeatureOccurenceLayer(
+          //     layerId,
+          //     speciesInfo.scientificname,
+          //     layerName,
+          //     'eBird',
+          //     countryISO
+          //   );
+          // } else if (layerName.match(/GBIF/)) {
+          //   layer = await EsriFeatureService.getFeatureOccurenceLayer(
+          //     layerId,
+          //     speciesInfo.scientificname,
+          //     layerName,
+          //     'GBIF',
+          //     countryISO
+          //   );
+          // } else
+
+            if (item.type === 'PRIVATE') {
+            let portalId = '';
+
+            if (countryISO === 'GUY') {
+              portalId = '56b7ab3ca9e74495ae6534ea965ca368';
+            } else if(countryISO === 'GIN') {
+              portalId = '34e596f26f3b4203937e872e91c630b1';
+            } else if(countryISO === 'COD') {
+              portalId = '34e596f26f3b4203937e872e91c630b1';
+            }
+
             layer = await EsriFeatureService.getFeaturePrivateOccurenceLayer(
               portalId,
               speciesInfo.scientificname,
               layerName,
               item.dataset_title
             );
-          }
-
           item.isActive = true;
           map.add(layer);
+          } else {
+            const mvtTileUrlTemplate = `https://production-dot-tiler-dot-map-of-life.appspot.com/0.x/tiles/species/occurrences/3857/{z}/{x}/{y}.mvt?scientificname=${speciesInfo.scientificname}&dsids=9905692e-6a28-4310-b01e-476a471e5bf8,794adb49-7458-41c4-a1c0-56537fdbec1d`;
+
+            const mvtStyle = {
+              version: 8,
+              glyphs: 'https://basemaps.arcgis.com/arcgis/rest/services/World_Basemap/VectorTileServer/resources/fonts/{fontstack}/{range}.pbf',
+              sources: {
+                'species-occurrence': {
+                  type: 'vector',
+                  tiles: [mvtTileUrlTemplate],
+                  minzoom: 0,
+                  maxzoom: 22
+                }
+              },
+              layers: [
+                // Fill layer for polygons
+                {
+                  id: 'occurren-fill',
+                  type: 'fill',
+                  source: 'species-occurrence',
+                  'source-layer': 'occurrence',
+                  paint: {
+                    'fill-color': '#FFA500',
+                    'fill-opacity': 0.8
+                  }
+                },
+                // Outline layer for polygon boundaries
+                {
+                  id: 'occurrence-outline',
+                  type: 'line',
+                  source: 'species-occurrence',
+                  'source-layer': 'occurrence',
+                  paint: {
+                    'line-color': '#FFA500',
+                    'line-width': 2,
+                    'line-opacity': 0.9
+                  }
+                },
+                {
+                  id: 'points-circles',
+                  type: 'circle',
+                  source: 'species-occurrence',
+                  'source-layer': 'points',
+                  paint: {
+                    'circle-color': '#FFA500',
+                    'circle-radius': 8,
+                    'circle-stroke-color': '#FFA500',
+                    'circle-stroke-width': 2,
+                    'circle-opacity': 1
+                  }
+                }
+              ]
+            };
+            layer = new VectorTileLayer({
+              style: mvtStyle,
+              title: `${speciesInfo.scientificname} Occurrences`,
+              visible: true,
+              opacity: 0.7,
+              id: layerName,
+            });
+            map.add(layer);
+          }
 
           view.whenLayerView(layer).then(() => {
             setRegionLayers((rl) => ({
@@ -595,7 +683,7 @@ function GroupedListComponent(props) {
                   />
                 }
               />
-              <span />
+              <span>{key.total_no_rows}</span>
               <span />
               <ToggleLayerInfoContainer layer={key} {...props} />
             </div>

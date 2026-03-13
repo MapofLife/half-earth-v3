@@ -28,6 +28,7 @@ import RegionsAnalysisContainer from './regions-analysis';
 import SpeciesFilterContainer from './species-filter';
 import SpeciesHomeContainer from './species-home';
 import TutorialsContainer from './tutorials';
+import PlanningContainer from './planning';
 
 function DashboardSidebar(props) {
   const t = useT();
@@ -38,6 +39,9 @@ function DashboardSidebar(props) {
     map,
     regionLayers,
     setRegionLayers,
+    setRegionName,
+    setHash,
+    setSelectedRegionOption
   } = props;
 
   const { lightMode, toggleLightMode } = useContext(LightModeContext);
@@ -51,6 +55,8 @@ function DashboardSidebar(props) {
     ) {
       removeRegionLayers(map, regionLayers);
 
+      setHash(null);
+      setRegionName(null);
       setRegionLayers({});
     }
   }, [selectedIndex]);
@@ -134,6 +140,9 @@ function DashboardSidebar(props) {
         )}
         {selectedIndex === NAVIGATION.TRENDS && (
           <DashboardTrendsSidebarContainer {...props} />
+        )}
+        {selectedIndex === NAVIGATION.PLANNING && (
+          <PlanningContainer {...props} />
         )}
         {selectedIndex === NAVIGATION.INFO && <TutorialsContainer {...props} />}
       </div>
