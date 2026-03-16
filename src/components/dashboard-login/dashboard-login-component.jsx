@@ -13,7 +13,7 @@ import styles from './dashboard-login-styles.module.scss';
 
 // TODO: Research why storing appId in .env file returns undefined
 const info = new OAuthInfo({
-  appId: '7Xx7eWvI655rXo2l',
+  appId: 'zhWvIGYPUcFL8BbC',
   popup: false,
 });
 
@@ -24,10 +24,10 @@ function DashboardLoginComponent(props) {
   const t = useT();
 
   const handleLogin = () => {
-    // IdentityManager.getCredential(info.portalUrl);
-    if (email.includes('@yale.edu') && password === 'nbis') {
-      setLoggedIn(true);
-    }
+    IdentityManager.getCredential(info.portalUrl);
+    // if (email.includes('@yale.edu') && password === 'nbis') {
+    //   setLoggedIn(true);
+    // }
   };
 
   const handleLoginSuccess = () => {
