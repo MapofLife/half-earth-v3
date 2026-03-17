@@ -33,10 +33,11 @@ function DashboardLoginComponent(props) {
   const handleLoginSuccess = () => {
     const portal = new Portal();
     portal.authMode = 'immediate';
-    portal.load().then(() => {
+    portal.load().then((response) => {
+      console.log('Portal load response: ', response);
       setLoggedIn(true);
       setUser(portal.user);
-      console.log('Logged in user:',portal.user);
+      console.log('Logged in user:', portal.user);
     });
   };
 
