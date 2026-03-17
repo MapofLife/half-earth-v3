@@ -35,18 +35,14 @@ function DashboardLoginComponent(props) {
     const portal = new Portal();
     portal.authMode = 'immediate';
     portal.load().then((response) => {
-      console.log('Portal load response: ', response);
       setLoggedIn(true);
       setUser(portal.user);
-      console.log('Logged in user:', portal.user);
     });
   };
 
   const handleKeyPress = (event) => {
     if (event.key === 'Enter') {
       // Your code to fire the event goes here
-      console.log('Enter key pressed!');
-      // For example, you might call a function:
       handleLogin();
     }
   };
@@ -57,7 +53,7 @@ function DashboardLoginComponent(props) {
       .then(handleLoginSuccess)
       .catch((error) => {
         console.log('Not signed in:', error);
-        // throw Error(error);
+        throw Error(error);
       });
   }, []);
 
