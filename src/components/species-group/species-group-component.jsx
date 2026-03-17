@@ -14,6 +14,7 @@ import TaxaImageComponent from '../taxa-image';
 
 import styles from './species-group-component.module.scss';
 import { MOL_IMAGES_THUMBS_BASE } from 'constants/dashboard-constants.js';
+import { FlagCircleOutlined, FlagOutlined, FlagSharp } from '@mui/icons-material'
 
 function SpeciesGroupComponent(props) {
   const locale = useLocale();
@@ -56,32 +57,41 @@ function SpeciesGroupComponent(props) {
     return scientificName;
   };
 
+  const flagSpecies = (speciesToFlag) => {
+    alert(`Flagging ${speciesToFlag.scientificname} for review.`);
+  }
+
   return (
-    <button
-      type="button"
-      className={cx(lightMode ? styles.light : '', styles.speciesBox)}
-      onClick={() => selectSpecies(species)}
-    >
-      <div className={styles.imgBox}>
-        {asset_url && asset_url !== 'NA' && (
-          <img
-            alt={`${selectedTaxaObj.taxa}`}
-            loading="lazy"
-            src={`${MOL_IMAGES_THUMBS_BASE}${asset_url}.jpg`}
-          />
-        )}
-        {asset_url && asset_url === 'NA' && (
-          <TaxaImageComponent taxa={selectedTaxaObj.taxa} />
-        )}
-        {!asset_url && <TaxaImageComponent taxa={selectedTaxaObj.taxa} />}
-      </div>
-      <div className={cx(styles.speciesText, styles.name)}>
-        <div className={styles.common}>
-          {getCommonName(common, scientificname)}
+    <div style={{ display: 'flex',  alignItems: 'flex-start' }}>
+      <button className={cx(species.flagged ? styles.selected : '', styles.flagSpecies)} onClick={() => flagSpecies(species)}>
+        <FlagSharp/>
+      </button>
+      <button
+        type="button"
+        className={cx(lightMode ? styles.light : '', styles.speciesBox)}
+        onClick={() => selectSpecies(species)}
+      >
+        <div className={styles.imgBox}>
+          {asset_url && asset_url !== 'NA' && (
+            <img
+              alt={`${selectedTaxaObj.taxa}`}
+              loading="lazy"
+              src={`${MOL_IMAGES_THUMBS_BASE}${asset_url}.jpg`}
+            />
+          )}
+          {asset_url && asset_url === 'NA' && (
+            <TaxaImageComponent taxa={selectedTaxaObj.taxa} />
+          )}
+          {!asset_url && <TaxaImageComponent taxa={selectedTaxaObj.taxa} />}
         </div>
-        <div className={styles.sci}>{scientificname}</div>
-      </div>
-    </button>
+        <div className={cx(styles.speciesText, styles.name)}>
+          <div className={styles.common}>
+            {getCommonName(common, scientificname)}
+          </div>
+          <div className={styles.sci}>{scientificname}</div>
+        </div>
+      </button>
+    </div>
   );
 }
 
