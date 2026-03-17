@@ -36,6 +36,7 @@ function DashboardLoginComponent(props) {
     portal.load().then(() => {
       setLoggedIn(true);
       setUser(portal.user);
+      console.log('Logged in user:',portal.user);
     });
   };
 
