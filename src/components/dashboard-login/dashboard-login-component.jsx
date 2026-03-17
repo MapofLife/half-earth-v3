@@ -15,6 +15,7 @@ import styles from './dashboard-login-styles.module.scss';
 const info = new OAuthInfo({
   appId: '2g74U2WEt7zh0Kpx',//'zhWvIGYPUcFL8BbC',
   popup: false,
+  portalUrl: 'https://guyana.maps.arcgis.com',
 });
 
 function DashboardLoginComponent(props) {
