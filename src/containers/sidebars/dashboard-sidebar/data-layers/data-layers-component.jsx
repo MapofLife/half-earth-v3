@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Line } from 'react-chartjs-2';
-
+import { Modal } from 'he-components';
 import { useT } from '@transifex/react';
 
 import { getCSSVariable } from 'utils/css-utils';
@@ -115,6 +115,15 @@ function DataLayerComponent(props) {
   const [showHabitatChart, setShowHabitatChart] = useState(false);
   const [showHabitatLayer, setShowHabitatLayer] = useState(false);
   const [isHabitatChartLoading, setIsHabitatChartLoading] = useState(false);
+  const [showProvideFeedback, setShowProvideFeedback] = useState(false);
+  const [feedbackOptions, setFeedbackOptions] = useState([
+    { checked: false, label: 'There is an issue with expert range map', info: '' },
+    { checked: false, label: 'There is an issue with point observations.', info: '' },
+    { checked: false, label: 'This is an issue with other spatial distribution data type (please specify in the box below).', info: '' },
+    { checked: false, label: 'There is a taxonomic issue', info: '' },
+    { checked: false, label: 'Other issues (please specify in the box below)', info: '' },
+  ]);
+  const [additionalComments, setAdditionalComments] = useState('');
 
   const expertRangeMapIds = [
     'ec694c34-bddd-4111-ba99-926a5f7866e8',
@@ -327,6 +336,14 @@ function DataLayerComponent(props) {
     }
   };
 
+  const showProvideFeedbackModal = () => {
+    setShowProvideFeedback(true);
+  }
+
+  const handleProvideFeedback = () => {
+
+  }
+
   useEffect(() => {
     if (!speciesInfo) return;
     getHabitatMapData();
@@ -439,6 +456,10 @@ function DataLayerComponent(props) {
       >
         <span className={styles.sectionTitle}>{t('Data Layers')}</span>
         <Button
+          label={t('Send feedback')}
+          handleClick={showProvideFeedbackModal}
+        />
+        <Button
           className={styles.back}
           handleClick={handleBack}
           label={t('Back')}
@@ -517,6 +538,56 @@ function DataLayerComponent(props) {
           <SpeciesSearch {...props} />
         </>
       )}
+      <Modal
+        isOpen={showProvideFeedback}
+        onRequestClose={() => setShowProvideFeedback(false)}
+        theme={styles}>
+          <article className={styles.feedbackContent}>
+            <div className={styles.feedbackHeader}>
+              <span className={styles.feedbackTitle}>{t('Send Data Feedback')}</span>
+              <span className={styles.feedbackSubtitle}>{t('Notice an error in the species distributional or taxonomic data? Select the data issue below and please describe the issue in the comment box.')}</span>
+            </div>
+            <span
+              className={styles.feedbackLabel}
+              >{t('Data Issues')}</span>
+            <div className={styles.feedbackOption}>
+              {feedbackOptions.map((option, index) => (
+                <label className={styles.optionLabel} key={index}>
+                  <input
+                    type="checkbox"
+                    checked={option.checked}
+                    onChange={() => {
+                      const updatedOptions = [...feedbackOptions];
+                      updatedOptions[index].checked = !updatedOptions[index].checked;
+                      setFeedbackOptions(updatedOptions);
+                    }}
+                  />
+                  {t(option.label)}
+                </label>
+              ))}
+            </div>
+            <span
+              className={styles.feedbackLabel}
+              >{t('Additional comments')}</span>
+
+            <textarea
+              className={styles.additionalComments}
+              value={additionalComments}
+              onChange={(e) => setAdditionalComments(e.target.value)}
+              placeholder={t('Add additional comments for data issues...')}
+            ></textarea>
+            <div className={styles.feedbackFooter}>
+              <Button className={styles.cancelButton} label={t('Cancel')} />
+
+              <Button
+                className={styles.submitButton}
+                type="rectangular"
+                label={t('Send Feedback')}
+                handleClick={() => submitFeedback()}
+              />
+            </div>
+          </article>
+      </Modal>
     </section>
   );
 }
