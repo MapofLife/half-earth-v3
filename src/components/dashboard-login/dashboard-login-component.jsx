@@ -13,7 +13,7 @@ import styles from './dashboard-login-styles.module.scss';
 
 // TODO: Research why storing appId in .env file returns undefined
 const info = new OAuthInfo({
-  appId: 'zhWvIGYPUcFL8BbC',
+  appId: '2g74U2WEt7zh0Kpx',//'zhWvIGYPUcFL8BbC',
   popup: false,
 });
 
