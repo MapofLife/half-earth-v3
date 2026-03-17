@@ -56,7 +56,8 @@ function DashboardLoginComponent(props) {
     IdentityManager.checkSignInStatus(info.portalUrl)
       .then(handleLoginSuccess)
       .catch((error) => {
-        throw Error(error);
+        console.log('Not signed in:', error);
+        // throw Error(error);
       });
   }, []);
 
