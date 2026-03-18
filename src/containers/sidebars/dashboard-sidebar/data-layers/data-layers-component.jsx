@@ -456,10 +456,6 @@ function DataLayerComponent(props) {
       >
         <span className={styles.sectionTitle}>{t('Data Layers')}</span>
         <Button
-          label={t('Send feedback')}
-          handleClick={showProvideFeedbackModal}
-        />
-        <Button
           className={styles.back}
           handleClick={handleBack}
           label={t('Back')}
@@ -538,6 +534,12 @@ function DataLayerComponent(props) {
           <SpeciesSearch {...props} />
         </>
       )}
+      <Button
+        className={styles.sendFeedbackButton}
+        type="rectangular"
+        label={t('Send Data Feedback')}
+        handleClick={showProvideFeedbackModal}
+      />
       <Modal
         isOpen={showProvideFeedback}
         onRequestClose={() => setShowProvideFeedback(false)}
