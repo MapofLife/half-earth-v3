@@ -36,6 +36,7 @@ import SpeciesInfoContainer from '../species-info';
 
 import styles from './data-layers-styles.module.scss';
 import DataLayersGroupedList from './grouped-list';
+import { key } from 'localforage'
 
 ChartJS.register(
   LinearScale,
@@ -117,11 +118,11 @@ function DataLayerComponent(props) {
   const [isHabitatChartLoading, setIsHabitatChartLoading] = useState(false);
   const [showProvideFeedback, setShowProvideFeedback] = useState(false);
   const [feedbackOptions, setFeedbackOptions] = useState([
-    { checked: false, label: 'There is an issue with expert range map', info: '' },
-    { checked: false, label: 'There is an issue with point observations.', info: '' },
-    { checked: false, label: 'This is an issue with other spatial distribution data type (please specify in the box below).', info: '' },
-    { checked: false, label: 'There is a taxonomic issue', info: '' },
-    { checked: false, label: 'Other issues (please specify in the box below)', info: '' },
+    { checked: false, label: 'There is an issue with expert range map', info: '', key: 'issue_expert_range_map' },
+    { checked: false, label: 'There is an issue with point observations.', info: '', key: 'issue_point_observation' },
+    { checked: false, label: 'This is an issue with other spatial distribution data type (please specify in the box below).', info: '', key: 'issue_other_spatial' },
+    { checked: false, label: 'There is a taxonomic issue', info: '', key: 'issue_taxonomic' },
+    { checked: false, label: 'Other issues (please specify in the box below)', info: '', key: 'issue_other' },
   ]);
   const [additionalComments, setAdditionalComments] = useState('');
 
@@ -341,8 +342,33 @@ function DataLayerComponent(props) {
   }
 
   const handleProvideFeedback = () => {
+    const feedbackData ={
+      additional_comments: additionalComments,
+      app_id: 'species',
+      problem_description: feedbackOptions.filter(option => option.checked).map(option => option.key).join('; '),
+      region_id: null,
+      scientificname: speciesInfo.scientificname,
+      org: 'guyana_nbis',
+    };
 
-  }
+    const response = fetch('https://test-api-dot-api-2-x-dot-map-of-life.appspot.com/2.x/nbis/create-feedback', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(feedbackData),
+    }).then((res) => {
+      if(res.ok){
+        alert(t('Thank you for your feedback!'));
+        setShowProvideFeedback(false);
+      } else {
+        alert(t('There was an issue submitting your feedback. Please try again later.'));
+      }
+    }).catch((error) => {
+      console.error('Error submitting feedback:', error);
+      alert(t('There was an issue submitting your feedback. Please try again later.'));
+    });
+  };
 
   useEffect(() => {
     if (!speciesInfo) return;
@@ -585,7 +611,7 @@ function DataLayerComponent(props) {
                 className={styles.submitButton}
                 type="rectangular"
                 label={t('Send Feedback')}
-                handleClick={() => submitFeedback()}
+                handleClick={handleProvideFeedback}
               />
             </div>
           </article>
