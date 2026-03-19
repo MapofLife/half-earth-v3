@@ -259,9 +259,9 @@ function DataLayerComponent(props) {
     const response = await fetch(habitatMapUrl);
     const d = await response.json();
 
-    const { trend_data, data } = d;
+    const { trend_data, trend, data } = d;
 
-    if (trend_data) {
+    if (trend && trend.tile_url) {
       setDataPoints((prevDataPoints) => {
         if (Array.isArray(prevDataPoints)) {
           const updatedDataPoints = [...prevDataPoints];
