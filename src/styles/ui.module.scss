@@ -170,3 +170,95 @@ $featureMapsHeight: 750px;
   color: $brand-color-main !important;
   font-weight: 700 !important;
 }
+
+.feedbackContent{
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    .feedbackHeader{
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+
+      .feedbackTitle{
+        font-size: 22px;
+        font-weight: 700;
+        color: $white;
+      }
+
+      .feedbackSubtitle{
+        font-size: 14px;
+        color: $white;
+      }
+    }
+
+    .feedbackLabel{
+      font-size: 16px;
+      font-weight: 500;
+      color: $white;
+    }
+
+    .additionalComments{
+      font-size: 14px;
+      font-weight: 500;
+      height: 75px;
+    }
+
+    .feedbackOption{
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+
+      .optionLabel{
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 14px;
+        font-weight: 500;
+        color: $white;
+      }
+
+      .optionInfo{
+        font-size: 12px;
+        color: $white;
+        margin-left: 24px;
+      }
+    }
+
+    .feedbackFooter{
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+
+      .cancelButton{
+        background-color: transparent;
+        color: $white;
+        font-size: 12px;
+        font-weight: 500;
+        padding: 6px 16px;
+        border-radius: 4px;
+        border: 1px solid $white;
+        cursor: pointer;
+
+        &:hover{
+          background-color: rgba($white, 0.1);
+        }
+      }
+      .submitButton{
+        background-color: $brand-color-main;
+        color: $white;
+        width: auto;
+        font-size: 12px;
+        font-weight: 500;
+        padding: 6px 16px;
+        border-radius: 4px;
+        border: none;
+        cursor: pointer;
+
+        &:hover{
+          background-color: darken($brand-color-main, 10%);
+        }
+      }
+    }
+  }
