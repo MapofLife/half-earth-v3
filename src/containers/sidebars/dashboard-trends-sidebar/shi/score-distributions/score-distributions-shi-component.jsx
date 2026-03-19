@@ -38,6 +38,7 @@ import { DASHBOARD_URLS } from 'constants/layers-urls';
 function ScoreDistributionsShiComponent(props) {
   const t = useT();
   const locale = useLocale();
+  const bucketSize = 5;
   const {
     setScientificName,
     setSelectedIndex,
@@ -170,9 +171,17 @@ function ScoreDistributionsShiComponent(props) {
       },
     }).then((res) => {
       if(res.ok){
-        console.log(res);
-      } else {
-        alert(t('There was an issue submitting your feedback. Please try again later.'));
+        res.json().then((data) => {
+          const species = data || [];
+          const formattedSpecies = species.map((s) => ({
+            species: s.species,
+            commonname: s.commonname,
+            species_url: s.species_url,
+            habitat_score: s.sps,
+            taxa: s.taxa,
+          }));
+          setSpsSpecies(formattedSpecies);
+        });
       }
     }).catch((error) => {
       console.error('Error submitting feedback:', error);

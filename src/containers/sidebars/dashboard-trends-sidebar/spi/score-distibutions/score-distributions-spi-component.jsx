@@ -149,13 +149,20 @@ function ScoreDistributionsSpiComponent(props) {
       },
     }).then((res) => {
       if(res.ok){
-        console.log(res);
-      } else {
-        alert(t('There was an issue submitting your feedback. Please try again later.'));
+        res.json().then((data) => {
+          const species = data || [];
+          const formattedSpecies = species.map((s) => ({
+            species: s.species,
+            commonname: s.commonname,
+            species_url: s.species_url,
+            species_protection_score_all: s.sps,
+            taxa: s.taxa,
+          }));
+          setSpsSpecies(formattedSpecies);
+        });
       }
     }).catch((error) => {
-      console.error('Error submitting feedback:', error);
-      alert(t('There was an issue submitting your feedback. Please try again later.'));
+      console.error('Error getting species:', error);
     });
   };
 
