@@ -605,7 +605,7 @@ function DataLayerComponent(props) {
               placeholder={t('Add additional comments for data issues...')}
             ></textarea>
             <div className={styles.feedbackFooter}>
-              <Button className={styles.cancelButton} label={t('Cancel')} />
+              <Button className={styles.cancelButton} label={t('Cancel')} handleClick={() => setShowProvideFeedback(false)} />
 
               <Button
                 className={styles.submitButton}
