@@ -14,7 +14,7 @@ import TaxaImageComponent from '../taxa-image';
 
 import styles from './species-group-component.module.scss';
 import { MOL_IMAGES_THUMBS_BASE } from 'constants/dashboard-constants.js';
-import { FlagSharp } from '@mui/icons-material'
+import { FlagOutlined, FlagSharp } from '@mui/icons-material'
 
 function SpeciesGroupComponent(props) {
   const locale = useLocale();
@@ -24,6 +24,7 @@ function SpeciesGroupComponent(props) {
     setSelectedIndex,
     setScientificName,
     setMapLegendLayers,
+    validateSpeciesList
   } = props;
   // eslint-disable-next-line camelcase
   const { asset_url, common, scientificname } = species;
@@ -63,13 +64,18 @@ function SpeciesGroupComponent(props) {
 
   return (
     <div style={{ display: 'flex',  alignItems: 'flex-start' }}>
-      <button className={cx(species.flagged ? styles.selected : '', styles.flagSpecies)} onClick={() => flagSpecies(species)}>
+      {validateSpeciesList && (
+        <button className={cx(species.flagged ? styles.selected : '', styles.flagSpecies)} onClick={() => flagSpecies(species)}>
+          {species.flagged ? <FlagSharp/> : <FlagOutlined/>}
+        </button>
+      )}
+      {!validateSpeciesList && species.flagged && (
         <FlagSharp/>
-      </button>
+      )}
       <button
         type="button"
         className={cx(lightMode ? styles.light : '', styles.speciesBox)}
-        onClick={() => selectSpecies(species)}
+        onClick={() => !validateSpeciesList && selectSpecies(species)}
       >
         <div className={styles.imgBox}>
           {asset_url && asset_url !== 'NA' && (

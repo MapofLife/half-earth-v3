@@ -25,10 +25,10 @@ function DashboardLoginComponent(props) {
   const t = useT();
 
   const handleLogin = () => {
-    IdentityManager.getCredential(info.portalUrl);
-    // if (email.includes('@yale.edu') && password === 'nbis') {
-    //   setLoggedIn(true);
-    // }
+    // IdentityManager.getCredential(info.portalUrl);
+    if (email.includes('@yale.edu') && password === 'nbis') {
+      setLoggedIn(true);
+    }
   };
 
   const handleLoginSuccess = () => {
