@@ -7,7 +7,7 @@ import { getCSSVariable } from 'utils/css-utils';
 import cx from 'classnames';
 import { LightModeContext } from 'context/light-mode';
 import { Loading } from 'he-components';
-
+import { DASHBOARD_URLS } from 'constants/layers-urls';
 import ChartInfoComponent from 'components/chart-info-popup/chart-info-component';
 import DistributionsChartComponent from 'components/charts/distribution-chart/distribution-chart-component';
 import SpeciesRichnessComponent from 'components/species-richness/species-richness-component';
@@ -32,6 +32,7 @@ import compStyles from './score-distributions-spi-styles.module.scss';
 
 function ScoreDistributionsSpiComponent(props) {
   const t = useT();
+  const bucketSize = 5;
   const locale = useLocale();
   const {
     activeTrend,
@@ -127,18 +128,35 @@ function ScoreDistributionsSpiComponent(props) {
         },
       },
     },
-    // onClick: (event, elements) => {
-    //   if (elements.length > 0) {
-    //     console.log(elements);
-    //     const datasetIndex = elements[0].datasetIndex;
-    //     const dataIndex = elements[0].index;
-    //     const value = chartData.datasets[datasetIndex].data[dataIndex];
-    //     console.log(value);
+    onClick: (event, elements) => {
+      if (elements.length > 0) {
+        console.log(elements);
+        const datasetIndex = elements[0].datasetIndex;
+        const dataIndex = elements[0].index;
+        const value = chartData.datasets[datasetIndex].data[dataIndex];
+        console.log(value);
 
-    //     setLowBucket(dataIndex * bucketSize);
-    //     setHighBucket((dataIndex * bucketSize) + bucketSize)
-    //   }
-    // }
+        getBucketSpecies((dataIndex * bucketSize), (dataIndex * bucketSize) + bucketSize);
+      }
+    }
+  };
+
+  const getBucketSpecies = (low, high) => {
+    const response = fetch(`${DASHBOARD_URLS.BUCKET_SPECIES_URL}?iso3=${countryISO}&region_key=${selectedProvince?.region_key}&min_value=${low}&max_value=${high}&filter_by=sps`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }).then((res) => {
+      if(res.ok){
+        console.log(res);
+      } else {
+        alert(t('There was an issue submitting your feedback. Please try again later.'));
+      }
+    }).catch((error) => {
+      console.error('Error submitting feedback:', error);
+      alert(t('There was an issue submitting your feedback. Please try again later.'));
+    });
   };
 
   const getChartData = async () => {

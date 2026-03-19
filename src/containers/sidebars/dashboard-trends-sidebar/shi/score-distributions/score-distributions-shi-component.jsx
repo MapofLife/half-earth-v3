@@ -33,6 +33,7 @@ import styles from '../../dashboard-trends-sidebar-styles.module.scss';
 import compStyles from '../../spi/score-distibutions/score-distributions-spi-styles.module.scss';
 
 import DistributionsTableContainer from './distributions-table';
+import { DASHBOARD_URLS } from 'constants/layers-urls';
 
 function ScoreDistributionsShiComponent(props) {
   const t = useT();
@@ -148,18 +149,35 @@ function ScoreDistributionsShiComponent(props) {
         },
       },
     },
-    // onClick: (event, elements) => {
-    //   if (elements.length > 0) {
-    //     console.log(elements);
-    //     const datasetIndex = elements[0].datasetIndex;
-    //     const dataIndex = elements[0].index;
-    //     const value = chartData.datasets[datasetIndex].data[dataIndex];
-    //     console.log(value);
+    onClick: (event, elements) => {
+      if (elements.length > 0) {
+        console.log(elements);
+        const datasetIndex = elements[0].datasetIndex;
+        const dataIndex = elements[0].index;
+        const value = chartData.datasets[datasetIndex].data[dataIndex];
+        console.log(value);
 
-    //     setLowBucket(dataIndex * bucketSize);
-    //     setHighBucket((dataIndex * bucketSize) + bucketSize)
-    //   }
-    // }
+        getBucketSpecies((dataIndex * bucketSize), (dataIndex * bucketSize) + bucketSize);
+      }
+    }
+  };
+
+  const getBucketSpecies = (low, high) => {
+    const response = fetch(`${DASHBOARD_URLS.BUCKET_SPECIES_URL}?iso3=${countryISO}&region_key=${selectedProvince?.region_key}&min_value=${low}&max_value=${high}&filter_by=sps`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }).then((res) => {
+      if(res.ok){
+        console.log(res);
+      } else {
+        alert(t('There was an issue submitting your feedback. Please try again later.'));
+      }
+    }).catch((error) => {
+      console.error('Error submitting feedback:', error);
+      alert(t('There was an issue submitting your feedback. Please try again later.'));
+    });
   };
 
   const displayData = () => {
