@@ -128,6 +128,8 @@ $info-width: 300px;
     }
 
     .spsSpecies {
+      max-height: 280px;
+      overflow-y: auto;
       list-style: none;
       margin: 0;
       padding: 0;
