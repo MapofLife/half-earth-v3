@@ -13,8 +13,9 @@ import styles from './dashboard-login-styles.module.scss';
 
 // TODO: Research why storing appId in .env file returns undefined
 const info = new OAuthInfo({
-  appId: 'zhWvIGYPUcFL8BbC',
+  appId: '2g74U2WEt7zh0Kpx',//'zhWvIGYPUcFL8BbC',
   popup: false,
+  // portalUrl: 'https://guyana.maps.arcgis.com',
 });
 
 function DashboardLoginComponent(props) {
@@ -33,7 +34,7 @@ function DashboardLoginComponent(props) {
   const handleLoginSuccess = () => {
     const portal = new Portal();
     portal.authMode = 'immediate';
-    portal.load().then(() => {
+    portal.load().then((response) => {
       setLoggedIn(true);
       setUser(portal.user);
     });
@@ -42,8 +43,6 @@ function DashboardLoginComponent(props) {
   const handleKeyPress = (event) => {
     if (event.key === 'Enter') {
       // Your code to fire the event goes here
-      console.log('Enter key pressed!');
-      // For example, you might call a function:
       handleLogin();
     }
   };
@@ -53,6 +52,7 @@ function DashboardLoginComponent(props) {
     IdentityManager.checkSignInStatus(info.portalUrl)
       .then(handleLoginSuccess)
       .catch((error) => {
+        console.log('Not signed in:', error);
         throw Error(error);
       });
   }, []);
