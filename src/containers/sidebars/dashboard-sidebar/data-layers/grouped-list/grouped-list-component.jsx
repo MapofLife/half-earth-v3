@@ -47,6 +47,7 @@ function GroupedListComponent(props) {
     setMapLegendLayers,
     showHabitatLayer,
     setIsLoading,
+    mapData,
   } = props;
   const t = useT();
   const { lightMode } = useContext(LightModeContext);
@@ -185,12 +186,7 @@ function GroupedListComponent(props) {
         setIsLoading(true);
         loadingCount += 1;
         setIsHabitatChartLoading(true);
-        layer = await EsriFeatureService.getXYZLayer(
-          speciesInfo.scientificname.replace(' ', '_'),
-          id,
-          LAYER_TITLE_TYPES.TREND,
-          speciesInfo.taxa
-        );
+        layer = await EsriFeatureService.getXYZLayerByURL(mapData, id, LAYER_TITLE_TYPES.TREND);
 
         view.whenLayerView(layer).then((layerView) => {
           layerView.watch('updating', (val) => {
@@ -279,12 +275,14 @@ function GroupedListComponent(props) {
         if (expertRangeMapIds.find((id) => id === item.dataset_id)) {
           setIsLoading(true);
           loadingCount += 1;
-          layer = await EsriFeatureService.getXYZLayer(
-            speciesInfo.scientificname.replace(' ', '_'),
-            layerName,
-            LAYER_TITLE_TYPES.EXPERT_RANGE_MAPS,
-            speciesInfo.taxa
-          );
+          // layer = await EsriFeatureService.getXYZLayer(
+          //   speciesInfo.scientificname.replace(' ', '_'),
+          //   layerName,
+          //   LAYER_TITLE_TYPES.EXPERT_RANGE_MAPS,
+          //   speciesInfo.taxa
+          // );
+
+          layer = await EsriFeatureService.getXYZLayerByURL(mapData, layerName, LAYER_TITLE_TYPES.EXPERT_RANGE_MAPS);
 
           item.isActive = true;
 
@@ -632,8 +630,9 @@ function GroupedListComponent(props) {
   }, [showHabitatLayer]);
 
   useEffect(() => {
+    if(!mapData) return;
     activateDefault();
-  }, [map]);
+  }, [map, mapData]);
 
   return (
     <div className={cx(lightMode ? styles.light : '', styles.container)}>

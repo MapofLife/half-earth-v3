@@ -117,6 +117,7 @@ function DataLayerComponent(props) {
   const [isLoading, setIsLoading] = useState(true);
   const [chartData, setChartData] = useState();
   const [showHabitatChart, setShowHabitatChart] = useState(false);
+  const [mapData, setMapData] = useState();
   const [showHabitatLayer, setShowHabitatLayer] = useState(false);
   const [isHabitatChartLoading, setIsHabitatChartLoading] = useState(false);
   const [showProvideFeedback, setShowProvideFeedback] = useState(false);
@@ -262,6 +263,7 @@ function DataLayerComponent(props) {
     const response = await fetch(habitatMapUrl);
     const d = await response.json();
 
+    setMapData(d);
     const { trend_data, trend, data } = d;
 
     if (trend && trend.tile_url) {
@@ -525,6 +527,7 @@ function DataLayerComponent(props) {
                 setShowHabitatChart={setShowHabitatChart}
                 showHabitatLayer={showHabitatLayer}
                 setIsHabitatChartLoading={setIsHabitatChartLoading}
+                mapData={mapData}
                 {...props}
               />
               {isHabitatChartLoading && <Loading height={200} />}
