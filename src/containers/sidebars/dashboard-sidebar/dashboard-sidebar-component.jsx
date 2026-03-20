@@ -48,6 +48,7 @@ function DashboardSidebar(props) {
   const [speciesDataLoading, setSpeciesDataLoading] = useState(true);
   const [logo, setLogo] = useState();
 
+
   useEffect(() => {
     if (
       selectedIndex !== NAVIGATION.TRENDS &&

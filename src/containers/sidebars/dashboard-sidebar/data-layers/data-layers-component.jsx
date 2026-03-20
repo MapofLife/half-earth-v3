@@ -37,6 +37,7 @@ import SpeciesInfoContainer from '../species-info';
 import styles from './data-layers-styles.module.scss';
 import DataLayersGroupedList from './grouped-list';
 import { key } from 'localforage'
+import useJWTToken from 'hooks/useJWTToken';
 
 ChartJS.register(
   LinearScale,
@@ -50,6 +51,7 @@ ChartJS.register(
 
 function DataLayerComponent(props) {
   const t = useT();
+  const { getToken } = useJWTToken();
   const {
     speciesInfo,
     dataLayerData,
@@ -69,6 +71,7 @@ function DataLayerComponent(props) {
     countryISO,
     countryName,
     map,
+    setSnackBar
   } = props;
 
   const { lightMode } = useContext(LightModeContext);
@@ -341,7 +344,9 @@ function DataLayerComponent(props) {
     setShowProvideFeedback(true);
   }
 
-  const handleProvideFeedback = () => {
+  const handleProvideFeedback = async () => {
+    const token = await getToken();
+
     const feedbackData ={
       additional_comments: additionalComments,
       app_id: 'species',
@@ -355,18 +360,30 @@ function DataLayerComponent(props) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(feedbackData),
     }).then((res) => {
       if(res.ok){
-        alert(t('Thank you for your feedback!'));
+        setAdditionalComments('');
+        setFeedbackOptions(prev => prev.map(option => ({ ...option, checked: false })));
+        setSnackBar({
+          open: true,
+          message: t('Thank you for your feedback!'),
+        });
         setShowProvideFeedback(false);
       } else {
-        alert(t('There was an issue submitting your feedback. Please try again later.'));
+        setSnackBar({
+          open: true,
+          message: t('There was an issue submitting your feedback. Please try again later.'),
+        });
       }
     }).catch((error) => {
       console.error('Error submitting feedback:', error);
-      alert(t('There was an issue submitting your feedback. Please try again later.'));
+      setSnackBar({
+        open: true,
+        message: t('There was an issue submitting your feedback. Please try again later.'),
+      });
     });
   };
 
