@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Line } from 'react-chartjs-2';
-
+import { Modal } from 'he-components';
 import { useT } from '@transifex/react';
 
 import { getCSSVariable } from 'utils/css-utils';
@@ -36,6 +36,8 @@ import SpeciesInfoContainer from '../species-info';
 
 import styles from './data-layers-styles.module.scss';
 import DataLayersGroupedList from './grouped-list';
+import { key } from 'localforage'
+import useJWTToken from 'hooks/useJWTToken';
 
 ChartJS.register(
   LinearScale,
@@ -49,6 +51,7 @@ ChartJS.register(
 
 function DataLayerComponent(props) {
   const t = useT();
+  const { getToken } = useJWTToken();
   const {
     speciesInfo,
     dataLayerData,
@@ -68,6 +71,7 @@ function DataLayerComponent(props) {
     countryISO,
     countryName,
     map,
+    setSnackBar
   } = props;
 
   const { lightMode } = useContext(LightModeContext);
@@ -113,8 +117,18 @@ function DataLayerComponent(props) {
   const [isLoading, setIsLoading] = useState(true);
   const [chartData, setChartData] = useState();
   const [showHabitatChart, setShowHabitatChart] = useState(false);
+  const [mapData, setMapData] = useState();
   const [showHabitatLayer, setShowHabitatLayer] = useState(false);
   const [isHabitatChartLoading, setIsHabitatChartLoading] = useState(false);
+  const [showProvideFeedback, setShowProvideFeedback] = useState(false);
+  const [feedbackOptions, setFeedbackOptions] = useState([
+    { checked: false, label: 'There is an issue with expert range map', info: '', key: 'issue_expert_range_map' },
+    { checked: false, label: 'There is an issue with point observations.', info: '', key: 'issue_point_observation' },
+    { checked: false, label: 'This is an issue with other spatial distribution data type (please specify in the box below).', info: '', key: 'issue_other_spatial' },
+    { checked: false, label: 'There is a taxonomic issue', info: '', key: 'issue_taxonomic' },
+    { checked: false, label: 'Other issues (please specify in the box below)', info: '', key: 'issue_other' },
+  ]);
+  const [additionalComments, setAdditionalComments] = useState('');
 
   const expertRangeMapIds = [
     'ec694c34-bddd-4111-ba99-926a5f7866e8',
@@ -244,14 +258,84 @@ function DataLayerComponent(props) {
     setShowHabitatLayer(true);
   };
 
+  const getExpertRangeMapInfo = (taxa) => {
+    switch (taxa.toUpperCase()) {
+      case 'MAMMALS':
+        return {
+          label: t('MDD Mammals 2021'),
+          dataset_id: 'ec694c34-bddd-4111-ba99-926a5f7866e8',
+          dataset_title: 'MDD Mammals 2021',
+        };
+      case 'REPTILES':
+        return {
+          label: t('GARD Reptiles 2022'),
+          dataset_id: '0ed89f4f-3ed2-41c2-9792-7c7314a55455',
+          dataset_title: 'GARD Reptiles 2022',
+        };
+      case 'AMPHIBIANS':
+        return {
+          label: t('IUCN Amphibians 2022'),
+          dataset_id: '98f229de-6131-41ef-aff1-7a52212b5a15',
+          dataset_title: 'IUCN Amphibians 2022',
+        };
+      case 'BIRDS':
+        return {
+          label: t('Jetz et al. (2012)'),
+          dataset_id: 'd542e050-2ae5-457e-8476-027741538965',
+          dataset_title: 'Jetz Birds 2012',
+        };
+      default:
+        return {
+          label: t('Expert range maps'),
+          dataset_id: '',
+          dataset_title: '',
+        };
+    }
+  };
+
   const getHabitatMapData = async () => {
     const habitatMapUrl = `${REGION_RANGE_MAP_URL}?species=${speciesInfo.scientificname}&taxa=${speciesInfo.taxa}`;
     const response = await fetch(habitatMapUrl);
     const d = await response.json();
 
-    const { trend_data, data } = d;
+    setMapData(d);
+    const { trend_data, trend, data } = d;
 
-    if (trend_data) {
+      if(d['range map'] && d['range map'].tile_url){
+        setDataPoints((prevDataPoints) => {
+
+        const rangeMapsExist = prevDataPoints?.find(item => item.id === LAYER_OPTIONS.EXPERT_RANGE_MAPS);
+
+        if (!rangeMapsExist && Array.isArray(prevDataPoints)) {
+          const updatedDataPoints = [...prevDataPoints];
+
+          const {label, dataset_id, dataset_title} = getExpertRangeMapInfo(speciesInfo.taxa);
+          updatedDataPoints.push({
+            label: t('Expert range maps'),
+            items: [{
+              type_title: LAYER_TITLE_TYPES.EXPERT_RANGE_MAPS,
+              label,
+              isActive: false,
+              parentId: LAYER_OPTIONS.EXPERT_RANGE_MAPS,
+              id: 'Jetz Birds 2012',
+              dataset_id,
+              dataset_title,
+            }],
+
+            id: LAYER_OPTIONS.EXPERT_RANGE_MAPS,
+            total_no_rows: 1,
+            isActive: false,
+            showChildren: false,
+            type: DATA_POINT_TYPE.PUBLIC,
+          });
+
+          return updatedDataPoints;
+        }
+      });
+    }
+
+
+    if (trend && trend.tile_url) {
       setDataPoints((prevDataPoints) => {
         if (Array.isArray(prevDataPoints)) {
           const updatedDataPoints = [...prevDataPoints];
@@ -325,6 +409,53 @@ function DataLayerComponent(props) {
         ],
       });
     }
+  };
+
+  const showProvideFeedbackModal = () => {
+    setShowProvideFeedback(true);
+  }
+
+  const handleProvideFeedback = async () => {
+    const token = await getToken();
+
+    const feedbackData ={
+      additional_comments: additionalComments,
+      app_id: 'species',
+      problem_description: feedbackOptions.filter(option => option.checked).map(option => option.key).join('; '),
+      region_id: null,
+      scientificname: speciesInfo.scientificname,
+      org: 'guyana_nbis',
+    };
+
+    const response = fetch('https://test-api-dot-api-2-x-dot-map-of-life.appspot.com/2.x/nbis/create-feedback', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(feedbackData),
+    }).then((res) => {
+      if(res.ok){
+        setAdditionalComments('');
+        setFeedbackOptions(prev => prev.map(option => ({ ...option, checked: false })));
+        setSnackBar({
+          open: true,
+          message: t('Thank you for your feedback!'),
+        });
+        setShowProvideFeedback(false);
+      } else {
+        setSnackBar({
+          open: true,
+          message: t('There was an issue submitting your feedback. Please try again later.'),
+        });
+      }
+    }).catch((error) => {
+      console.error('Error submitting feedback:', error);
+      setSnackBar({
+        open: true,
+        message: t('There was an issue submitting your feedback. Please try again later.'),
+      });
+    });
   };
 
   useEffect(() => {
@@ -465,6 +596,7 @@ function DataLayerComponent(props) {
                 setShowHabitatChart={setShowHabitatChart}
                 showHabitatLayer={showHabitatLayer}
                 setIsHabitatChartLoading={setIsHabitatChartLoading}
+                mapData={mapData}
                 {...props}
               />
               {isHabitatChartLoading && <Loading height={200} />}
@@ -517,6 +649,62 @@ function DataLayerComponent(props) {
           <SpeciesSearch {...props} />
         </>
       )}
+      <Button
+        className={styles.sendFeedbackButton}
+        type="rectangular"
+        label={t('Send Data Feedback')}
+        handleClick={showProvideFeedbackModal}
+      />
+      <Modal
+        isOpen={showProvideFeedback}
+        onRequestClose={() => setShowProvideFeedback(false)}
+        theme={styles}>
+          <article className={styles.feedbackContent}>
+            <div className={styles.feedbackHeader}>
+              <span className={styles.feedbackTitle}>{t('Send Data Feedback')}</span>
+              <span className={styles.feedbackSubtitle}>{t('Notice an error in the species distributional or taxonomic data? Select the data issue below and please describe the issue in the comment box.')}</span>
+            </div>
+            <span
+              className={styles.feedbackLabel}
+              >{t('Data Issues')}</span>
+            <div className={styles.feedbackOption}>
+              {feedbackOptions.map((option, index) => (
+                <label className={styles.optionLabel} key={index}>
+                  <input
+                    type="checkbox"
+                    checked={option.checked}
+                    onChange={() => {
+                      const updatedOptions = [...feedbackOptions];
+                      updatedOptions[index].checked = !updatedOptions[index].checked;
+                      setFeedbackOptions(updatedOptions);
+                    }}
+                  />
+                  {t(option.label)}
+                </label>
+              ))}
+            </div>
+            <span
+              className={styles.feedbackLabel}
+              >{t('Additional comments')}</span>
+
+            <textarea
+              className={styles.additionalComments}
+              value={additionalComments}
+              onChange={(e) => setAdditionalComments(e.target.value)}
+              placeholder={t('Add additional comments for data issues...')}
+            ></textarea>
+            <div className={styles.feedbackFooter}>
+              <Button className={styles.cancelButton} label={t('Cancel')} handleClick={() => setShowProvideFeedback(false)} />
+
+              <Button
+                className={styles.submitButton}
+                type="rectangular"
+                label={t('Send Feedback')}
+                handleClick={handleProvideFeedback}
+              />
+            </div>
+          </article>
+      </Modal>
     </section>
   );
 }

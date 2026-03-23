@@ -27,6 +27,7 @@ import {
   MEX,
   PROVINCE_TREND,
 } from '../../sidebars/dashboard-trends-sidebar/dashboard-trends-sidebar-component';
+import { Snackbar } from '@mui/material'
 
 const { VITE_APP_ARGISJS_API_VERSION: API_VERSION } = import.meta.env;
 const LabelsLayer = loadable(() => import('containers/layers/labels-layer'));
@@ -74,6 +75,18 @@ function DashboardViewComponent(props) {
   const [shiActiveTrend, setShiActiveTrend] = useState(PROVINCE_TREND);
   const [siiActiveTrend, setSiiActiveTrend] = useState(PROVINCE_TREND);
   // const [showTopNav, setShowTopNav] = useState(true);
+
+  const [snackBar, setSnackBar] = useState({
+      open: false,
+      message: '',
+    });
+
+    const handleSnackBarClose = () => {
+      setSnackBar({
+        open: false,
+        message: '',
+      });
+    };
 
   const handleRegionSelected = (foundRegion) => {
     highlight?.remove();
@@ -271,6 +284,7 @@ function DashboardViewComponent(props) {
           closeUploadModal={closeUploadModal}
           uploadedShape={uploadedShape}
           setUploadedShape={setUploadedShape}
+          setSnackBar={setSnackBar}
           {...props}
         />
       </LightModeProvider>
@@ -290,6 +304,14 @@ function DashboardViewComponent(props) {
       />
 
       <LabelsLayer activeLayers={activeLayers} />
+      <Snackbar
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        open={snackBar.open}
+        onClose={handleSnackBarClose}
+        autoHideDuration={3000}
+        message={snackBar.message}
+        key={'bottomcenter'}
+      />
     </MapView>
   );
 }

@@ -109,7 +109,7 @@ function SpeciesListComponent(props) {
     // this.virtualScroll?.scrollToIndex(0);
     const inFilterCheck = (sp) => {
       return (
-        sp.common_name?.toLowerCase().indexOf(filter) > -1 ||
+        sp.common?.some(s => s?.toLowerCase().includes(filter)) ||
         sp.scientificname?.toLowerCase().indexOf(filter) > -1
       );
     };

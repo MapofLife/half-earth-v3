@@ -4,6 +4,16 @@
 @import 'styles/common-animations.module';
 
 
+
+.flagSpecies {
+  display: flex;
+  align-items: center;
+  color: var(--font-color);
+
+  &.selected{
+    color: var(--lime-green);
+  }
+}
 .speciesBox {
   --font-color: #{$white};
   --border-color: #{$brand-color-main};

@@ -553,6 +553,7 @@ function DashboardContainer(props) {
                 foundTaxa?.species.push(species);
               } else {
                 foundSpecies.source += `,${species.source}`;
+                foundSpecies.product_type += `,${species.product_type}`;
               }
             }
           });
