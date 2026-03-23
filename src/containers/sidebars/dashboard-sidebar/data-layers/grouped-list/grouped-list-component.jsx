@@ -409,7 +409,7 @@ function GroupedListComponent(props) {
               layers: [
                 // Fill layer for polygons
                 {
-                  id: 'occurren-fill',
+                  id: 'occurrence-fill',
                   type: 'fill',
                   source: 'species-occurrence',
                   'source-layer': 'occurrence',
@@ -434,15 +434,16 @@ function GroupedListComponent(props) {
                   id: 'points-circles',
                   type: 'circle',
                   source: 'species-occurrence',
-                  'source-layer': 'points',
+                  'source-layer': 'occurrence',
+                  filter: ['==', ['geometry-type'], 'Point'],
                   paint: {
                     'circle-color': '#FFA500',
                     'circle-radius': 8,
                     'circle-stroke-color': '#FFA500',
                     'circle-stroke-width': 2,
                     'circle-opacity': 1
-                  }
-                }
+                  },
+                },
               ]
             };
             layer = new VectorTileLayer({
