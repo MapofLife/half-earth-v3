@@ -258,6 +258,41 @@ function DataLayerComponent(props) {
     setShowHabitatLayer(true);
   };
 
+  const getExpertRangeMapInfo = (taxa) => {
+    switch (taxa.toUpperCase()) {
+      case 'MAMMALS':
+        return {
+          label: t('MDD Mammals 2021'),
+          dataset_id: 'ec694c34-bddd-4111-ba99-926a5f7866e8',
+          dataset_title: 'MDD Mammals 2021',
+        };
+      case 'REPTILES':
+        return {
+          label: t('GARD Reptiles 2022'),
+          dataset_id: '0ed89f4f-3ed2-41c2-9792-7c7314a55455',
+          dataset_title: 'GARD Reptiles 2022',
+        };
+      case 'AMPHIBIANS':
+        return {
+          label: t('IUCN Amphibians 2022'),
+          dataset_id: '98f229de-6131-41ef-aff1-7a52212b5a15',
+          dataset_title: 'IUCN Amphibians 2022',
+        };
+      case 'BIRDS':
+        return {
+          label: t('Jetz et al. (2012)'),
+          dataset_id: 'd542e050-2ae5-457e-8476-027741538965',
+          dataset_title: 'Jetz Birds 2012',
+        };
+      default:
+        return {
+          label: t('Expert range maps'),
+          dataset_id: '',
+          dataset_title: '',
+        };
+    }
+  };
+
   const getHabitatMapData = async () => {
     const habitatMapUrl = `${REGION_RANGE_MAP_URL}?species=${speciesInfo.scientificname}&taxa=${speciesInfo.taxa}`;
     const response = await fetch(habitatMapUrl);
@@ -265,6 +300,40 @@ function DataLayerComponent(props) {
 
     setMapData(d);
     const { trend_data, trend, data } = d;
+
+      if(d['range map'] && d['range map'].tile_url){
+        setDataPoints((prevDataPoints) => {
+
+        const rangeMapsExist = prevDataPoints?.find(item => item.id === LAYER_OPTIONS.EXPERT_RANGE_MAPS);
+
+        if (!rangeMapsExist && Array.isArray(prevDataPoints)) {
+          const updatedDataPoints = [...prevDataPoints];
+
+          const {label, dataset_id, dataset_title} = getExpertRangeMapInfo(speciesInfo.taxa);
+          updatedDataPoints.push({
+            label: t('Expert range maps'),
+            items: [{
+              type_title: LAYER_TITLE_TYPES.EXPERT_RANGE_MAPS,
+              label,
+              isActive: false,
+              parentId: LAYER_OPTIONS.EXPERT_RANGE_MAPS,
+              id: 'Jetz Birds 2012',
+              dataset_id,
+              dataset_title,
+            }],
+
+            id: LAYER_OPTIONS.EXPERT_RANGE_MAPS,
+            total_no_rows: 1,
+            isActive: false,
+            showChildren: false,
+            type: DATA_POINT_TYPE.PUBLIC,
+          });
+
+          return updatedDataPoints;
+        }
+      });
+    }
+
 
     if (trend && trend.tile_url) {
       setDataPoints((prevDataPoints) => {
