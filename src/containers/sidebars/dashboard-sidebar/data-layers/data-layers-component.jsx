@@ -38,6 +38,7 @@ import styles from './data-layers-styles.module.scss';
 import DataLayersGroupedList from './grouped-list';
 import { key } from 'localforage'
 import useJWTToken from 'hooks/useJWTToken';
+import { update } from 'lodash'
 
 ChartJS.register(
   LinearScale,
@@ -301,65 +302,58 @@ function DataLayerComponent(props) {
     setMapData(d);
     const { trend_data, trend, data } = d;
 
-      if(d['range map'] && d['range map'].tile_url){
-        setDataPoints((prevDataPoints) => {
+    setDataPoints((prevDataPoints) => {
+      const updatedDataPoints = [...prevDataPoints];
+        if(d['range map'] && d['range map'].tile_url){
+          const rangeMapsExist = prevDataPoints?.find(item => item.id === LAYER_OPTIONS.EXPERT_RANGE_MAPS);
 
-        const rangeMapsExist = prevDataPoints?.find(item => item.id === LAYER_OPTIONS.EXPERT_RANGE_MAPS);
+          if (!rangeMapsExist && Array.isArray(prevDataPoints)) {
+            // const updatedDataPoints = [...prevDataPoints];
 
-        if (!rangeMapsExist && Array.isArray(prevDataPoints)) {
-          const updatedDataPoints = [...prevDataPoints];
+            const {label, dataset_id, dataset_title} = getExpertRangeMapInfo(speciesInfo.taxa);
+            updatedDataPoints.push({
+              label: t('Expert range maps'),
+              items: [{
+                type_title: LAYER_TITLE_TYPES.EXPERT_RANGE_MAPS,
+                label,
+                isActive: false,
+                parentId: LAYER_OPTIONS.EXPERT_RANGE_MAPS,
+                id: 'Jetz Birds 2012',
+                dataset_id,
+                dataset_title,
+              }],
 
-          const {label, dataset_id, dataset_title} = getExpertRangeMapInfo(speciesInfo.taxa);
-          updatedDataPoints.push({
-            label: t('Expert range maps'),
-            items: [{
-              type_title: LAYER_TITLE_TYPES.EXPERT_RANGE_MAPS,
-              label,
+              id: LAYER_OPTIONS.EXPERT_RANGE_MAPS,
+              total_no_rows: 1,
               isActive: false,
-              parentId: LAYER_OPTIONS.EXPERT_RANGE_MAPS,
-              id: 'Jetz Birds 2012',
-              dataset_id,
-              dataset_title,
-            }],
-
-            id: LAYER_OPTIONS.EXPERT_RANGE_MAPS,
-            total_no_rows: 1,
-            isActive: false,
-            showChildren: false,
-            type: DATA_POINT_TYPE.PUBLIC,
-          });
-
-          return updatedDataPoints;
-        }
-      });
-    }
-
-
-    if (trend && trend.tile_url) {
-      setDataPoints((prevDataPoints) => {
-        if (Array.isArray(prevDataPoints)) {
-          const updatedDataPoints = [...prevDataPoints];
-          updatedDataPoints.push({
-            label: t('Habitat Loss/Gain'),
-            items: [],
-            id: LAYER_OPTIONS.HABITAT,
-            total_no_rows: 1,
-            isActive: false,
-            showChildren: false,
-            type: DATA_POINT_TYPE.PUBLIC,
-          });
-
-          const habitatLayer = updatedDataPoints.find(
-            (dp) => dp.id === LAYER_OPTIONS.HABITAT
-          );
-
-          if (habitatLayer) {
-            displayHabitatLayer();
+              showChildren: false,
+              type: DATA_POINT_TYPE.PUBLIC,
+            });
           }
-
-          return updatedDataPoints;
         }
-        return [];
+
+        if (trend && trend.tile_url) {
+          if (Array.isArray(prevDataPoints)) {
+            updatedDataPoints.push({
+              label: t('Habitat Loss/Gain'),
+              items: [],
+              id: LAYER_OPTIONS.HABITAT,
+              total_no_rows: 1,
+              isActive: false,
+              showChildren: false,
+              type: DATA_POINT_TYPE.PUBLIC,
+            });
+
+            const habitatLayer = updatedDataPoints.find(
+              (dp) => dp.id === LAYER_OPTIONS.HABITAT
+            );
+
+            if (habitatLayer) {
+              displayHabitatLayer();
+            }
+          }
+        }
+        return updatedDataPoints;
       });
 
       trend_data.shift();
@@ -384,7 +378,8 @@ function DataLayerComponent(props) {
           },
         ],
       });
-    } else if (data?.length > 1) {
+    // } else
+      if (data?.length > 1) {
       // remove Year row
       data.shift();
       setValuesExists(true);

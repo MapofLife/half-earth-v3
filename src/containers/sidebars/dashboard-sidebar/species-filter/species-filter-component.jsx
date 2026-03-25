@@ -63,7 +63,7 @@ function SpeciesFilterComponent(props) {
       title: t('Expected Sources'),
       filters: [
         {
-          name: t('Refined Range Map'),
+          name: t('Expert Range Map'),
           active: false,
           test: (species) => {
             const {datasetList} = species;
@@ -71,6 +71,14 @@ function SpeciesFilterComponent(props) {
             return datasetList.map((d) => d.product_type).indexOf('range') >
               -1;
           },
+          count: 0,
+          type: 'and',
+          result: false,
+        },
+        {
+          name: t('Refined Range Map'),
+          active: false,
+          test: (species) => species.global_shi > 0,
           count: 0,
           type: 'and',
           result: false,
