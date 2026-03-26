@@ -189,6 +189,23 @@ async function getXYZLayer(scientificname, id, type, taxa = null) {
   });
 }
 
+async function getXYZLayerByURL(data, id, type) {
+  let urlTemplate;
+
+  if (type === LAYER_TITLE_TYPES.EXPERT_RANGE_MAPS) {
+    urlTemplate = data['range map'].tile_url;
+  } else if (type === LAYER_TITLE_TYPES.POINT_OBSERVATIONS) {
+    urlTemplate = data['refined map'].tile_url;
+  } else if (type === LAYER_TITLE_TYPES.TREND) {
+    urlTemplate = data.trend.tile_url;
+  }
+
+  return new WebTileLayer({
+    urlTemplate,
+    id,
+  });
+}
+
 function getMVTSource(scientificname) {
   return {
     type: 'vector',
@@ -299,6 +316,7 @@ export default {
   getGeoJsonLayer,
   getVectorTileLayer,
   getXYZLayer,
+  getXYZLayerByURL,
   getTileLayer,
   getMVTSource,
   addProtectedAreaLayer,

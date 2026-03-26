@@ -47,6 +47,7 @@ function GroupedListComponent(props) {
     setMapLegendLayers,
     showHabitatLayer,
     setIsLoading,
+    mapData,
   } = props;
   const t = useT();
   const { lightMode } = useContext(LightModeContext);
@@ -54,11 +55,10 @@ function GroupedListComponent(props) {
   let loadingCount = 0;
 
   const expertRangeMapIds = [
-    'ec694c34-bddd-4111-ba99-926a5f7866e8',
-    '0ed89f4f-3ed2-41c2-9792-7c7314a55455',
-    '98f229de-6131-41ef-aff1-7a52212b5a15',
-    'd542e050-2ae5-457e-8476-027741538965',
-    // '83cfa8fb-dd6e-4031-8215-1079abddb8a7',
+    'ec694c34-bddd-4111-ba99-926a5f7866e8', //MDD mammals 2021
+    '0ed89f4f-3ed2-41c2-9792-7c7314a55455', // GARD 2022 - reptiles
+    '98f229de-6131-41ef-aff1-7a52212b5a15', // IUCN 2022 - amphibians
+    'd542e050-2ae5-457e-8476-027741538965', // Jetz Birds 2012 - birds
   ];
 
   const pointObservationIds = [
@@ -185,12 +185,7 @@ function GroupedListComponent(props) {
         setIsLoading(true);
         loadingCount += 1;
         setIsHabitatChartLoading(true);
-        layer = await EsriFeatureService.getXYZLayer(
-          speciesInfo.scientificname.replace(' ', '_'),
-          id,
-          LAYER_TITLE_TYPES.TREND,
-          speciesInfo.taxa
-        );
+        layer = await EsriFeatureService.getXYZLayerByURL(mapData, id, LAYER_TITLE_TYPES.TREND);
 
         view.whenLayerView(layer).then((layerView) => {
           layerView.watch('updating', (val) => {
@@ -279,12 +274,14 @@ function GroupedListComponent(props) {
         if (expertRangeMapIds.find((id) => id === item.dataset_id)) {
           setIsLoading(true);
           loadingCount += 1;
-          layer = await EsriFeatureService.getXYZLayer(
-            speciesInfo.scientificname.replace(' ', '_'),
-            layerName,
-            LAYER_TITLE_TYPES.EXPERT_RANGE_MAPS,
-            speciesInfo.taxa
-          );
+          // layer = await EsriFeatureService.getXYZLayer(
+          //   speciesInfo.scientificname.replace(' ', '_'),
+          //   layerName,
+          //   LAYER_TITLE_TYPES.EXPERT_RANGE_MAPS,
+          //   speciesInfo.taxa
+          // );
+
+          layer = await EsriFeatureService.getXYZLayerByURL(mapData, layerName, LAYER_TITLE_TYPES.EXPERT_RANGE_MAPS);
 
           item.isActive = true;
 
@@ -412,7 +409,7 @@ function GroupedListComponent(props) {
               layers: [
                 // Fill layer for polygons
                 {
-                  id: 'occurren-fill',
+                  id: 'occurrence-fill',
                   type: 'fill',
                   source: 'species-occurrence',
                   'source-layer': 'occurrence',
@@ -438,14 +435,29 @@ function GroupedListComponent(props) {
                   type: 'circle',
                   source: 'species-occurrence',
                   'source-layer': 'points',
+                  filter: ['==', ['geometry-type'], 'Point'],
                   paint: {
                     'circle-color': '#FFA500',
                     'circle-radius': 8,
                     'circle-stroke-color': '#FFA500',
                     'circle-stroke-width': 2,
                     'circle-opacity': 1
-                  }
-                }
+                  },
+                },
+                {
+                  id: 'points-circles',
+                  type: 'circle',
+                  source: 'species-occurrence',
+                  'source-layer': 'occurrence',
+                  filter: ['==', ['geometry-type'], 'Point'],
+                  paint: {
+                    'circle-color': '#FFA500',
+                    'circle-radius': 8,
+                    'circle-stroke-color': '#FFA500',
+                    'circle-stroke-width': 2,
+                    'circle-opacity': 1
+                  },
+                },
               ]
             };
             layer = new VectorTileLayer({
@@ -632,8 +644,9 @@ function GroupedListComponent(props) {
   }, [showHabitatLayer]);
 
   useEffect(() => {
+    if(!mapData) return;
     activateDefault();
-  }, [map]);
+  }, [map, mapData]);
 
   return (
     <div className={cx(lightMode ? styles.light : '', styles.container)}>
