@@ -37,6 +37,7 @@ function SpeciesListComponent(props) {
   const [selectedTaxaObj, setSelectedTaxaObj] = useState();
   const [filteredSpecies, setFilteredSpecies] = useState({});
   const [filter, setFilter] = useState();
+  const [validateSpeciesList, setValidateSpeciesList] = useState(false);
 
   const getTaxaTitle = (label, taxa) => {
     const taxaToCheck = Object.values(TAXA_NAMES);
@@ -186,6 +187,8 @@ function SpeciesListComponent(props) {
     setSelectedTaxa('');
   };
 
+  const getLabel = validateSpeciesList ? t('Save changes') : t('Validate list');
+
   useEffect(() => {
     if (!selectedTaxa) return;
     updateSelectedTaxa(selectedTaxa);
@@ -263,15 +266,22 @@ function SpeciesListComponent(props) {
       {!isLoading && selectedTaxa && selectedTaxaObj && (
         <div className={styles.speciesList}>
           <div className={styles.header}>
-            <span style={{ marginRight: '5px' }}>{selectedTaxaObj?.count}</span>
-            <span
-              style={{
-                textTransform: 'capitalize',
-                display: 'inline-block',
-              }}
-            >
-              {getTaxaTitle(selectedTaxaObj?.title, selectedTaxaObj?.taxa)}
-            </span>
+            <div>
+              <span style={{ marginRight: '5px' }}>{selectedTaxaObj?.count}</span>
+              <span
+                style={{
+                  textTransform: 'capitalize',
+                  display: 'inline-block',
+                }}
+              >
+                {getTaxaTitle(selectedTaxaObj?.title, selectedTaxaObj?.taxa)}
+              </span>
+            </div>
+            <Button
+              className={styles.close}
+              handleClick={() => setValidateSpeciesList((vsl) => !vsl)}
+              label={getLabel}
+            />
           </div>
           <SearchInput
             className={cx(styles.search)}
@@ -295,6 +305,7 @@ function SpeciesListComponent(props) {
                         <SpeciesGroupContainer
                           species={v}
                           key={idx}
+                          validateSpeciesList={validateSpeciesList}
                           selectedTaxaObj={selectedTaxaObj}
                           {...props}
                         />

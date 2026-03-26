@@ -171,6 +171,12 @@
   overflow-y: hidden;
   width: 250px;
 
+  .header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
   .filterResults {
     margin-top: 8px;
     overflow-y: auto;

@@ -281,9 +281,9 @@ function DataLayerComponent(props) {
         };
       case 'BIRDS':
         return {
-          label: t('Jetz et al. (2012)'),
+          label: t('Jetzmap 2025'),
           dataset_id: 'd542e050-2ae5-457e-8476-027741538965',
-          dataset_title: 'Jetz Birds 2012',
+          dataset_title: 'Jetzmap 2025',
         };
       default:
         return {
@@ -318,7 +318,7 @@ function DataLayerComponent(props) {
                 label,
                 isActive: false,
                 parentId: LAYER_OPTIONS.EXPERT_RANGE_MAPS,
-                id: 'Jetz Birds 2012',
+                id: 'Jetzmap 2025',
                 dataset_id,
                 dataset_title,
               }],
