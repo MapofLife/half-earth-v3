@@ -16,9 +16,11 @@ import styles from './species-group-component.module.scss';
 import { MOL_IMAGES_THUMBS_BASE } from 'constants/dashboard-constants.js';
 import { FlagOutlined, FlagSharp } from '@mui/icons-material'
 import { DASHBOARD_URLS } from 'constants/layers-urls.js';
+import useJWTToken from 'hooks/useJWTToken';
 
 function SpeciesGroupComponent(props) {
   const locale = useLocale();
+  const { getToken } = useJWTToken();
   const {
     species,
     selectedTaxaObj,
@@ -61,17 +63,19 @@ function SpeciesGroupComponent(props) {
     return scientificName;
   };
 
-  const flagSpecies = (speciesToFlag) => {
-
+  const flagSpecies = async (speciesToFlag) => {
+    const token = await getToken();
     const flag = fetch(DASHBOARD_URLS.FLAG_SPECIES_URL, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
       },
       body: JSON.stringify({
         scientificname: speciesToFlag.scientificname,
-        region_field: selectedRegion,
+        region_field: Object.values(selectedRegion)[0] || countryISO,
         region_code: countryISO,
+        flag: !speciesToFlag.flagged,
       })
     }).then((response) => {
       if (response.ok) {
