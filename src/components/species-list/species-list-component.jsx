@@ -122,8 +122,15 @@ function SpeciesListComponent(props) {
       fc[k].visibleCount = 0;
     });
 
+    // add isFlagged property to species
+    const speciesWithFlag = selectedTaxaObj?.species?.map((sp) => {
+      if (sp.flagged === undefined) {
+        return { ...sp, flagged: false };
+      }
+      return sp;
+    });
     // sort by family common
-    const familySortedSpecies = sortFilteredSpecies(selectedTaxaObj?.species);
+    const familySortedSpecies = sortFilteredSpecies(speciesWithFlag);
 
     // group by family common
     let groupByFamily = familySortedSpecies?.reduce((group, result) => {
@@ -187,7 +194,17 @@ function SpeciesListComponent(props) {
     setSelectedTaxa('');
   };
 
-  const getLabel = validateSpeciesList ? t('Save changes') : t('Validate list');
+  const updateFlaggedSpecies = (speciesToFlag) => {
+    const updatedSpecies = selectedTaxaObj.species.map((sp) => {
+      if (sp.scientificname === speciesToFlag.scientificname) {
+        return { ...sp, flagged: !sp.flagged };
+      }
+      return sp;
+    });
+    setSelectedTaxaObj({ ...selectedTaxaObj, species: updatedSpecies });
+  };
+
+  const getLabel = validateSpeciesList ? t('Validate complete') : t('Validate list');
 
   useEffect(() => {
     if (!selectedTaxa) return;
@@ -277,11 +294,11 @@ function SpeciesListComponent(props) {
                 {getTaxaTitle(selectedTaxaObj?.title, selectedTaxaObj?.taxa)}
               </span>
             </div>
-            <Button
+            {/* <Button
               className={styles.close}
               handleClick={() => setValidateSpeciesList((vsl) => !vsl)}
               label={getLabel}
-            />
+            /> */}
           </div>
           <SearchInput
             className={cx(styles.search)}
@@ -307,6 +324,7 @@ function SpeciesListComponent(props) {
                           key={idx}
                           validateSpeciesList={validateSpeciesList}
                           selectedTaxaObj={selectedTaxaObj}
+                          updateFlaggedSpecies={updateFlaggedSpecies}
                           {...props}
                         />
                       )

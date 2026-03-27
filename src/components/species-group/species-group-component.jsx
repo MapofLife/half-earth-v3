@@ -29,6 +29,7 @@ function SpeciesGroupComponent(props) {
     setMapLegendLayers,
     validateSpeciesList,
     countryISO,
+    updateFlaggedSpecies,
     selectedRegion,
   } = props;
   // eslint-disable-next-line camelcase
@@ -79,13 +80,14 @@ function SpeciesGroupComponent(props) {
       })
     }).then((response) => {
       if (response.ok) {
-        alert(`${speciesToFlag.scientificname} has been flagged for review.`);
+        updateFlaggedSpecies(speciesToFlag);
+        // alert(`${speciesToFlag.scientificname} has been flagged for review.`);
       } else {
-        alert(`Failed to flag ${speciesToFlag.scientificname}. Please try again later.`);
+        // alert(`Failed to flag ${speciesToFlag.scientificname}. Please try again later.`);
       }
     })
     .catch(() => {
-      alert(`An error occurred while flagging ${speciesToFlag.scientificname}. Please try again later.`);
+      // alert(`An error occurred while flagging ${speciesToFlag.scientificname}. Please try again later.`);
     });
   };
 
