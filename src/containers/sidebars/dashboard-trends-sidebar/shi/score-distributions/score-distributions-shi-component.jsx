@@ -177,7 +177,7 @@ function ScoreDistributionsShiComponent(props) {
             species: s.species,
             commonname: s.commonname,
             species_url: s.species_url,
-            habitat_score: s.sps,
+            habitat_score: s.shs,
             taxa: s.taxa,
           }));
           setSpsSpecies(formattedSpecies);
