@@ -73,8 +73,8 @@ function SpeciesGroupComponent(props) {
       },
       body: JSON.stringify({
         scientificname: speciesToFlag.scientificname,
-        region_field: 'iso3',//Object.values(selectedRegion)?.[0] || countryISO,
-        region_code: countryISO,
+        region_field: selectedRegion ? Object.keys(selectedRegion)?.[0] : 'iso3',
+        region_code: selectedRegion ? Object.values(selectedRegion)?.[0] : countryISO,
         flag: !speciesToFlag.flagged,
       })
     }).then((response) => {
