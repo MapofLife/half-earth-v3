@@ -254,7 +254,7 @@ function DashboardViewComponent(props) {
       <LightModeProvider>
         {/* <TopMenuContainer {...props} /> */}
         {showLegend && <MapLegendContainer map={map} {...props} />}
-        {selectedIndex === NAVIGATION.REGION && (
+        {(selectedIndex === NAVIGATION.REGION || selectedIndex === NAVIGATION.EXPLORE_SPECIES) && (
           <LayerLegendContainer map={map} {...props} />
         )}
         <DashboardSidebarContainer
