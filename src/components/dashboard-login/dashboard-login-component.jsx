@@ -10,19 +10,42 @@ import useJWTToken from 'hooks/useJWTToken';
 import Button from 'components/button';
 
 import styles from './dashboard-login-styles.module.scss';
+import { DASHBOARD_URLS } from 'constants/layers-urls';
+
+const getOAuthInfo = (countryISO) => {
+  if(countryISO === 'GUY'){
+    return new OAuthInfo({
+      appId: '2g74U2WEt7zh0Kpx',
+      popup: false,
+      portalUrl: 'https://guyana.maps.arcgis.com',
+    });
+  }
+
+  if(countryISO === 'COD'){
+    return new OAuthInfo({
+      appId: 'qLC0Ks0swCJPymuu',
+      popup: false,
+      portalUrl: 'https://iccn.maps.arcgis.com/',
+    });
+  }
+
+  if(countryISO === 'GIN'){
+    return new OAuthInfo({
+      appId: 'lxtJIxf04Acx574x',
+      popup: false,
+      portalUrl: 'https://guinee.maps.arcgis.com/',
+    });
+  }
+};
 
 // TODO: Research why storing appId in .env file returns undefined
-const info = new OAuthInfo({
-  appId: '2g74U2WEt7zh0Kpx',//'zhWvIGYPUcFL8BbC',
-  popup: false,
-  portalUrl: 'https://guyana.maps.arcgis.com',
-});
 
 function DashboardLoginComponent(props) {
-  const { setLoggedIn, setUser } = props;
+  const { setLoggedIn, setUser, countryISO } = props;
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
   const t = useT();
+  const info = getOAuthInfo(countryISO.toUpperCase());
 
   const { getToken } = useJWTToken();
 
@@ -45,7 +68,7 @@ function DashboardLoginComponent(props) {
       const token = await getToken();
       console.log('Obtained token:', token);
 
-      fetch('https://test-api-dot-api-2-x-dot-map-of-life.appspot.com/2.x/nbis/get-arcgis-user-info', {
+      fetch(DASHBOARD_URLS.ARCGIS_USER_INFO_URL, {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${token}`,

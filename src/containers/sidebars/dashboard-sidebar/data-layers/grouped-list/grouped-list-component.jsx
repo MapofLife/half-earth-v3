@@ -305,16 +305,16 @@ function GroupedListComponent(props) {
             map.add(layer);
           }
 
-          view.whenLayerView(layer).then(() => {
-            setRegionLayers((rl) => ({
-              ...rl,
-              [layerName]: layer,
-            }));
-            loadingCount -= 1;
-            if (loadingCount === 0) {
-              setIsLoading(false);
-            }
-          });
+          await view.whenLayerView(layer)
+          setRegionLayers((rl) => ({
+            ...rl,
+            [layerName]: layer,
+          }));
+
+          loadingCount -= 1;
+          if (loadingCount === 0) {
+            setIsLoading(false);
+          }
 
           setMapLegendLayers((ml) => [...ml, item]);
         }
@@ -343,35 +343,6 @@ function GroupedListComponent(props) {
         ) {
           setIsLoading(true);
           loadingCount += 1;
-
-          // let layerId = GBIF_OCCURENCE_URL;
-          // if (countryISO === 'EE') {
-          //   layerId = REGION_OCCURENCE_ID;
-          // } else if (countryISO === 'GUY') {
-          //   layerId = '5239b39a253c4ab69bb931044406b431';
-          // } else if(countryISO === 'GIN') {
-          //   layerId = '34e596f26f3b4203937e872e91c630b1';
-          // } else if(countryISO === 'COD') {
-          //   layerId = '34e596f26f3b4203937e872e91c630b1';
-          // }
-
-          // if (layerName.match(/EBIRD/)) {
-          //   layer = await EsriFeatureService.getFeatureOccurenceLayer(
-          //     layerId,
-          //     speciesInfo.scientificname,
-          //     layerName,
-          //     'eBird',
-          //     countryISO
-          //   );
-          // } else if (layerName.match(/GBIF/)) {
-          //   layer = await EsriFeatureService.getFeatureOccurenceLayer(
-          //     layerId,
-          //     speciesInfo.scientificname,
-          //     layerName,
-          //     'GBIF',
-          //     countryISO
-          //   );
-          // } else
 
             if (item.type === 'PRIVATE') {
             let portalId = '';
@@ -470,16 +441,16 @@ function GroupedListComponent(props) {
           item.isActive = true;
           map.add(layer);
 
-          view.whenLayerView(layer).then(() => {
-            setRegionLayers((rl) => ({
-              ...rl,
-              [layerName]: layer,
-            }));
-            loadingCount -= 1;
-            if (loadingCount === 0) {
-              setIsLoading(false);
-            }
-          });
+          await view.whenLayerView(layer);
+
+          setRegionLayers((rl) => ({
+            ...rl,
+            [layerName]: layer,
+          }));
+          loadingCount -= 1;
+          if (loadingCount === 0) {
+            setIsLoading(false);
+          }
 
           getLayerIcon(layer, item);
         }
@@ -508,16 +479,16 @@ function GroupedListComponent(props) {
 
         map.add(layer);
 
-        view.whenLayerView(layer).then(() => {
-          setRegionLayers((rl) => ({
-            ...rl,
-            [layerName]: layer,
-          }));
-          loadingCount -= 1;
-          if (loadingCount === 0) {
-            setIsLoading(false);
-          }
-        });
+        await view.whenLayerView(layer);
+
+        setRegionLayers((rl) => ({
+          ...rl,
+          [layerName]: layer,
+        }));
+        loadingCount -= 1;
+        if (loadingCount === 0) {
+          setIsLoading(false);
+        }
 
         map.addSource('mapTiles', {
           type: 'vector',

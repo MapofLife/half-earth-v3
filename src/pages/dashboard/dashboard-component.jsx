@@ -7,15 +7,17 @@ function DashboardComponent(props) {
   const { activeLayers, handleMapLoad, loggedIn, setLoggedIn, countryISO } =
     props;
 
+  const countriesRequiringLogin = ['EE', 'GUY', 'COD', 'GIN'];
+
   useEffect(() => {
-    if (countryISO !== 'EE' && countryISO !== 'GUY') {
+    if (!countriesRequiringLogin.includes(countryISO.toUpperCase())) {
       setLoggedIn(true);
     }
   }, []);
 
   return (
     <>
-      {!loggedIn && (countryISO === 'EE' || countryISO === 'GUY') && (
+      {!loggedIn && countriesRequiringLogin.includes(countryISO.toUpperCase()) && (
         <DashboardLogin setLoggedIn={setLoggedIn} {...props} />
       )}
       {loggedIn && (

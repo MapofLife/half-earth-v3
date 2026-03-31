@@ -133,6 +133,8 @@ import {
 
 const { VITE_APP_VERCEL_ENV } = import.meta.env;
 
+const NBIS_BASE_URL = 'https://test-api-dot-api-2-x-dot-map-of-life.appspot.com/2.x/nbis';
+
 const isNotProduction =
   VITE_APP_VERCEL_ENV === 'development' || VITE_APP_VERCEL_ENV === 'preview';
 
@@ -500,8 +502,9 @@ export const LAYERS_URLS = {
 };
 
 export const DASHBOARD_URLS = {
-  FLAG_SPECIES_URL: 'https://test-api-dot-api-2-x-dot-map-of-life.appspot.com/2.x/nbis/flag_species',
-  BUCKET_SPECIES_URL: 'https://test-api-dot-api-2-x-dot-map-of-life.appspot.com/2.x/nbis/get-species',
+  ARCGIS_USER_INFO_URL: `${NBIS_BASE_URL}/get-arcgis-user-info`,
+  FLAG_SPECIES_URL: `${NBIS_BASE_URL}/flag_species`,
+  BUCKET_SPECIES_URL: `${NBIS_BASE_URL}/get-species`,
   REGIONS_MOL_DATA: 'https://dev-mol3-dot-api-2-x-dot-map-of-life.appspot.com/2.x/spatial/species/list',
   INITIAL_COUNTRY_LAYER: '53a1e68de7e4499cad77c80daba46a94',
   COUNTRY_URL:
