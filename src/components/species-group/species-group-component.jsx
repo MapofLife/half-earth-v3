@@ -81,13 +81,12 @@ function SpeciesGroupComponent(props) {
     }).then((response) => {
       if (response.ok) {
         updateFlaggedSpecies(speciesToFlag);
-        // alert(`${speciesToFlag.scientificname} has been flagged for review.`);
       } else {
-        // alert(`Failed to flag ${speciesToFlag.scientificname}. Please try again later.`);
+        alert(`Failed to flag ${speciesToFlag.scientificname}. Please try again later.`);
       }
     })
     .catch(() => {
-      // alert(`An error occurred while flagging ${speciesToFlag.scientificname}. Please try again later.`);
+      alert(`An error occurred while flagging ${speciesToFlag.scientificname}. Please try again later.`);
     });
   };
 
@@ -99,7 +98,9 @@ function SpeciesGroupComponent(props) {
         </button>
       )}
       {!validateSpeciesList && species.flagged && (
-        <FlagSharp/>
+        <div className={cx(species.flagged ? styles.selected : '', styles.flagSpecies)}>
+          <FlagSharp/>
+        </div>
       )}
       <button
         type="button"

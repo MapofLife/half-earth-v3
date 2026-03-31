@@ -106,6 +106,7 @@ function SpeciesListComponent(props) {
     });
   };
 
+  // used to load the species list
   const applyFilter = () => {
     // this.virtualScroll?.scrollToIndex(0);
     const inFilterCheck = (sp) => {
@@ -123,14 +124,14 @@ function SpeciesListComponent(props) {
     });
 
     // add isFlagged property to species
-    const speciesWithFlag = selectedTaxaObj?.species?.map((sp) => {
-      if (sp.flagged === undefined) {
-        return { ...sp, flagged: false };
-      }
-      return sp;
-    });
+    // const speciesWithFlag = selectedTaxaObj?.species?.map((sp) => {
+    //   if (sp.flagged === undefined) {
+    //     return { ...sp, flagged: false };
+    //   }
+    //   return sp;
+    // });
     // sort by family common
-    const familySortedSpecies = sortFilteredSpecies(speciesWithFlag);
+    const familySortedSpecies = sortFilteredSpecies(selectedTaxaObj?.species);
 
     // group by family common
     let groupByFamily = familySortedSpecies?.reduce((group, result) => {
@@ -213,7 +214,7 @@ function SpeciesListComponent(props) {
 
   useEffect(() => {
     if (!selectedTaxaObj) return;
-
+    // load list of species
     applyFilter();
   }, [selectedTaxaObj]);
 
@@ -294,11 +295,11 @@ function SpeciesListComponent(props) {
                 {getTaxaTitle(selectedTaxaObj?.title, selectedTaxaObj?.taxa)}
               </span>
             </div>
-            {/* <Button
+            <Button
               className={styles.close}
               handleClick={() => setValidateSpeciesList((vsl) => !vsl)}
               label={getLabel}
-            /> */}
+            />
           </div>
           <SearchInput
             className={cx(styles.search)}

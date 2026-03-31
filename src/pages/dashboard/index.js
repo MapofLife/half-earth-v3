@@ -45,12 +45,14 @@ import { layersConfig } from 'constants/mol-layers-configs';
 
 import DashboardComponent from './dashboard-component.jsx';
 import mapStateToProps from './dashboard-selectors.js';
+import useJWTToken from 'hooks/useJWTToken';
 
 const actions = { ...countryDataActions, ...urlActions };
 
 function DashboardContainer(props) {
   const locale = useLocale();
   const t = useT();
+  const { getToken } = useJWTToken();
   const {
     viewSettings,
     countryISO,
@@ -87,11 +89,12 @@ function DashboardContainer(props) {
   const [provinceName, setProvinceName] = useState();
   const [regionName, setRegionName] = useState();
   const [speciesListLoading, setSpeciesListLoading] = useState(true);
-  const [prioritySpeciesList, setPrioritySpeciesList] = useState([]);
+  const [prioritySpeciesList, setPrioritySpeciesList] = useState();
   const [mapLegendLayers, setMapLegendLayers] = useState([]);
-  const [speciesToAvoid, setSpeciesToAvoid] = useState([]);
+  const [speciesToAvoid, setSpeciesToAvoid] = useState();
   const [user, setUser] = useState();
   const [hash, setHash] = useState();
+  const [flaggedSpecies, setFlaggedSpecies] = useState();
 
   const getQueryParams = () => {
     if (queryParams) {
@@ -715,26 +718,38 @@ function DashboardContainer(props) {
     taxas?.forEach(taxa => {
       const taxaDatasetSet = new Set();
       taxa.species.forEach(species => {
-        const speciesDatasets = Object.keys(species.dataset);
-        speciesDatasets.forEach(d => {
-          taxaDatasetSet.add(d);
-        });
-        const speciesDataset2 = {};
-        speciesDatasets.forEach(k => {
-          speciesDataset2[datasets[k].dataset_id] =
-            species.dataset[k];
-        });
-        species.datasetList = speciesDatasets.map(dsid => ({
-          dataset_id: datasets[dsid].dataset_id,
-          product_type: datasets[dsid].product_type,
-          title: datasets[dsid].title,
-          seasonality: species.dataset[dsid],
-          seasonalityString: species.dataset[dsid]
-            .map(s => (s === null ? 'Resident' : seasons[s]))
-            .filter(s => s.length > 0)
-            .join(', '),
-        }));
-        species.dataset = speciesDataset2;
+
+        const foundFlaggedSpecies = flaggedSpecies?.find(fs => fs.scientificname === species.scientificname);
+        if(foundFlaggedSpecies){
+          species.flagged = foundFlaggedSpecies;
+        } else {
+          species.flagged = false;
+        }
+
+        if(foundFlaggedSpecies?.deleted){
+          return;
+        } else {
+          const speciesDatasets = Object.keys(species.dataset);
+          speciesDatasets.forEach(d => {
+            taxaDatasetSet.add(d);
+          });
+          const speciesDataset2 = {};
+          speciesDatasets.forEach(k => {
+            speciesDataset2[datasets[k].dataset_id] =
+              species.dataset[k];
+          });
+          species.datasetList = speciesDatasets.map(dsid => ({
+            dataset_id: datasets[dsid].dataset_id,
+            product_type: datasets[dsid].product_type,
+            title: datasets[dsid].title,
+            seasonality: species.dataset[dsid],
+            seasonalityString: species.dataset[dsid]
+              .map(s => (s === null ? 'Resident' : seasons[s]))
+              .filter(s => s.length > 0)
+              .join(', '),
+          }));
+          species.dataset = speciesDataset2;
+        }
       });
       taxa.datasets = {};
       Array.from(taxaDatasetSet).forEach((d) => {
@@ -859,7 +874,28 @@ function DashboardContainer(props) {
       const species = features.map(({ attributes }) => attributes);
 
       setPrioritySpeciesList(species);
+    } else {
+      setPrioritySpeciesList([]);
     }
+  };
+
+  const getFlaggedSpeciesList = async () => {
+    const token = await getToken();
+
+    let url = DASHBOARD_URLS.GET_FLAGGED_SPECIES_URL;
+
+    url += `?region_field=${selectedRegion ? Object.keys(selectedRegion)?.[0] : 'iso3'}&region_code=${selectedRegion ? Object.values(selectedRegion)?.[0] : countryISO}`;
+
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+    });
+
+    const data = await response.json();
+    setFlaggedSpecies(data);
   };
 
   const getIgnoredSpeciesList = async () => {
@@ -876,6 +912,8 @@ function DashboardContainer(props) {
       const species = features.map(({ attributes }) => attributes.species_name);
 
       setSpeciesToAvoid(species);
+    } else {
+      setSpeciesToAvoid([]);
     }
   };
 
@@ -1073,6 +1111,7 @@ function DashboardContainer(props) {
           setCountryDataError(error);
         });
 
+      getFlaggedSpeciesList();
       getPrioritySpeciesList();
       getIgnoredSpeciesList();
     }
@@ -1101,9 +1140,9 @@ function DashboardContainer(props) {
   }, []);
 
   useEffect(() => {
-    if (!selectedRegion && speciesToAvoid.length === 0) return;
+    if (!selectedRegion && (!speciesToAvoid || !flaggedSpecies)) return;
     getSpeciesList();
-  }, [selectedRegion, speciesToAvoid]);
+  }, [selectedRegion, speciesToAvoid, flaggedSpecies]);
 
   useEffect(() => {
     if (!scientificName) return;

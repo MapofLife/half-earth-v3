@@ -256,7 +256,9 @@ function MapLegendComponent(props) {
 
     setLeftPosition(`${rect.width + parseInt(left, 10) + 10}px`);
 
-    setLayersLegend(Array.from(new Set(mapLegendLayers)));
+    // setLayersLegend(Array.from(new Set(mapLegendLayers)));
+    const uniqueLayers = Array.from(new Map(mapLegendLayers.map(item => [item.id, item])).values());
+    setLayersLegend(uniqueLayers);
   }, [mapLegendLayers]);
 
   useEffect(() => {
