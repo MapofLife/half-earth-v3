@@ -56,8 +56,15 @@ function BioDiversityContainer(props) {
   const [startYear, setStartYear] = useState(1950);
 
   const removeRegionLayers = () => {
+    const layersToRemove = INITIAL_LAYERS;
+
+    if(countryISO.toLowerCase() === 'guy') {
+      layersToRemove.push('GUY-RIVER');
+      layersToRemove.push('GUY-RIVER-NAME');
+    }
+
     map.layers.items.forEach((layer) => {
-      if (!INITIAL_LAYERS.includes(layer.id)) {
+      if (!layersToRemove.includes(layer.id)) {
         map.remove(layer);
       }
     });
