@@ -390,8 +390,6 @@ function GroupedListComponent(props) {
               layerName,
               item.dataset_title
             );
-          item.isActive = true;
-          map.add(layer);
           } else {
             const mvtTileUrlTemplate = `https://production-dot-tiler-dot-map-of-life.appspot.com/0.x/tiles/species/occurrences/3857/{z}/{x}/{y}.mvt?scientificname=${speciesInfo.scientificname}&dsids=9905692e-6a28-4310-b01e-476a471e5bf8,794adb49-7458-41c4-a1c0-56537fdbec1d`;
 
@@ -467,8 +465,10 @@ function GroupedListComponent(props) {
               opacity: 0.7,
               id: layerName,
             });
-            map.add(layer);
           }
+
+          item.isActive = true;
+          map.add(layer);
 
           view.whenLayerView(layer).then(() => {
             setRegionLayers((rl) => ({

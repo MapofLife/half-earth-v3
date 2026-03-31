@@ -27,6 +27,7 @@ function MapLegendComponent(props) {
   const t = useT();
   const [leftPosition, setLeftPosition] = useState(0);
   const [collapse, setCollapse] = useState(false);
+  const [layersToShow, setLayersToShow] = useState([]);
   const spiLow = 0;
   const spiHigh = 100;
   const shiLow = 95;
@@ -182,7 +183,7 @@ function MapLegendComponent(props) {
   };
 
   const findLayerInLegend = (layer) => {
-    const newLayers = [...mapLegendLayers];
+    const newLayers = [...layersToShow];
     const newLayerIndex = newLayers.findIndex(
       (l) => l.label.toUpperCase() === layer.label.toUpperCase()
     );
@@ -226,6 +227,8 @@ function MapLegendComponent(props) {
     const left = style.getPropertyValue('left');
 
     setLeftPosition(`${rect.width + parseInt(left, 10) + 10}px`);
+
+    setLayersToShow(Array.from(new Set(mapLegendLayers)));
   }, [mapLegendLayers]);
 
   return (
@@ -250,7 +253,7 @@ function MapLegendComponent(props) {
         </button>
       </div>
       <ul className={styles.layers}>
-        {Object.values(mapLegendLayers).map((layer, index) => (
+        {Object.values(layersToShow).map((layer, index) => (
           <li key={`${layer.id}-${layer.label}`}>
             <div className={styles.info}>
               <b>{t(layer.label?.toUpperCase())}</b>
@@ -274,11 +277,11 @@ function MapLegendComponent(props) {
                 <button
                   type="button"
                   className={cx(styles.arrows, styles.down, {
-                    [styles.disabled]: index === mapLegendLayers.length - 1,
+                    [styles.disabled]: index === layersToShow.length - 1,
                   })}
                   aria-label={t('Move layer down')}
                   onClick={() => moveLayerDown(layer)}
-                  disabled={index === mapLegendLayers.length - 1}
+                  disabled={index === layersToShow.length - 1}
                 >
                   <ArrowUpIcon />
                 </button>
