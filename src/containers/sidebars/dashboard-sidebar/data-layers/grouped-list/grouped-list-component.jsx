@@ -100,7 +100,7 @@ function GroupedListComponent(props) {
             item.imageUrl = url;
           }
 
-          if (color) {
+          if (color && color.r && color.g && color.b && color.a > 0) {
             item.color = color;
           }
 
