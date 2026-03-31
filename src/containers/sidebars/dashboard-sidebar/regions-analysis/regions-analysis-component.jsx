@@ -110,6 +110,7 @@ function RegionsAnalysisComponent(props) {
     setMapLegendLayers,
     setSelectedRegionOption,
     setRegionName,
+    setSelectedTaxa,
     countryISO,
     countryName,
     setHash,
@@ -464,6 +465,7 @@ function RegionsAnalysisComponent(props) {
   }, [uploadedShape]);
 
   useEffect(() => {
+    setSelectedTaxa('');
     if (selectedRegionOption && selectedRegion) {
       setSelectedIndex(NAVIGATION.EXPLORE_SPECIES);
     } else {
