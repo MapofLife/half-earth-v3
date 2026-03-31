@@ -258,7 +258,6 @@ function BioDiversityContainer(props) {
       null,
       countryISO
     );
-    map.add(protectedLayers);
 
     const layerName = LAYER_OPTIONS.HABITAT;
     const webTileLayer = await EsriFeatureService.getXYZLayer(
@@ -267,11 +266,12 @@ function BioDiversityContainer(props) {
       LAYER_TITLE_TYPES.TREND,
       speciesInfo.taxa
     );
-    map.add(webTileLayer);
 
-    view.whenLayerView(webTileLayer).then(() => {
-      setIsLoading(false);
-    });
+    map.add(webTileLayer);
+    await view.whenLayerView(webTileLayer);
+
+    map.add(protectedLayers);
+    await view.whenLayerView(protectedLayers);
 
     // Add layers to Map Legend
     const protectedAreaLayer = {
@@ -312,6 +312,8 @@ function BioDiversityContainer(props) {
         [LAYER_OPTIONS.PROTECTED_AREAS]: protectedLayers,
       });
     }
+
+    setIsLoading(false);
   };
 
   // get habitat score information
