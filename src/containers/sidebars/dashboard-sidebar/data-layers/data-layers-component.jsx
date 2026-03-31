@@ -212,7 +212,7 @@ function DataLayerComponent(props) {
         }
         obj.isActive = true;
         obj.parentId = grouped[groupKey].id;
-        obj.id = obj.label;
+        obj.id = obj.label.toUpperCase();
         // TODO: remove logic when not filtering out results
         const foundExpertRange = expertRangeMapIds.find(
           (id) => id === obj.dataset_id
@@ -318,7 +318,7 @@ function DataLayerComponent(props) {
                 label,
                 isActive: false,
                 parentId: LAYER_OPTIONS.EXPERT_RANGE_MAPS,
-                id: 'Jetzmap 2025',
+                id: 'JETZMAP 2025',
                 dataset_id,
                 dataset_title,
               }],

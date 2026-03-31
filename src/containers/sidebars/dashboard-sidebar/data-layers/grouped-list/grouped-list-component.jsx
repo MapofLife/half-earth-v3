@@ -90,6 +90,10 @@ function GroupedListComponent(props) {
         item.color = {r: 255, g: 165, b: 0, a: 0.8};
       }
 
+      if(layer.id.match(/EBIRD/)){
+        item.color = {r: 255, g: 165, b: 0, a: 0.8};
+      }
+
       if (renderer) {
         const { symbol, uniqueValueGroups } = renderer;
 
@@ -358,7 +362,7 @@ function GroupedListComponent(props) {
             layer = await EsriFeatureService.getFeaturePrivateOccurenceLayer(
               portalId,
               speciesInfo.scientificname,
-              layerName,
+              layerName.toUpperCase(),
               item.dataset_title
             );
           } else {
@@ -434,7 +438,7 @@ function GroupedListComponent(props) {
               title: `${speciesInfo.scientificname} Occurrences`,
               visible: true,
               opacity: 0.7,
-              id: layerName,
+              id: layerName.toUpperCase(),
             });
           }
 

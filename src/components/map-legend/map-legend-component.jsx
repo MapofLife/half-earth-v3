@@ -28,6 +28,7 @@ function MapLegendComponent(props) {
   const [leftPosition, setLeftPosition] = useState(0);
   const [collapse, setCollapse] = useState(false);
   const [layersToShow, setLayersToShow] = useState([]);
+  const [layersLegend, setLayersLegend] = useState([]);
   const spiLow = 0;
   const spiHigh = 100;
   const shiLow = 95;
@@ -219,6 +220,33 @@ function MapLegendComponent(props) {
     return false;
   };
 
+  const reorderArrayAByReverseB = (A, B) => {
+    // Create a Map for case-insensitive lookup: lowercased item → original index in B
+    const indexMap = new Map();
+
+    B.forEach((item, index) => {
+        if (item !== undefined && item !== null) {
+            indexMap.set(item.toString().toLowerCase().trim(), index);
+        }
+    });
+
+    // Sort A so that items appearing LATER in B come FIRST (reverse order)
+    return A.slice().sort((a, b) => {
+        const aStr = a?.id.toString().toLowerCase().trim();
+        const bStr = b?.id.toString().toLowerCase().trim();
+
+        const idxA = indexMap.get(aStr);
+        const idxB = indexMap.get(bStr);
+
+        // Items not found in B go to the end
+        if (idxA === undefined) return 1;
+        if (idxB === undefined) return -1;
+
+        // Higher index in B = should come first (reverse order)
+        return idxB - idxA;
+    });
+  }
+
   useEffect(() => {
     const sidebar = document.getElementById('dashboard-sidebar');
 
@@ -228,8 +256,15 @@ function MapLegendComponent(props) {
 
     setLeftPosition(`${rect.width + parseInt(left, 10) + 10}px`);
 
-    setLayersToShow(Array.from(new Set(mapLegendLayers)));
+    setLayersLegend(Array.from(new Set(mapLegendLayers)));
   }, [mapLegendLayers]);
+
+  useEffect(() => {
+    if(layersLegend.length > 0){
+      const orderedLayers = reorderArrayAByReverseB( layersLegend, map.layers.items.map(item => item.id));
+      setLayersToShow(orderedLayers);
+    }
+  }, [layersLegend]);
 
   return (
     <div
