@@ -235,6 +235,12 @@ function FilterComponent(props) {
               <Button className={styles.cancelButton} label={t('Cancel')} handleClick={() => setShowFlaggedSpecies(false)} />
 
               <Button
+                className={styles.rejectButton}
+                type="rectangular"
+                label={t('Unflag Species')}
+                handleClick={handleFlagFeedback}
+              />
+              <Button
                 className={styles.submitButton}
                 type="rectangular"
                 label={t('Approve Flagged Species')}
