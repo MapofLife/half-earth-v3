@@ -1,12 +1,14 @@
 import React, { useContext, useEffect, useState } from 'react';
 
 import { useT } from '@transifex/react';
-
+import { Modal } from 'he-components';
 import DoneIcon from '@mui/icons-material/Done';
 import { Chip } from '@mui/material';
 import cx from 'classnames';
 import { LightModeContext } from 'context/light-mode';
 import { Loading } from 'he-components';
+import Checkbox from '@mui/material/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
 
 import Button from 'components/button';
 
@@ -24,10 +26,13 @@ function FilterComponent(props) {
     setFilters,
     isLoading,
     updateActiveFilter,
+    flaggedSpecies,
   } = props;
 
   const [anyActive, setAnyActive] = useState(false);
   const { lightMode } = useContext(LightModeContext);
+  const [showFlaggedSpecies, setShowFlaggedSpecies] = useState(false);
+  const [flaggedSpeciesToReview, setFlaggedSpeciesToReview] = useState([]);
 
   const clearCounts = () => {
     setFilteredTaxaList([]);
@@ -121,6 +126,10 @@ function FilterComponent(props) {
     refreshCounts();
   };
 
+  const handleFlagFeedback = () => {
+    console.log('handle flag feedback', flaggedSpecies);
+  };
+
   const clearFilters = () => {
     filters.forEach((f) =>
       f.filters.forEach((ff) => {
@@ -129,6 +138,19 @@ function FilterComponent(props) {
     );
     refreshCounts();
   };
+
+  const updateSpecies = (scientificName) => {
+    setFlaggedSpeciesToReview(prev => prev.map(s => s.scientificname === scientificName ? { ...s, checked: !s.checked } : s));
+  };
+
+  useEffect(() => {
+    if (flaggedSpecies) {
+      setFlaggedSpeciesToReview(flaggedSpecies.map((species) => ({
+        ...species,
+          checked: false,
+      })));
+    }
+  }, [flaggedSpecies]);
 
   useEffect(() => {
     if (!taxaList) return;
@@ -176,6 +198,51 @@ function FilterComponent(props) {
             </div>
           );
         })}
+      {flaggedSpecies?.length > 0 && (
+        <Button
+          className={styles.viewFlaggedButton}
+          type="rectangular"
+          label={t('View flagged species')}
+          handleClick={() => setShowFlaggedSpecies(true)}
+        />
+      )}
+      <Modal
+        isOpen={showFlaggedSpecies}
+        onRequestClose={() => setShowFlaggedSpecies(false)}
+        theme={styles}>
+          <article className={styles.feedbackContent}>
+            <div className={styles.feedbackHeader}>
+              <span className={styles.feedbackTitle}>{t('Flagged Species')}</span>
+              <span className={styles.feedbackSubtitle}>{t('These are the species that have been flagged for review.')}</span>
+            </div>
+            <div className={styles.feedbackBody}>
+              {flaggedSpeciesToReview?.map((species) => (
+                <div key={species.scientificName} className={styles.flaggedSpeciesItem}>
+                  <FormControlLabel
+                    label={t(species.scientificname)}
+                    control={
+                      <Checkbox
+                        checked={species.checked}
+                        onChange={() => updateSpecies(species.scientificname)}
+                      />
+                    }
+                  />
+                  <span className={styles.flagReason}>{t('Flagged by:')} {species.user_name}</span>
+                </div>
+              ))}
+            </div>
+            <div className={styles.feedbackFooter}>
+              <Button className={styles.cancelButton} label={t('Cancel')} handleClick={() => setShowFlaggedSpecies(false)} />
+
+              <Button
+                className={styles.submitButton}
+                type="rectangular"
+                label={t('Approve Flagged Species')}
+                handleClick={handleFlagFeedback}
+              />
+            </div>
+          </article>
+      </Modal>
     </div>
   );
 }

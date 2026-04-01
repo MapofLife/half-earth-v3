@@ -123,13 +123,6 @@ function SpeciesListComponent(props) {
       fc[k].visibleCount = 0;
     });
 
-    // add isFlagged property to species
-    // const speciesWithFlag = selectedTaxaObj?.species?.map((sp) => {
-    //   if (sp.flagged === undefined) {
-    //     return { ...sp, flagged: false };
-    //   }
-    //   return sp;
-    // });
     // sort by family common
     const familySortedSpecies = sortFilteredSpecies(selectedTaxaObj?.species);
 

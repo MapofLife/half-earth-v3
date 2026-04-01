@@ -403,8 +403,7 @@ function DashboardContainer(props) {
             attributes.replace(/NA/g, null).replace(/NaN/g, 'null')
           )[0];
 
-          const isFound = speciesToAvoid
-            .map((item) => item.toUpperCase())
+          const isFound = speciesToAvoid?.map((item) => item.toUpperCase())
             .includes(scientific_name.toUpperCase());
 
           if (!isFound) {
@@ -439,8 +438,7 @@ function DashboardContainer(props) {
 
   const getCustomAreasSpeciesDetails = (speciesData, taxa) => {
     const results = speciesData.map(({ name, commonName, threat_status, species_url }) => {
-      const isFound = speciesToAvoid
-        .map((item) => item.toUpperCase())
+      const isFound = speciesToAvoid?.map((item) => item.toUpperCase())
         .includes(name.toUpperCase());
       let common_name = commonName || name;
       if (Array.isArray(commonName)) {
@@ -541,8 +539,7 @@ function DashboardContainer(props) {
 
         if (foundTaxa) {
           occurrence.species.forEach((species) => {
-            const isFound = speciesToAvoid
-              .map((item) => item.toUpperCase())
+            const isFound = speciesToAvoid?.map((item) => item.toUpperCase())
               .includes(species.scientificname.toUpperCase());
 
             if (!isFound) {
@@ -657,8 +654,7 @@ function DashboardContainer(props) {
 
         if (foundTaxa) {
           occurrence.species.forEach((species) => {
-            const isFound = speciesToAvoid
-              .map((item) => item.toUpperCase())
+            const isFound = speciesToAvoid?.map((item) => item.toUpperCase())
               .includes(species.scientificname.toUpperCase());
 
             if (!isFound) {
@@ -1140,9 +1136,14 @@ function DashboardContainer(props) {
   }, []);
 
   useEffect(() => {
-    if (!selectedRegion && (!speciesToAvoid || !flaggedSpecies)) return;
+    if (!selectedRegion && !speciesToAvoid) return;
+    getFlaggedSpeciesList();
+  }, [selectedRegion, speciesToAvoid]);
+
+  useEffect(() => {
     getSpeciesList();
-  }, [selectedRegion, speciesToAvoid, flaggedSpecies]);
+  }, [flaggedSpecies])
+
 
   useEffect(() => {
     if (!scientificName) return;
@@ -1227,6 +1228,7 @@ function DashboardContainer(props) {
       setSelectedGeometryRings={setSelectedGeometryRings}
       selectedGeometryRings={selectedGeometryRings}
       setGeometry={setGeometry}
+      flaggedSpecies={flaggedSpecies}
       {...props}
     />
   );
