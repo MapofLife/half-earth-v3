@@ -145,7 +145,7 @@ function FilterComponent(props) {
 
   useEffect(() => {
     if (flaggedSpecies) {
-      setFlaggedSpeciesToReview(flaggedSpecies.map((species) => ({
+      setFlaggedSpeciesToReview(flaggedSpecies?.map((species) => ({
         ...species,
           checked: false,
       })));
