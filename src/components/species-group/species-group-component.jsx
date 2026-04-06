@@ -77,6 +77,7 @@ function SpeciesGroupComponent(props) {
         region_field: selectedRegion ? Object.keys(selectedRegion)?.[0] : 'iso3',
         region_code: selectedRegion ? Object.values(selectedRegion)?.[0] : countryISO,
         flag: !speciesToFlag.flagged,
+        iso3: countryISO,
       })
     }).then((response) => {
       if (response.ok) {

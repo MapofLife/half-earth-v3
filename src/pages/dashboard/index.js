@@ -880,7 +880,7 @@ function DashboardContainer(props) {
 
     let url = DASHBOARD_URLS.GET_FLAGGED_SPECIES_URL;
 
-    url += `?region_field=${selectedRegion ? Object.keys(selectedRegion)?.[0] : 'iso3'}&region_code=${selectedRegion ? Object.values(selectedRegion)?.[0] : countryISO}`;
+    url += `?region_field=${selectedRegion ? Object.keys(selectedRegion)?.[0] : 'iso3'}&region_code=${selectedRegion ? Object.values(selectedRegion)?.[0] : countryISO}&iso3=${countryISO}`;
 
     const response = await fetch(url, {
       method: 'GET',
