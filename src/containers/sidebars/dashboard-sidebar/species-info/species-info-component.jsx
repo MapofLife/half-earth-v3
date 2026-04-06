@@ -69,7 +69,7 @@ function SpeciesInfoComponent(props) {
 
       if (
         speciesInfo?.info &&
-        getLanguageContent(speciesInfo?.info).length > 600
+        getLanguageContent(speciesInfo?.info).length > 400
       ) {
         setShowMoreOption(true);
       } else {

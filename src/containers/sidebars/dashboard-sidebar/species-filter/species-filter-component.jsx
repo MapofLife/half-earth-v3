@@ -537,26 +537,26 @@ function SpeciesFilterComponent(props) {
           <article className={styles.feedbackContent}>
             <div className={styles.feedbackHeader}>
               <span className={styles.feedbackTitle}>{t('Save custom area')}</span>
-              <span className={styles.feedbackSubtitle}>{t('Would you like to save this custom area?')}</span>
             </div>
             <div className={styles.feedbackBody}>
+              <span
+              className={styles.feedbackLabel}
+              >{t('Name of custom area to be used in the future')}</span>
               <input
                 type="text"
                 className={styles.searchInput}
-                placeholder={t('Name of custom area')}
                 onChange={(e) => setCustomAreaName(e.target.value)}
                 value={customAreaName}
               />
               <span
               className={styles.feedbackLabel}
-              >{t('Additional comments')}</span>
-
-            <textarea
-              className={styles.additionalComments}
-              value={customAreaDescription}
-              onChange={(e) => setCustomAreaDescription(e.target.value)}
-              placeholder={t('Add additional comments for data issues...')}
-            ></textarea>
+              >{t('Description')}</span>
+              <textarea
+                className={styles.additionalComments}
+                value={customAreaDescription}
+                onChange={(e) => setCustomAreaDescription(e.target.value)}
+                placeholder={t('Add additional comments for data issues...')}
+              ></textarea>
             </div>
             <div className={styles.feedbackFooter}>
               <Button className={styles.cancelButton} label={t('Cancel')} handleClick={() => setShowCustomAreaModal(false)} />
