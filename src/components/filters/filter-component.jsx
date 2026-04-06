@@ -217,7 +217,7 @@ function FilterComponent(props) {
             </div>
             <div className={styles.feedbackBody}>
               {flaggedSpeciesToReview?.map((species) => (
-                <div key={species.scientificName} className={styles.flaggedSpeciesItem}>
+                <div key={`flagged-${species.scientificName}`} className={styles.flaggedSpeciesItem}>
                   <FormControlLabel
                     label={t(species.scientificname)}
                     control={

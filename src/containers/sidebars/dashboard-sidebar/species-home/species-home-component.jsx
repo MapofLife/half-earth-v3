@@ -47,7 +47,7 @@ function SpeciesHomeComponent(props) {
           )}
         </p>
         <SpeciesSearch {...props} />
-        {prioritySpeciesList.length > 0 && (
+        {prioritySpeciesList?.length > 0 && (
           <div className={styles.mostPopular}>
             <span className={styles.sectionTitle}>{t('Popular Species')}</span>
             <div className={styles.species}>

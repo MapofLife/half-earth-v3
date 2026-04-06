@@ -505,6 +505,8 @@ export const DASHBOARD_URLS = {
   ARCGIS_USER_INFO_URL: `${NBIS_BASE_URL}/get-arcgis-user-info`,
   FLAG_SPECIES_URL: `${NBIS_BASE_URL}/flag_species`,
   GET_FLAGGED_SPECIES_URL: `${NBIS_BASE_URL}/get-flagged-species`,
+  CREATE_CUSTOM_AREA_URL: `${NBIS_BASE_URL}/create-custom-region`,
+  CREATE_FEEDBACK_URL: `${NBIS_BASE_URL}/create-feedback`,
   BUCKET_SPECIES_URL: `${NBIS_BASE_URL}/get-species`,
   REGIONS_MOL_DATA: 'https://dev-mol3-dot-api-2-x-dot-map-of-life.appspot.com/2.x/spatial/species/list',
   INITIAL_COUNTRY_LAYER: '53a1e68de7e4499cad77c80daba46a94',
