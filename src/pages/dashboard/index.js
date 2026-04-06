@@ -510,63 +510,63 @@ function DashboardContainer(props) {
     let whereClause = `1=1`;
 
     let geoRings = null;
-      if (selectedGeometryRings) {
-        geoRings = {
-          rings: selectedGeometryRings,
-        };
-      }
+    if (selectedGeometryRings) {
+      geoRings = {
+        rings: selectedGeometryRings,
+      };
+    }
 
-      const occurenceFeatures = await EsriFeatureService.getFeatures({
-        url,
-        whereClause,
-        returnDistinctValues: true,
-        geometry: geoRings,
-        returnGeometry: false,
-        outFields: ['*'],
-      });
+    const occurenceFeatures = await EsriFeatureService.getFeatures({
+      url,
+      whereClause,
+      returnDistinctValues: true,
+      geometry: geoRings,
+      returnGeometry: false,
+      outFields: ['*'],
+    });
 
-      // if (countryISO.toUpperCase() !== 'EE') {
-      const buckets = bucketByTaxa(occurenceFeatures);
+    // if (countryISO.toUpperCase() !== 'EE') {
+    const buckets = bucketByTaxa(occurenceFeatures);
 
-      // loop through buckets to get species info
-      // TODO: remove this for the count, but keep for searching species
-      const occurenceData = Object.keys(buckets).map((key) => {
-        return getSpeciesDetails(buckets[key], key, 'private');
-      });
+    // loop through buckets to get species info
+    // TODO: remove this for the count, but keep for searching species
+    const occurenceData = Object.keys(buckets).map((key) => {
+      return getSpeciesDetails(buckets[key], key, 'private');
+    });
 
-      occurenceData?.forEach((occurrence) => {
-        const foundTaxa = list.find((sp) => sp.taxa === occurrence.taxa);
+    occurenceData?.forEach((occurrence) => {
+      const foundTaxa = list.find((sp) => sp.taxa === occurrence.taxa);
 
-        if (foundTaxa) {
-          occurrence.species.forEach((species) => {
-            const isFound = speciesToAvoid?.map((item) => item.toUpperCase())
-              .includes(species.scientificname.toUpperCase());
+      if (foundTaxa) {
+        occurrence.species.forEach((species) => {
+          const isFound = speciesToAvoid?.map((item) => item.toUpperCase())
+            .includes(species.scientificname.toUpperCase());
 
-            if (!isFound) {
-              const foundSpecies = foundTaxa?.species.find(
-                (speciesToFind) =>
-                  speciesToFind?.scientificname.toUpperCase() ===
-                  species?.scientificname.toUpperCase()
-              );
+          if (!isFound) {
+            const foundSpecies = foundTaxa?.species.find(
+              (speciesToFind) =>
+                speciesToFind?.scientificname.toUpperCase() ===
+                species?.scientificname.toUpperCase()
+            );
 
-              if (!foundSpecies) {
-                foundTaxa?.species.push(species);
-              } else {
-                foundSpecies.source += `,${species.source}`;
-                foundSpecies.product_type += `,${species.product_type}`;
-              }
+            if (!foundSpecies) {
+              foundTaxa?.species.push(species);
+            } else {
+              foundSpecies.source += `,${species.source}`;
+              foundSpecies.product_type += `,${species.product_type}`;
             }
-          });
-        } else {
-          list.push(occurrence);
-        }
-      });
+          }
+        });
+      } else {
+        list.push(occurrence);
+      }
+    });
 
-      list.forEach((l) => {
-        l.count = l.species.length;
-      });
+    list.forEach((l) => {
+      l.count = l.species.length;
+    });
 
-      setTaxaList(list);
+    setTaxaList(list);
   }
 
   const getOccurenceSpecies = async (speciesData) => {
@@ -765,9 +765,9 @@ function DashboardContainer(props) {
       v2: "true"
     };
 
-    if (exploreAllSpecies) {
+    // if (exploreAllSpecies) {
       body.iso3 = countryISO;
-    }
+    // }
 
     if (selectedRegion) {
       delete body.iso3;

@@ -111,6 +111,7 @@ function RegionsAnalysisComponent(props) {
     setSelectedRegion,
     selectedIndex,
     selectedRegionOption,
+    setSelectedGeometryRings,
     setMapLegendLayers,
     setSelectedRegionOption,
     setRegionName,
@@ -472,6 +473,7 @@ function RegionsAnalysisComponent(props) {
       const { geojson } = selectedCustomArea;
       const newGeometry = webMercatorUtils.webMercatorToGeographic(geojson);
       setSelectedRegion({ customName: selectedCustomArea.region_name, rings: newGeometry.coordinates });
+      setSelectedGeometryRings(newGeometry.coordinates);
       setSelectedRegionOption(REGION_OPTIONS.DRAW);
       setRegionName(t('Custom Area'));
       setSelectedIndex(NAVIGATION.EXPLORE_SPECIES);

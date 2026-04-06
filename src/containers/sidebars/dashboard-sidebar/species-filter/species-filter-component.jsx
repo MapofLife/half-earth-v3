@@ -49,6 +49,7 @@ function SpeciesFilterComponent(props) {
     setSelectedTaxa,
     setExploreAllSpecies,
     speciesListLoading,
+    setSelectedGeometryRings,
     selectedRegion,
     setRegionName,
     exploreAllSpecies,
@@ -249,6 +250,7 @@ function SpeciesFilterComponent(props) {
     setSelectedTaxa(null);
     setSelectedRegion(null);
     setRegionName('');
+    setSelectedGeometryRings(null);
     setSelectedRegionOption(null);
     setSelectedIndex(NAVIGATION.REGION);
   };
