@@ -505,11 +505,13 @@ function SpeciesFilterComponent(props) {
               <h2>{regionName}</h2>
               <span>{regionLabel}</span>
             </div>
-            <Button
-              className={styles.customAreaButton}
-              type="rectangular"
-              label={t('Save this custom area')}
-              handleClick={() => setShowCustomAreaModal(true)} />
+            {selectedRegionOption === REGION_OPTIONS.DRAW && (
+              <Button
+                className={styles.customAreaButton}
+                type="rectangular"
+                label={t('Save this custom area')}
+                handleClick={() => setShowCustomAreaModal(true)} />
+            )}
             <Button
               className={styles.back}
               handleClick={handleBack}
