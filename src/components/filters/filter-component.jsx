@@ -9,15 +9,17 @@ import { LightModeContext } from 'context/light-mode';
 import { Loading } from 'he-components';
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
-
+import { DASHBOARD_URLS } from 'constants/layers-urls';
 import Button from 'components/button';
 
 import hrTheme from 'styles/themes/hr-theme.module.scss';
 
 import styles from './filter-component-styles.module.scss';
+import useJWTToken from 'hooks/useJWTToken';
 
 function FilterComponent(props) {
   const t = useT();
+  const { getToken } = useJWTToken();
   const {
     setFilteredTaxaList,
     selectedTaxa,
@@ -27,6 +29,8 @@ function FilterComponent(props) {
     isLoading,
     updateActiveFilter,
     flaggedSpecies,
+    countryISO,
+    selectedRegion,
   } = props;
 
   const [anyActive, setAnyActive] = useState(false);
@@ -126,9 +130,70 @@ function FilterComponent(props) {
     refreshCounts();
   };
 
-  const handleFlagFeedback = () => {
-    console.log('handle flag feedback', flaggedSpecies);
+  const approveFlaggedSpecies = async (approvedSpecies) => {
+    // make api call to approve species
+    const token = await getToken();
+
+    approvedSpecies.forEach(async (species) => {
+      const flaggedSpeciesData = {
+        scientificname: species.scientificname,
+        region_field: selectedRegion ? Object.keys(selectedRegion)?.[0] : 'iso3',
+        region_code: selectedRegion ? Object.values(selectedRegion)?.[0] : countryISO,
+        iso3: countryISO,
+      }
+
+      const response = fetch(DASHBOARD_URLS.APPROVE_FLAGGED_SPECIES_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(flaggedSpeciesData),
+      }).then((res) => {
+        if(res.ok){
+          setShowFlaggedSpecies(false);
+        }
+      });
+    });
+  }
+
+  const rejectFlaggedSpecies = async (rejectedSpecies) => {
+    // make api call to reject species
+    const token = await getToken();
+
+    rejectedSpecies.forEach(async (species) => {
+      const flaggedSpeciesData = {
+        scientificname: species.scientificname,
+        region_field: selectedRegion ? Object.keys(selectedRegion)?.[0] : 'iso3',
+        region_code: selectedRegion ? Object.values(selectedRegion)?.[0] : countryISO,
+        iso3: countryISO,
+        flag: false,
+      }
+
+      const response = fetch(DASHBOARD_URLS.FLAG_SPECIES_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(flaggedSpeciesData),
+      }).then((res) => {
+        if(res.ok){
+          setShowFlaggedSpecies(false);
+        }
+      });
+    });
+  }
+
+  const handleApproveFlaggedSpecies =  () => {
+    const approvedSpecies = flaggedSpeciesToReview.filter(s => s.checked);
+    approveFlaggedSpecies(approvedSpecies);
   };
+
+  const handleRejectFlaggedSpecies = () => {
+    const rejectedSpecies = flaggedSpeciesToReview.filter(s => s.checked);
+    rejectFlaggedSpecies(rejectedSpecies);
+  }
 
   const clearFilters = () => {
     filters.forEach((f) =>
@@ -217,7 +282,7 @@ function FilterComponent(props) {
             </div>
             <div className={styles.feedbackBody}>
               {flaggedSpeciesToReview?.map((species) => (
-                <div key={`flagged-${species.scientificName}`} className={styles.flaggedSpeciesItem}>
+                <div key={`flagged-${species.scientificname}`} className={styles.flaggedSpeciesItem}>
                   <FormControlLabel
                     label={t(species.scientificname)}
                     control={
@@ -238,13 +303,13 @@ function FilterComponent(props) {
                 className={styles.rejectButton}
                 type="rectangular"
                 label={t('Unflag Species')}
-                handleClick={handleFlagFeedback}
+                handleClick={handleRejectFlaggedSpecies}
               />
               <Button
                 className={styles.submitButton}
                 type="rectangular"
                 label={t('Approve Flagged Species')}
-                handleClick={handleFlagFeedback}
+                handleClick={handleApproveFlaggedSpecies}
               />
             </div>
           </article>

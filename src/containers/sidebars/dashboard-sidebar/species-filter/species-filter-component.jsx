@@ -372,7 +372,7 @@ function SpeciesFilterComponent(props) {
     // You can use the CREATE_CUSTOM_AREA_URL from your layers-urls.js for the API endpoint
     const token = await getToken();
 
-    const feedbackData ={
+    const customAreaData ={
       region_name: customAreaName,
       region_description: customAreaDescription,
       geojson: customAreaPolygon
@@ -384,7 +384,7 @@ function SpeciesFilterComponent(props) {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify(feedbackData),
+      body: JSON.stringify(customAreaData),
     }).then((res) => {
       if(res.ok){
       }
