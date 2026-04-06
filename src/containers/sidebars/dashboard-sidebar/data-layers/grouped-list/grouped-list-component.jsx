@@ -238,7 +238,7 @@ function GroupedListComponent(props) {
           [id]: layer,
         }));
         loadingCount -= 1;
-        if (loadingCount === 0) {
+        if (loadingCount <= 0) {
           setIsLoading(false);
         }
       });
@@ -261,7 +261,7 @@ function GroupedListComponent(props) {
 
     view.whenLayerView(layer).then(() => {
       loadingCount -= 1;
-      if (loadingCount === 0) {
+      if (loadingCount <= 0) {
         setIsLoading(false);
       }
     });
