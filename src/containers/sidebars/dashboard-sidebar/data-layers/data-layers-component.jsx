@@ -39,6 +39,7 @@ import DataLayersGroupedList from './grouped-list';
 import { key } from 'localforage'
 import useJWTToken from 'hooks/useJWTToken';
 import { update } from 'lodash'
+import { DASHBOARD_URLS } from 'constants/layers-urls';
 
 ChartJS.register(
   LinearScale,
@@ -422,7 +423,7 @@ function DataLayerComponent(props) {
       org: 'guyana_nbis',
     };
 
-    const response = fetch('https://test-api-dot-api-2-x-dot-map-of-life.appspot.com/2.x/nbis/create-feedback', {
+    const response = fetch(DASHBOARD_URLS.CREATE_FEEDBACK_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

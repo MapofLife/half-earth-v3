@@ -9,6 +9,7 @@ import {
   INDIGENOUS_LANDS_FEATURE_ID,
   IUCNStatusTypes,
 } from 'utils/dashboard-utils';
+import { Modal } from 'he-components';
 
 import cx from 'classnames';
 import { LightModeContext } from 'context/light-mode';
@@ -32,9 +33,13 @@ import styles from '../dashboard-sidebar-styles.module.scss';
 import filterStyles from './species-filter-styles.module.scss';
 import GraphicsLayer from '@arcgis/core/layers/GraphicsLayer'
 import Graphic from '@arcgis/core/Graphic'
+import { FormControlLabel, Input } from '@mui/material'
+import { DASHBOARD_URLS } from 'constants/layers-urls';
+import useJWTToken from 'hooks/useJWTToken';
 
 function SpeciesFilterComponent(props) {
   const t = useT();
+  const { getToken } = useJWTToken();
   const { lightMode } = useContext(LightModeContext);
 
   const {
@@ -42,6 +47,7 @@ function SpeciesFilterComponent(props) {
     setSelectedRegionOption,
     setSelectedIndex,
     setSelectedTaxa,
+    setExploreAllSpecies,
     speciesListLoading,
     selectedRegion,
     setRegionName,
@@ -226,6 +232,11 @@ function SpeciesFilterComponent(props) {
 
   const [filters, setFilters] = useState(filterStart);
   const [regionLabel, setRegionLabel] = useState();
+  const [showCustomAreaModal, setShowCustomAreaModal] = useState(false);
+  const [customAreaName, setCustomAreaName] = useState('');
+  const [customAreaDescription, setCustomAreaDescription] = useState('');
+  const [additionalComments, setAdditionalComments] = useState('');
+  const [customAreaPolygon, setCustomAreaPolygon] = useState(null);
 
   const layersToFind = [
     LAYER_OPTIONS.PROTECTED_AREAS,
@@ -356,6 +367,33 @@ function SpeciesFilterComponent(props) {
     }
   };
 
+  const handleSaveCustomArea = async () => {
+    // Implement the logic to save the custom area, e.g., send the geometry and name to the backend
+    // You can use the CREATE_CUSTOM_AREA_URL from your layers-urls.js for the API endpoint
+    const token = await getToken();
+
+    const feedbackData ={
+      region_name: customAreaName,
+      region_description: customAreaDescription,
+      geojson: customAreaPolygon
+    };
+
+    const response = fetch(DASHBOARD_URLS.CREATE_CUSTOM_AREA_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(feedbackData),
+    }).then((res) => {
+      if(res.ok){
+      }
+    });
+
+    // After saving, you might want to refresh the list of regions or provide feedback to the user
+    setShowCustomAreaModal(false);
+  }
+
   useEffect(() => {
     if (!selectedRegion) return;
 
@@ -379,6 +417,7 @@ function SpeciesFilterComponent(props) {
         break;
       case REGION_OPTIONS.DRAW:
         setRegionLabel(t('Custom Area'));
+        setExploreAllSpecies(false);
         break;
       default:
         break;
@@ -389,6 +428,11 @@ function SpeciesFilterComponent(props) {
         type: "polygon",
         rings: [...selectedRegion.rings]
       };
+
+      setCustomAreaPolygon({
+        type: 'polygon',
+        coordinates: polygon.rings
+      });
 
       const fillSymbol = {
         type: "simple-fill",
@@ -461,6 +505,13 @@ function SpeciesFilterComponent(props) {
               <h2>{regionName}</h2>
               <span>{regionLabel}</span>
             </div>
+            {selectedRegionOption === REGION_OPTIONS.DRAW && (
+              <Button
+                className={styles.customAreaButton}
+                type="rectangular"
+                label={t('Save this custom area')}
+                handleClick={() => setShowCustomAreaModal(true)} />
+            )}
             <Button
               className={styles.back}
               handleClick={handleBack}
@@ -479,6 +530,44 @@ function SpeciesFilterComponent(props) {
           <SpeciesListContainer isLoading={speciesListLoading} {...props} />
         </div>
       </div>
+      <Modal
+        isOpen={showCustomAreaModal}
+        onRequestClose={() => setShowCustomAreaModal(false)}
+        theme={styles}>
+          <article className={styles.feedbackContent}>
+            <div className={styles.feedbackHeader}>
+              <span className={styles.feedbackTitle}>{t('Save custom area')}</span>
+              <span className={styles.feedbackSubtitle}>{t('Would you like to save this custom area?')}</span>
+            </div>
+            <div className={styles.feedbackBody}>
+              <input
+                type="text"
+                className={styles.searchInput}
+                placeholder={t('Name of custom area')}
+                onChange={(e) => setCustomAreaName(e.target.value)}
+                value={customAreaName}
+              />
+              <span
+              className={styles.feedbackLabel}
+              >{t('Additional comments')}</span>
+
+            <textarea
+              className={styles.additionalComments}
+              value={customAreaDescription}
+              onChange={(e) => setCustomAreaDescription(e.target.value)}
+              placeholder={t('Add additional comments for data issues...')}
+            ></textarea>
+            </div>
+            <div className={styles.feedbackFooter}>
+              <Button className={styles.cancelButton} label={t('Cancel')} handleClick={() => setShowCustomAreaModal(false)} />
+              <Button
+                className={styles.submitButton}
+                type="rectangular"
+                label={t('Save')} handleClick={handleSaveCustomArea} />
+
+            </div>
+          </article>
+      </Modal>
     </section>
   );
 }
