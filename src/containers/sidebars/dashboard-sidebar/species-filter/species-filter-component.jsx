@@ -556,7 +556,7 @@ function SpeciesFilterComponent(props) {
                 className={styles.additionalComments}
                 value={customAreaDescription}
                 onChange={(e) => setCustomAreaDescription(e.target.value)}
-                placeholder={t('Add additional comments for data issues...')}
+                placeholder={t('Describe this custom area...')}
               ></textarea>
             </div>
             <div className={styles.feedbackFooter}>
