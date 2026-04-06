@@ -507,6 +507,7 @@ export const DASHBOARD_URLS = {
   FLAG_SPECIES_URL: `${NBIS_BASE_URL}/flag-species`,
   GET_FLAGGED_SPECIES_URL: `${NBIS_BASE_URL}/get-flagged-species`,
   CREATE_CUSTOM_AREA_URL: `${NBIS_BASE_URL}/create-custom-region`,
+  GET_CUSTOM_AREA_URL: `${NBIS_BASE_URL}/get-custom-regions`,
   CREATE_FEEDBACK_URL: `${NBIS_BASE_URL}/create-feedback`,
   BUCKET_SPECIES_URL: `${NBIS_BASE_URL}/get-species`,
   REGIONS_MOL_DATA: 'https://dev-mol3-dot-api-2-x-dot-map-of-life.appspot.com/2.x/spatial/species/list',

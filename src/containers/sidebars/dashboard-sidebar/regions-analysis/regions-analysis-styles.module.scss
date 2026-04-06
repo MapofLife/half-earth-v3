@@ -131,6 +131,11 @@
       display: flex;
       gap: 8px;
 
+      .basicSingle{
+        color: #000;
+        width: 50%;
+      }
+
       .customArea {
         background-color: transparent;
         border: 1px solid var(--lime-green);

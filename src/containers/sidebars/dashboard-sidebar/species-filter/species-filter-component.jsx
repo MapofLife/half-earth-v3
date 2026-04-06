@@ -29,8 +29,8 @@ import {
 } from 'constants/dashboard-constants.js';
 
 import styles from '../dashboard-sidebar-styles.module.scss';
-
 import filterStyles from './species-filter-styles.module.scss';
+
 import GraphicsLayer from '@arcgis/core/layers/GraphicsLayer'
 import Graphic from '@arcgis/core/Graphic'
 import { FormControlLabel, Input } from '@mui/material'
@@ -397,8 +397,6 @@ function SpeciesFilterComponent(props) {
   useEffect(() => {
     if (!selectedRegion) return;
 
-    // layerView.highlight(hits.graphic);
-
     switch (selectedRegionOption) {
       case REGION_OPTIONS.PROTECTED_AREAS:
         setRegionLabel(t('Protected Areas'));
@@ -424,6 +422,9 @@ function SpeciesFilterComponent(props) {
     }
 
     if(selectedRegion.rings){
+      if(selectedRegion.customName){
+        setRegionName(selectedRegion.customName);
+      }
       const polygon = {
         type: "polygon",
         rings: [...selectedRegion.rings]
@@ -455,7 +456,7 @@ function SpeciesFilterComponent(props) {
         }));
       map.add(graphicsLayer);
 
-      // view.graphics.add(polygonGraphic);
+      view.goTo(graphicsLayer.graphics).then(() => view.goTo({ zoom: view.zoom - 1 }, { duration: 500 }));
     }
   }, [selectedRegionOption, selectedRegion]);
 
@@ -505,7 +506,7 @@ function SpeciesFilterComponent(props) {
               <h2>{regionName}</h2>
               <span>{regionLabel}</span>
             </div>
-            {selectedRegionOption === REGION_OPTIONS.DRAW && (
+            {selectedRegionOption === REGION_OPTIONS.DRAW && !selectedRegion?.customName && (
               <Button
                 className={styles.customAreaButton}
                 type="rectangular"
@@ -533,7 +534,7 @@ function SpeciesFilterComponent(props) {
       <Modal
         isOpen={showCustomAreaModal}
         onRequestClose={() => setShowCustomAreaModal(false)}
-        theme={styles}>
+        theme={filterStyles}>
           <article className={styles.feedbackContent}>
             <div className={styles.feedbackHeader}>
               <span className={styles.feedbackTitle}>{t('Save custom area')}</span>

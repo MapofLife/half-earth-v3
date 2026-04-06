@@ -47,6 +47,9 @@ import SketchWidget from '../../data-global-sidebar/analyze-areas-sidebar-card/s
 import styles from './regions-analysis-styles.module.scss';
 import Polygon from '@arcgis/core/geometry/Polygon'
 import Graphic from '@arcgis/core/Graphic'
+import Select from 'react-select';
+import { DASHBOARD_URLS } from 'constants/layers-urls';
+import useJWTToken from 'hooks/useJWTToken';
 // import SearchInput from 'components/search-input';
 
 export const getWarningMessages = (t, locale) => ({
@@ -93,6 +96,7 @@ export const getWarningMessages = (t, locale) => ({
 
 function RegionsAnalysisComponent(props) {
   const t = useT();
+  const { getToken } = useJWTToken();
   const locale = useLocale();
   const {
     map,
@@ -127,6 +131,8 @@ function RegionsAnalysisComponent(props) {
     title: '',
     description: '',
   });
+  const [selectedCustomArea, setSelectedCustomArea] = useState(null);
+  const [savedCustomAreas, setSavedCustomAreas] = useState([]);
 
   const regionSelectionOptions = [
     {
@@ -440,6 +446,38 @@ function RegionsAnalysisComponent(props) {
     );
   };
 
+  const getSavedCustomAreas = async () => {
+    const token = await getToken();
+
+    try {
+      const areas = await fetch(DASHBOARD_URLS.GET_CUSTOM_AREA_URL, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      const data = await areas.json();
+      setSavedCustomAreas(data);
+    } catch (error) {
+      console.error('Error fetching saved custom areas:', error);
+    }
+  };
+
+  const handleCustomAreaSelect = (selectedOption) => {
+    setSelectedCustomArea(selectedOption);
+  };
+
+  const handleLoadCustomArea = () => {
+    if (selectedCustomArea) {
+      const { geojson } = selectedCustomArea;
+      const newGeometry = webMercatorUtils.webMercatorToGeographic(geojson);
+      setSelectedRegion({ customName: selectedCustomArea.region_name, rings: newGeometry.coordinates });
+      setSelectedRegionOption(REGION_OPTIONS.DRAW);
+      setRegionName(t('Custom Area'));
+      setSelectedIndex(NAVIGATION.EXPLORE_SPECIES);
+    }
+  };
+
   useEffect(() => {
     browsePage({
       type: DASHBOARD,
@@ -478,6 +516,8 @@ function RegionsAnalysisComponent(props) {
         setSelectedRegionOption(REGION_OPTIONS.PROTECTED_AREAS);
         displayLayer(REGION_OPTIONS.PROTECTED_AREAS);
       }
+
+      getSavedCustomAreas();
     }
   }, []);
 
@@ -554,6 +594,30 @@ function RegionsAnalysisComponent(props) {
             />
           </div>
         </div>
+        {countryISO.toUpperCase() === 'GUY' && (<>
+          <span className={styles.selectionSubTitle}>
+            {t('Select a saved custom area')}
+          </span>
+          <div className={styles.customAreaContainer}>
+            <Select
+              className={styles.basicSingle}
+              classNamePrefix="select"
+              name="savedCustomAreas"
+              value={selectedCustomArea}
+              getOptionLabel={(x) => x.region_name}
+              getOptionValue={(x) => x.region_name}
+              options={savedCustomAreas}
+              onChange={handleCustomAreaSelect}
+            />
+            <div className={styles.comingSoon}>
+              <Button
+                type="rectangular"
+                label={t('Load selected area')}
+                handleClick={handleLoadCustomArea}
+              />
+            </div>
+          </div>
+        </>)}
         {selectedRegionOption === REGION_OPTIONS.DRAW && (
           <div>
             <SketchWidget
