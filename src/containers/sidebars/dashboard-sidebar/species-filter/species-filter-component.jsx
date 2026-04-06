@@ -47,6 +47,7 @@ function SpeciesFilterComponent(props) {
     setSelectedRegionOption,
     setSelectedIndex,
     setSelectedTaxa,
+    setExploreAllSpecies,
     speciesListLoading,
     selectedRegion,
     setRegionName,
@@ -234,6 +235,8 @@ function SpeciesFilterComponent(props) {
   const [showCustomAreaModal, setShowCustomAreaModal] = useState(false);
   const [customAreaName, setCustomAreaName] = useState('');
   const [customAreaDescription, setCustomAreaDescription] = useState('');
+  const [additionalComments, setAdditionalComments] = useState('');
+  const [customAreaPolygon, setCustomAreaPolygon] = useState(null);
 
   const layersToFind = [
     LAYER_OPTIONS.PROTECTED_AREAS,
@@ -372,7 +375,7 @@ function SpeciesFilterComponent(props) {
     const feedbackData ={
       region_name: customAreaName,
       region_description: customAreaDescription,
-      geojson: geometry
+      geojson: customAreaPolygon
     };
 
     const response = fetch(DASHBOARD_URLS.CREATE_CUSTOM_AREA_URL, {
@@ -414,6 +417,7 @@ function SpeciesFilterComponent(props) {
         break;
       case REGION_OPTIONS.DRAW:
         setRegionLabel(t('Custom Area'));
+        setExploreAllSpecies(false);
         break;
       default:
         break;
@@ -424,6 +428,11 @@ function SpeciesFilterComponent(props) {
         type: "polygon",
         rings: [...selectedRegion.rings]
       };
+
+      setCustomAreaPolygon({
+        type: 'polygon',
+        coordinates: polygon.rings
+      });
 
       const fillSymbol = {
         type: "simple-fill",
@@ -496,8 +505,10 @@ function SpeciesFilterComponent(props) {
               <h2>{regionName}</h2>
               <span>{regionLabel}</span>
             </div>
-            <Button className={styles.viewFlaggedButton}
-              label={t('Save custom area')}
+            <Button
+              className={styles.customAreaButton}
+              type="rectangular"
+              label={t('Save this custom area')}
               handleClick={() => setShowCustomAreaModal(true)} />
             <Button
               className={styles.back}
@@ -534,11 +545,21 @@ function SpeciesFilterComponent(props) {
                 onChange={(e) => setCustomAreaName(e.target.value)}
                 value={customAreaName}
               />
+              <span
+              className={styles.feedbackLabel}
+              >{t('Additional comments')}</span>
+
+            <textarea
+              className={styles.additionalComments}
+              value={customAreaDescription}
+              onChange={(e) => setCustomAreaDescription(e.target.value)}
+              placeholder={t('Add additional comments for data issues...')}
+            ></textarea>
             </div>
             <div className={styles.feedbackFooter}>
               <Button className={styles.cancelButton} label={t('Cancel')} handleClick={() => setShowCustomAreaModal(false)} />
               <Button
-              className={styles.submitButton}
+                className={styles.submitButton}
                 type="rectangular"
                 label={t('Save')} handleClick={handleSaveCustomArea} />
 

@@ -503,7 +503,7 @@ export const LAYERS_URLS = {
 
 export const DASHBOARD_URLS = {
   ARCGIS_USER_INFO_URL: `${NBIS_BASE_URL}/get-arcgis-user-info`,
-  FLAG_SPECIES_URL: `${NBIS_BASE_URL}/flag_species`,
+  FLAG_SPECIES_URL: `${NBIS_BASE_URL}/flag-species`,
   GET_FLAGGED_SPECIES_URL: `${NBIS_BASE_URL}/get-flagged-species`,
   CREATE_CUSTOM_AREA_URL: `${NBIS_BASE_URL}/create-custom-region`,
   CREATE_FEEDBACK_URL: `${NBIS_BASE_URL}/create-feedback`,
