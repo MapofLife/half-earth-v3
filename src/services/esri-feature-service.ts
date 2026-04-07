@@ -210,7 +210,7 @@ function getMVTSource(scientificname) {
   return {
     type: 'vector',
     tiles: [
-      'https://production-dot-tiler-dot-map-of-life.appspot.com/0.x/tiles/regions/regions/{proj}/{z}/{x}/{y}.pbf?region_id=1673cab0-c717-4367-9db0-5c63bf26944d',
+      'https://tiles.mol.org/0.x/tiles/regions/regions/{proj}/{z}/{x}/{y}.pbf?region_id=1673cab0-c717-4367-9db0-5c63bf26944d',
     ],
   };
 }
@@ -225,7 +225,7 @@ function getOccurrenceTileLayer(scientificname) {
   return {
     type: 'vector',
     tiles: [
-      `https://production-dot-tiler-dot-map-of-life.appspot.com/0.x/tiles/species/occurrences/3857/{z}/{x}/{y}.mvt?${dparams.toString()}`,
+      `https://tiles.mol.org/0.x/tiles/species/occurrences/3857/{z}/{x}/{y}.mvt?${dparams.toString()}`,
     ],
     minzoom: 0,
     maxzoom: 22

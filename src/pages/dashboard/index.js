@@ -159,7 +159,7 @@ function DashboardContainer(props) {
   };
 
   const getSpeciesData = async () => {
-    const url = `https://dev-api-dot-api-2-x-dot-map-of-life.appspot.com/2.x/species/info?lang=${lang}&scientificname=${scientificName}`;
+    const url = `https://api.mol.org/2.x/species/info?lang=${lang}&scientificname=${scientificName}`;
     const response = await fetch(url);
     const d = await response.json();
     setSpeciesInfo(d[0]);
@@ -232,11 +232,11 @@ function DashboardContainer(props) {
         returnGeometry: false,
       });
     } else {
-      eBirdResponse = await EsriFeatureService.getFeatures({
-        url: DASHBOARD_URLS.GUY_SPECIES_OCCURENCE_URL,
-        whereClause: `species = '${scientificName}' and source = 'eBird' and iso3 = '${countryISO}'`,
-        returnGeometry: false,
-      });
+      // eBirdResponse = await EsriFeatureService.getFeatures({
+      //   url: DASHBOARD_URLS.GUY_SPECIES_OCCURENCE_URL,
+      //   whereClause: `species = '${scientificName}' and source = 'eBird' and iso3 = '${countryISO}'`,
+      //   returnGeometry: false,
+      // });
     }
 
     const eBirdResponseItems = eBirdResponse?.map((item) => item.attributes);
@@ -262,7 +262,7 @@ function DashboardContainer(props) {
       lang: locale,
     };
     const dparams = new URLSearchParams(dataLayerParams);
-    const dataLayersURL = `https://dev-api-dot-api-2-x-dot-map-of-life.appspot.com/2.x/species/datasets?${dparams}`;
+    const dataLayersURL = `https://api.mol.org/2.x/species/datasets?${dparams}`;
 
     const apiCalls = [dataLayersURL];
 
@@ -1031,8 +1031,8 @@ function DashboardContainer(props) {
 
       setData({ habitatTrendData: countryData, spiScoreData: spiCountryData });
     } else {
-      const habitatTrendUrl = `https://dev-api-dot-api-2-x-dot-map-of-life.appspot.com/2.x/species/indicators/habitat-trends/bycountry?scientificname=${scientificName}`;
-      const spiScoreURL = `https://dev-api-dot-api-2-x-dot-map-of-life.appspot.com/2.x/indicators/sps/species_bycountry?scientificname=${scientificName}`;
+      const habitatTrendUrl = `https://api.mol.org/2.x/species/indicators/habitat-trends/bycountry?scientificname=${scientificName}`;
+      const spiScoreURL = `https://api.mol.org/2.x/indicators/sps/species_bycountry?scientificname=${scientificName}`;
 
       const apiCalls = [habitatTrendUrl, spiScoreURL];
 
