@@ -489,7 +489,6 @@ function SpeciesFilterComponent(props) {
     }
   }, [geometry]);
 
-
   useEffect(() => {
     displayLayer(selectedRegionOption);
   }, []);

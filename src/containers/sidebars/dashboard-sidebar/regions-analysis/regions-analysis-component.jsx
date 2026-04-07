@@ -176,21 +176,15 @@ function RegionsAnalysisComponent(props) {
   ];
 
   const postDrawCallback = (geometry) => {
-    // const hash = createHashFromGeometry(geometry);
-    // setAoiGeometry({ hash, geometry });
-    // postAoiToDataBase(geometry, { aoiId: hash });
-
-    // console.log('Geometry drawn', geometry);
-
     const newGeometry = webMercatorUtils.webMercatorToGeographic(geometry);
-    console.log('WebMercator to Geographic', newGeometry);
 
     setTimeout(() => {
       setSelectedIndex(NAVIGATION.EXPLORE_SPECIES);
       setRegionName(t('Custom Area'));
       // setHash(hash);
+      setSelectedGeometryRings({rings: newGeometry.rings});
       setSelectedRegion(newGeometry);
-      // setSelectedRegion({ name: t('Custom Area'), iso: countryISO });
+      setSelectedRegionOption(REGION_OPTIONS.DRAW);
     }, 1000);
 
   };
