@@ -50,6 +50,7 @@ import Graphic from '@arcgis/core/Graphic'
 import Select from 'react-select';
 import { DASHBOARD_URLS } from 'constants/layers-urls';
 import useJWTToken from 'hooks/useJWTToken';
+import { Delete } from '@mui/icons-material'
 // import SearchInput from 'components/search-input';
 
 export const getWarningMessages = (t, locale) => ({
@@ -462,6 +463,28 @@ function RegionsAnalysisComponent(props) {
     setSelectedCustomArea(selectedOption);
   };
 
+  const handleDeleteCustomArea = async () => {
+    if (selectedCustomArea) {
+      const token = await getToken();
+
+      try {
+        await fetch(`${DASHBOARD_URLS.DELETE_CUSTOM_AREA_URL}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`
+          },
+          body: JSON.stringify({region_id: selectedCustomArea.region_id}),
+        });
+
+        setSelectedCustomArea(null);
+        getSavedCustomAreas();
+      } catch (error) {
+        console.error('Error deleting custom area:', error);
+      }
+    }
+  };
+
   const handleLoadCustomArea = () => {
     if (selectedCustomArea) {
       const { geojson } = selectedCustomArea;
@@ -610,6 +633,13 @@ function RegionsAnalysisComponent(props) {
                 type="rectangular"
                 label={t('Load selected area')}
                 handleClick={handleLoadCustomArea}
+              />
+            </div>
+            <div
+              onClick={handleDeleteCustomArea}
+              title={t('Delete selected area')}>
+              <Delete
+                className={styles.deleteIcon}
               />
             </div>
           </div>

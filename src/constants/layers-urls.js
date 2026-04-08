@@ -508,6 +508,7 @@ export const DASHBOARD_URLS = {
   APPROVE_FLAGGED_SPECIES_URL: `${NBIS_BASE_URL}/approve-species`,
   GET_FLAGGED_SPECIES_URL: `${NBIS_BASE_URL}/get-flagged-species`,
   CREATE_CUSTOM_AREA_URL: `${NBIS_BASE_URL}/create-custom-region`,
+  DELETE_CUSTOM_AREA_URL: `${NBIS_BASE_URL}/delete-custom-region`,
   GET_CUSTOM_AREA_URL: `${NBIS_BASE_URL}/get-custom-regions`,
   CREATE_FEEDBACK_URL: `${NBIS_BASE_URL}/create-feedback`,
   BUCKET_SPECIES_URL: `${NBIS_BASE_URL}/get-species`,
