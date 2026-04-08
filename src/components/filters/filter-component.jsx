@@ -302,13 +302,13 @@ function FilterComponent(props) {
               <Button
                 className={styles.rejectButton}
                 type="rectangular"
-                label={t('Unflag Species')}
+                label={t('Unflag selected species')}
                 handleClick={handleRejectFlaggedSpecies}
               />
               <Button
                 className={styles.submitButton}
                 type="rectangular"
-                label={t('Approve Flagged Species')}
+                label={t('Approve selected species')}
                 handleClick={handleApproveFlaggedSpecies}
               />
             </div>
