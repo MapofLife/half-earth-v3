@@ -383,6 +383,7 @@ function SpeciesFilterComponent(props) {
     const response = fetch(DASHBOARD_URLS.CREATE_CUSTOM_AREA_URL, {
       method: 'POST',
       headers: {
+        ISO3: countryISO,
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },

@@ -70,6 +70,7 @@ function DashboardLoginComponent(props) {
 
       fetch(DASHBOARD_URLS.ARCGIS_USER_INFO_URL, {
         method: 'GET',
+        ISO3: countryISO,
         headers: {
           Authorization: `Bearer ${token}`,
         },

@@ -304,7 +304,7 @@ function DataLayerComponent(props) {
     const { trend_data, trend, data } = d;
 
     setDataPoints((prevDataPoints) => {
-      const updatedDataPoints = [...prevDataPoints];
+      const updatedDataPoints = prevDataPoints ? [...prevDataPoints] : [];
         if(d['range map'] && d['range map'].tile_url){
           const rangeMapsExist = prevDataPoints?.find(item => item.id === LAYER_OPTIONS.EXPERT_RANGE_MAPS);
 
@@ -426,6 +426,7 @@ function DataLayerComponent(props) {
     const response = fetch(DASHBOARD_URLS.CREATE_FEEDBACK_URL, {
       method: 'POST',
       headers: {
+        ISO3: countryISO,
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },

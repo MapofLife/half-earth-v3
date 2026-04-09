@@ -69,6 +69,7 @@ function SpeciesGroupComponent(props) {
     const flag = fetch(DASHBOARD_URLS.FLAG_SPECIES_URL, {
       method: 'POST',
       headers: {
+        ISO3: countryISO,
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       },

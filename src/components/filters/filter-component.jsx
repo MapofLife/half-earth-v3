@@ -139,12 +139,13 @@ function FilterComponent(props) {
         scientificname: species.scientificname,
         region_field: selectedRegion ? Object.keys(selectedRegion)?.[0] : 'iso3',
         region_code: selectedRegion ? Object.values(selectedRegion)?.[0] : countryISO,
-        iso3: countryISO,
+        ISO3: countryISO,
       }
 
       const response = fetch(DASHBOARD_URLS.APPROVE_FLAGGED_SPECIES_URL, {
         method: 'POST',
         headers: {
+          ISO3: countryISO,
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
@@ -166,13 +167,14 @@ function FilterComponent(props) {
         scientificname: species.scientificname,
         region_field: selectedRegion ? Object.keys(selectedRegion)?.[0] : 'iso3',
         region_code: selectedRegion ? Object.values(selectedRegion)?.[0] : countryISO,
-        iso3: countryISO,
+        ISO3: countryISO,
         flag: false,
       }
 
       const response = fetch(DASHBOARD_URLS.FLAG_SPECIES_URL, {
         method: 'POST',
         headers: {
+          ISO3: countryISO,
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },

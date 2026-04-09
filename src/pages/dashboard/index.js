@@ -885,6 +885,7 @@ function DashboardContainer(props) {
     const response = await fetch(url, {
       method: 'GET',
       headers: {
+        ISO3: countryISO,
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       },

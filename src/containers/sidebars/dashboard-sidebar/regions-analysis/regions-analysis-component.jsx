@@ -448,6 +448,7 @@ function RegionsAnalysisComponent(props) {
     try {
       const areas = await fetch(DASHBOARD_URLS.GET_CUSTOM_AREA_URL, {
         headers: {
+          ISO3: countryISO,
           Authorization: `Bearer ${token}`
         }
       });
@@ -471,6 +472,7 @@ function RegionsAnalysisComponent(props) {
         await fetch(`${DASHBOARD_URLS.DELETE_CUSTOM_AREA_URL}`, {
           method: 'POST',
           headers: {
+            ISO3: countryISO,
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`
           },
