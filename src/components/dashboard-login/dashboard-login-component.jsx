@@ -16,7 +16,7 @@ const getOAuthInfo = (countryISO) => {
   if(countryISO === 'GUY'){
     return new OAuthInfo({
       appId: '2g74U2WEt7zh0Kpx',
-      popup: true,
+      popup: false,
       portalUrl: 'https://guyana.maps.arcgis.com',
     });
   }
