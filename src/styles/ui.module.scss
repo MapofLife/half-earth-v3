@@ -294,4 +294,14 @@ $featureMapsHeight: 750px;
         }
       }
     }
+
+    .flaggedSpeciesList {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      max-height: 500px;
+      overflow-y: auto;
+      align-items: center;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
   }

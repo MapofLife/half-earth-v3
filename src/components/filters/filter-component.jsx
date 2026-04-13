@@ -31,6 +31,7 @@ function FilterComponent(props) {
     flaggedSpecies,
     countryISO,
     selectedRegion,
+    setUpdateFlaggedSpecies,
   } = props;
 
   const [anyActive, setAnyActive] = useState(false);
@@ -139,13 +140,13 @@ function FilterComponent(props) {
         scientificname: species.scientificname,
         region_field: selectedRegion ? Object.keys(selectedRegion)?.[0] : 'iso3',
         region_code: selectedRegion ? Object.values(selectedRegion)?.[0] : countryISO,
-        ISO3: countryISO,
+        iso3: countryISO,
       }
 
       const response = fetch(DASHBOARD_URLS.APPROVE_FLAGGED_SPECIES_URL, {
         method: 'POST',
         headers: {
-          ISO3: countryISO,
+          iso3: countryISO,
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
@@ -153,6 +154,7 @@ function FilterComponent(props) {
       }).then((res) => {
         if(res.ok){
           setShowFlaggedSpecies(false);
+          setUpdateFlaggedSpecies(prev => !prev);
         }
       });
     });
@@ -167,14 +169,14 @@ function FilterComponent(props) {
         scientificname: species.scientificname,
         region_field: selectedRegion ? Object.keys(selectedRegion)?.[0] : 'iso3',
         region_code: selectedRegion ? Object.values(selectedRegion)?.[0] : countryISO,
-        ISO3: countryISO,
+        iso3: countryISO,
         flag: false,
       }
 
       const response = fetch(DASHBOARD_URLS.FLAG_SPECIES_URL, {
         method: 'POST',
         headers: {
-          ISO3: countryISO,
+          iso3: countryISO,
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
@@ -182,6 +184,7 @@ function FilterComponent(props) {
       }).then((res) => {
         if(res.ok){
           setShowFlaggedSpecies(false);
+          setUpdateFlaggedSpecies(prev => !prev);
         }
       });
     });
@@ -270,7 +273,7 @@ function FilterComponent(props) {
           className={styles.viewFlaggedButton}
           type="rectangular"
           label={t('View flagged species')}
-          handleClick={() => setShowFlaggedSpecies(true)}
+          handleClick={() => {setUpdateFlaggedSpecies(prev => !prev); setShowFlaggedSpecies(true);}}
         />
       )}
       <Modal
@@ -283,20 +286,24 @@ function FilterComponent(props) {
               <span className={styles.feedbackSubtitle}>{t('These are the species that have been flagged for review.')}</span>
             </div>
             <div className={styles.feedbackBody}>
-              {flaggedSpeciesToReview?.map((species) => (
-                <div key={`flagged-${species.scientificname}`} className={styles.flaggedSpeciesItem}>
-                  <FormControlLabel
-                    label={t(species.scientificname)}
-                    control={
-                      <Checkbox
-                        checked={species.checked}
-                        onChange={() => updateSpecies(species.scientificname)}
-                      />
-                    }
-                  />
-                  <span className={styles.flagReason}>{t('Flagged by:')} {species.user_name}</span>
-                </div>
-              ))}
+              <div className={styles.flaggedSpeciesList}>
+                <span>{t('Species')}</span>
+                <span>{t('Flagged by')}</span>
+                {flaggedSpeciesToReview?.map((species) => (
+                  <React.Fragment key={`flagged-${species.scientificname}`}>
+                    <FormControlLabel
+                      label={t(species.scientificname)}
+                      control={
+                        <Checkbox
+                          checked={species.checked}
+                          onChange={() => updateSpecies(species.scientificname)}
+                        />
+                      }
+                    />
+                    <span>{species.user_name}</span>
+                  </React.Fragment>
+                ))}
+              </div>
             </div>
             <div className={styles.feedbackFooter}>
               <Button className={styles.cancelButton} label={t('Cancel')} handleClick={() => setShowFlaggedSpecies(false)} />

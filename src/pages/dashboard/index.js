@@ -95,6 +95,7 @@ function DashboardContainer(props) {
   const [user, setUser] = useState();
   const [hash, setHash] = useState();
   const [flaggedSpecies, setFlaggedSpecies] = useState();
+  const [updateFlaggedSpecies, setUpdateFlaggedSpecies] = useState(false);
 
   const getQueryParams = () => {
     if (queryParams) {
@@ -1139,7 +1140,12 @@ function DashboardContainer(props) {
   useEffect(() => {
     if (!selectedRegion && !speciesToAvoid) return;
     getFlaggedSpeciesList();
-  }, [selectedRegion, speciesToAvoid]);
+  }, [selectedRegion, speciesToAvoid ]);
+
+  useEffect(() => {
+    if (!updateFlaggedSpecies) return;
+    getFlaggedSpeciesList();
+  }, [updateFlaggedSpecies ]);
 
   useEffect(() => {
     getSpeciesList();
@@ -1229,6 +1235,8 @@ function DashboardContainer(props) {
         selectedGeometryRings={selectedGeometryRings}
         setGeometry={setGeometry}
         flaggedSpecies={flaggedSpecies}
+        setUpdateFlaggedSpecies={setUpdateFlaggedSpecies}
+        updateFlaggedSpecies={updateFlaggedSpecies}
         {...props}
       />
     </AuthorizationProvider>
