@@ -271,6 +271,11 @@ $featureMapsHeight: 750px;
         &:hover{
           background-color: darken($brand-color-main, 10%);
         }
+
+        &.disabled {
+          color: #aababc;
+          background-color: #5a5a5a;
+        }
       }
 
       .rejectButton{

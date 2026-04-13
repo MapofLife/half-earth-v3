@@ -372,7 +372,7 @@ function SpeciesFilterComponent(props) {
   const handleSaveCustomArea = async () => {
     // Implement the logic to save the custom area, e.g., send the geometry and name to the backend
     // You can use the CREATE_CUSTOM_AREA_URL from your layers-urls.js for the API endpoint
-    const token = await getToken().catch(() => window.location.reload());
+    const token = await getToken();
 
     const customAreaData ={
       region_name: customAreaName,

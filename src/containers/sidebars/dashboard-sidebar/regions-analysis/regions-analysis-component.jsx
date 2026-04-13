@@ -50,7 +50,8 @@ import Graphic from '@arcgis/core/Graphic'
 import Select from 'react-select';
 import { DASHBOARD_URLS } from 'constants/layers-urls';
 import useJWTToken from 'hooks/useJWTToken';
-import { Delete } from '@mui/icons-material'
+import { Delete } from '@mui/icons-material';
+import { Modal } from 'he-components';
 // import SearchInput from 'components/search-input';
 
 export const getWarningMessages = (t, locale) => ({
@@ -135,6 +136,8 @@ function RegionsAnalysisComponent(props) {
   });
   const [selectedCustomArea, setSelectedCustomArea] = useState(null);
   const [savedCustomAreas, setSavedCustomAreas] = useState([]);
+  const [showDeleteCustomAreaModal, setShowDeleteCustomAreaModal] = useState(false);
+  const [deleteText, setDeleteText] = useState('');
 
   const regionSelectionOptions = [
     {
@@ -443,7 +446,7 @@ function RegionsAnalysisComponent(props) {
   };
 
   const getSavedCustomAreas = async () => {
-    const token = await getToken().catch(() => window.location.reload());
+    const token = await getToken();
 
     try {
       const areas = await fetch(DASHBOARD_URLS.GET_CUSTOM_AREA_URL, {
@@ -464,9 +467,16 @@ function RegionsAnalysisComponent(props) {
     setSelectedCustomArea(selectedOption);
   };
 
+  const displayDeleteCustomAreaModal = () => {
+    if (selectedCustomArea) {
+      setDeleteText('');
+      setShowDeleteCustomAreaModal(true);
+    }
+  };
+
   const handleDeleteCustomArea = async () => {
     if (selectedCustomArea) {
-      const token = await getToken().catch(() => window.location.reload());
+      const token = await getToken();
 
       try {
         await fetch(`${DASHBOARD_URLS.DELETE_CUSTOM_AREA_URL}`, {
@@ -481,6 +491,7 @@ function RegionsAnalysisComponent(props) {
 
         setSelectedCustomArea(null);
         getSavedCustomAreas();
+        setShowDeleteCustomAreaModal(false);
       } catch (error) {
         console.error('Error deleting custom area:', error);
       }
@@ -637,13 +648,13 @@ function RegionsAnalysisComponent(props) {
                 handleClick={handleLoadCustomArea}
               />
             </div>
-            <div
-              onClick={handleDeleteCustomArea}
+            {selectedCustomArea && <div
+              onClick={displayDeleteCustomAreaModal}
               title={t('Delete selected area')}>
               <Delete
                 className={styles.deleteIcon}
               />
-            </div>
+            </div>}
           </div>
         </>)}
         {selectedRegionOption === REGION_OPTIONS.DRAW && (
@@ -679,6 +690,39 @@ function RegionsAnalysisComponent(props) {
         title={promptModalContent.title}
         description={promptModalContent.description}
       />
+      <Modal
+        isOpen={showDeleteCustomAreaModal}
+        onRequestClose={() => setShowDeleteCustomAreaModal(false)}
+        theme={styles}>
+          <article className={styles.feedbackContent}>
+            <div className={styles.feedbackHeader}>
+              <span className={styles.feedbackTitle}>{t('Delete custom area')}</span>
+            </div>
+            <div className={styles.feedbackBody}>
+              <span
+              className={styles.feedbackLabel}
+              >{t('You are about to delete this custom area. If you are sure, please type "delete" in the field below.')}</span>
+              <input
+                type="text"
+                className={styles.searchInput}
+                onChange={(e) => setDeleteText(e.target.value)}
+                value={deleteText}
+              />
+
+            </div>
+            <div className={styles.feedbackFooter}>
+              <Button className={styles.cancelButton} label={t('Cancel')} handleClick={() => setShowDeleteCustomAreaModal(false)} />
+              <button
+                type="button"
+                disabled={deleteText.toLowerCase() !== 'delete'}
+                className={cx(styles.submitButton, {
+                  [styles.disabled]: deleteText.toLowerCase() !== 'delete',
+                })}
+                onClick={handleDeleteCustomArea}
+              >{t('Delete')}</button>
+            </div>
+          </article>
+        </Modal>
     </section>
   );
 }

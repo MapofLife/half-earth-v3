@@ -132,7 +132,7 @@ function FilterComponent(props) {
 
   const approveFlaggedSpecies = async (approvedSpecies) => {
     // make api call to approve species
-    const token = await getToken().catch(() => window.location.reload());
+    const token = await getToken();
 
     approvedSpecies.forEach(async (species) => {
       const flaggedSpeciesData = {
@@ -160,7 +160,7 @@ function FilterComponent(props) {
 
   const rejectFlaggedSpecies = async (rejectedSpecies) => {
     // make api call to reject species
-    const token = await getToken().catch(() => window.location.reload());
+    const token = await getToken();
 
     rejectedSpecies.forEach(async (species) => {
       const flaggedSpeciesData = {

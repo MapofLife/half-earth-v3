@@ -65,7 +65,7 @@ function SpeciesGroupComponent(props) {
   };
 
   const flagSpecies = async (speciesToFlag) => {
-    const token = await getToken().catch(() => window.location.reload());
+    const token = await getToken();
     const flag = fetch(DASHBOARD_URLS.FLAG_SPECIES_URL, {
       method: 'POST',
       headers: {
