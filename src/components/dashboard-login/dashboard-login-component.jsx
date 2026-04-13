@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 
 import { useT } from '@transifex/react';
 
@@ -11,6 +11,7 @@ import Button from 'components/button';
 
 import styles from './dashboard-login-styles.module.scss';
 import { DASHBOARD_URLS } from 'constants/layers-urls';
+import { AuthorizationContext } from 'context/authorization'
 
 const getOAuthInfo = (countryISO) => {
   if(countryISO === 'GUY'){
@@ -42,8 +43,9 @@ const getOAuthInfo = (countryISO) => {
 
 function DashboardLoginComponent(props) {
   const { setLoggedIn, setUser, countryISO } = props;
-  const [email, setEmail] = React.useState('');
-  const [password, setPassword] = React.useState('');
+  const { isAuthorized, setIsAuthorized } = useContext(AuthorizationContext);
+  // const [email, setEmail] = React.useState('');
+  // const [password, setPassword] = React.useState('');
   const t = useT();
   const info = getOAuthInfo(countryISO.toUpperCase());
 
@@ -51,17 +53,15 @@ function DashboardLoginComponent(props) {
 
   const handleLogin = () => {
     IdentityManager.getCredential(info.portalUrl);
-    // if (email.includes('@yale.edu') && password === 'nbis') {
-    //   setLoggedIn(true);
-    // }
   };
 
   const handleLoginSuccess = () => {
     const portal = new Portal();
     portal.authMode = 'immediate';
     portal.load().then(async (response) => {
-      setLoggedIn(true);
+      // setLoggedIn(true);
       setUser(portal.user);
+      setIsAuthorized(true);
 
 
       // Example of using the token to make an authenticated request to the backend
@@ -107,7 +107,7 @@ function DashboardLoginComponent(props) {
     <div className={styles.container}>
       <div className={styles.loginForm}>
         <h1 className={styles.title}>{t('Login')}</h1>
-        <FormControl variant="standard">
+        {/* <FormControl variant="standard">
           <TextField
             label={t('Email address')}
             value={email}
@@ -127,7 +127,7 @@ function DashboardLoginComponent(props) {
               setPassword(event.target.value);
             }}
           />
-        </FormControl>
+        </FormControl> */}
         <Button
           className={styles.saveButton}
           type="rectangular"

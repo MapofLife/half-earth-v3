@@ -412,7 +412,7 @@ function DataLayerComponent(props) {
   }
 
   const handleProvideFeedback = async () => {
-    const token = await getToken();
+    const token = await getToken().catch(() => window.location.reload());
 
     const feedbackData ={
       additional_comments: additionalComments,

@@ -81,14 +81,14 @@ const useJWTToken = () => {
   // Clear cached token when user signs out
   const getEsriToken = useCallback(async () => {
     console.log('Getting Esri token...');
-    const portal = new Portal();
-    portal.authMode = 'immediate';
-    await portal.load();
-    // Get user's credential
-    console.log('Getting credential from portal...');
-    const refreshedCredential = await portal.credential.refreshToken();
-    console.log('Token refreshed:', refreshedCredential.token);
-    return refreshedCredential.token;
+    // const portal = new Portal();
+    // portal.authMode = 'immediate';
+    // await portal.load();
+    // // Get user's credential
+    // console.log('Getting credential from portal...');
+    // const refreshedCredential = await portal.credential.refreshToken();
+    // console.log('Token refreshed:', refreshedCredential.token);
+    // return refreshedCredential.token;
   }, []);
 
   // Auto-refresh token when it's about to expire

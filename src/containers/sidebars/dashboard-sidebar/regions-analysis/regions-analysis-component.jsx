@@ -443,7 +443,7 @@ function RegionsAnalysisComponent(props) {
   };
 
   const getSavedCustomAreas = async () => {
-    const token = await getToken();
+    const token = await getToken().catch(() => window.location.reload());
 
     try {
       const areas = await fetch(DASHBOARD_URLS.GET_CUSTOM_AREA_URL, {
@@ -466,7 +466,7 @@ function RegionsAnalysisComponent(props) {
 
   const handleDeleteCustomArea = async () => {
     if (selectedCustomArea) {
-      const token = await getToken();
+      const token = await getToken().catch(() => window.location.reload());
 
       try {
         await fetch(`${DASHBOARD_URLS.DELETE_CUSTOM_AREA_URL}`, {
