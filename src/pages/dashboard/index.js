@@ -42,7 +42,7 @@ import {
   WDPA_OECM_FEATURE_DATA_LAYER
  } from 'constants/layers-slugs.js';
 import { layersConfig } from 'constants/mol-layers-configs';
-
+import { AuthorizationProvider } from 'context/authorization';
 import DashboardComponent from './dashboard-component.jsx';
 import mapStateToProps from './dashboard-selectors.js';
 import useJWTToken from 'hooks/useJWTToken';
@@ -77,7 +77,7 @@ function DashboardContainer(props) {
   const [filteredTaxaList, setFilteredTaxaList] = useState([]);
   const [scientificName, setScientificName] = useState(null);
   const [selectedIndex, setSelectedIndex] = useState(NAVIGATION.HOME);
-  const [loggedIn, setLoggedIn] = useState(false);
+  // const [loggedIn, setLoggedIn] = useState(false);
   const [selectedRegion, setSelectedRegion] = useState();
   const [selectedGeometryRings, setSelectedGeometryRings] = useState();
   const [fromTrends, setFromTrends] = useState(false);
@@ -1176,62 +1176,62 @@ function DashboardContainer(props) {
   ]);
 
   return (
-    <DashboardComponent
-      handleMapLoad={handleMapLoad}
-      geometry={geometry}
-      speciesInfo={speciesInfo}
-      setSpeciesInfo={setSpeciesInfo}
-      data={data}
-      dataLayerData={dataLayerData}
-      setDataLayerData={setDataLayerData}
-      privateOccurrenceData={privateOccurrenceData}
-      dataByCountry={dataByCountry}
-      spiDataByCountry={spiDataByCountry}
-      taxaList={taxaList}
-      setTaxaList={setTaxaList}
-      selectedTaxa={selectedTaxa}
-      setSelectedTaxa={setSelectedTaxa}
-      filteredTaxaList={filteredTaxaList}
-      setFilteredTaxaList={setFilteredTaxaList}
-      scientificName={scientificName}
-      setScientificName={setScientificName}
-      selectedIndex={selectedIndex}
-      setSelectedIndex={setSelectedIndex}
-      loggedIn={loggedIn}
-      setLoggedIn={setLoggedIn}
-      setSelectedRegion={setSelectedRegion}
-      selectedRegion={selectedRegion}
-      regionLayers={regionLayers}
-      setRegionLayers={setRegionLayers}
-      selectedRegionOption={selectedRegionOption}
-      setSelectedRegionOption={setSelectedRegionOption}
-      setHash={setHash}
-      hash={hash}
-      selectedProvince={selectedProvince}
-      setSelectedProvince={setSelectedProvince}
-      tabOption={tabOption}
-      setTabOption={setTabOption}
-      provinceName={provinceName}
-      setProvinceName={setProvinceName}
-      fromTrends={fromTrends}
-      setFromTrends={setFromTrends}
-      user={user}
-      setUser={setUser}
-      speciesListLoading={speciesListLoading}
-      prioritySpeciesList={prioritySpeciesList}
-      mapLegendLayers={mapLegendLayers}
-      setMapLegendLayers={setMapLegendLayers}
-      setExploreAllSpecies={setExploreAllSpecies}
-      exploreAllSpecies={exploreAllSpecies}
-      regionName={regionName}
-      setRegionName={setRegionName}
-      allTaxa={allTaxa}
-      setSelectedGeometryRings={setSelectedGeometryRings}
-      selectedGeometryRings={selectedGeometryRings}
-      setGeometry={setGeometry}
-      flaggedSpecies={flaggedSpecies}
-      {...props}
-    />
+    <AuthorizationProvider>
+      <DashboardComponent
+        handleMapLoad={handleMapLoad}
+        geometry={geometry}
+        speciesInfo={speciesInfo}
+        setSpeciesInfo={setSpeciesInfo}
+        data={data}
+        dataLayerData={dataLayerData}
+        setDataLayerData={setDataLayerData}
+        privateOccurrenceData={privateOccurrenceData}
+        dataByCountry={dataByCountry}
+        spiDataByCountry={spiDataByCountry}
+        taxaList={taxaList}
+        setTaxaList={setTaxaList}
+        selectedTaxa={selectedTaxa}
+        setSelectedTaxa={setSelectedTaxa}
+        filteredTaxaList={filteredTaxaList}
+        setFilteredTaxaList={setFilteredTaxaList}
+        scientificName={scientificName}
+        setScientificName={setScientificName}
+        selectedIndex={selectedIndex}
+        setSelectedIndex={setSelectedIndex}
+        setSelectedRegion={setSelectedRegion}
+        selectedRegion={selectedRegion}
+        regionLayers={regionLayers}
+        setRegionLayers={setRegionLayers}
+        selectedRegionOption={selectedRegionOption}
+        setSelectedRegionOption={setSelectedRegionOption}
+        setHash={setHash}
+        hash={hash}
+        selectedProvince={selectedProvince}
+        setSelectedProvince={setSelectedProvince}
+        tabOption={tabOption}
+        setTabOption={setTabOption}
+        provinceName={provinceName}
+        setProvinceName={setProvinceName}
+        fromTrends={fromTrends}
+        setFromTrends={setFromTrends}
+        user={user}
+        setUser={setUser}
+        speciesListLoading={speciesListLoading}
+        prioritySpeciesList={prioritySpeciesList}
+        mapLegendLayers={mapLegendLayers}
+        setMapLegendLayers={setMapLegendLayers}
+        setExploreAllSpecies={setExploreAllSpecies}
+        exploreAllSpecies={exploreAllSpecies}
+        regionName={regionName}
+        setRegionName={setRegionName}
+        allTaxa={allTaxa}
+        setSelectedGeometryRings={setSelectedGeometryRings}
+        selectedGeometryRings={selectedGeometryRings}
+        setGeometry={setGeometry}
+        flaggedSpecies={flaggedSpecies}
+        {...props}
+      />
+    </AuthorizationProvider>
   );
 }
 
