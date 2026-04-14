@@ -20,7 +20,7 @@ import useJWTToken from 'hooks/useJWTToken';
 
 function SpeciesGroupComponent(props) {
   const locale = useLocale();
-  const { getToken } = useJWTToken();
+
   const {
     species,
     selectedTaxaObj,
@@ -32,6 +32,7 @@ function SpeciesGroupComponent(props) {
     updateFlaggedSpecies,
     selectedRegion,
   } = props;
+  const { getToken } = useJWTToken(countryISO);
   // eslint-disable-next-line camelcase
   const { asset_url, common, scientificname } = species;
   const { lightMode } = useContext(LightModeContext);

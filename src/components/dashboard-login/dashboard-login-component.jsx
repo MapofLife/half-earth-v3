@@ -42,17 +42,17 @@ const getOAuthInfo = (countryISO) => {
 // TODO: Research why storing appId in .env file returns undefined
 
 function DashboardLoginComponent(props) {
-  const { setLoggedIn, setUser, countryISO } = props;
-  const { isAuthorized, setIsAuthorized } = useContext(AuthorizationContext);
+  const { setLoggedIn, setUser } = props;
+  const { isAuthorized, setIsAuthorized, setToken, token, countryISO } = useContext(AuthorizationContext);
   // const [email, setEmail] = React.useState('');
   // const [password, setPassword] = React.useState('');
   const t = useT();
-  const info = getOAuthInfo(countryISO.toUpperCase());
+  // const info = getOAuthInfo(countryISO.toUpperCase());
 
-  const { getToken } = useJWTToken();
+  // const { getToken } = useJWTToken();
 
   const handleLogin = () => {
-    IdentityManager.getCredential(info.portalUrl);
+    // IdentityManager.getCredential(info.portalUrl);
   };
 
   const handleLoginSuccess = () => {
@@ -63,9 +63,11 @@ function DashboardLoginComponent(props) {
       setUser(portal.user);
       setIsAuthorized(true);
 
-
       // Example of using the token to make an authenticated request to the backend
-      const token = await getToken();
+      const refreshedCredential = await portal.credential.refreshToken();
+      console.log('Token refreshed:', refreshedCredential.token);
+      const token = refreshedCredential.token;
+      setToken(token);
       console.log('Obtained token:', token);
 
       fetch(DASHBOARD_URLS.ARCGIS_USER_INFO_URL, {
@@ -94,13 +96,13 @@ function DashboardLoginComponent(props) {
   };
 
   useEffect(() => {
-    IdentityManager.registerOAuthInfos([info]);
-    IdentityManager.checkSignInStatus(info.portalUrl)
-      .then(handleLoginSuccess)
-      .catch((error) => {
-        console.log('Not signed in:', error);
-        throw Error(error);
-      });
+    // IdentityManager.registerOAuthInfos([info]);
+    // IdentityManager.checkSignInStatus(info.portalUrl)
+    //   .then(handleLoginSuccess)
+    //   .catch((error) => {
+    //     console.log('Not signed in:', error);
+    //     throw Error(error);
+    //   });
   }, []);
 
   return (

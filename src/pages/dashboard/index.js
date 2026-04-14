@@ -42,7 +42,6 @@ import {
   WDPA_OECM_FEATURE_DATA_LAYER
  } from 'constants/layers-slugs.js';
 import { layersConfig } from 'constants/mol-layers-configs';
-import { AuthorizationProvider } from 'context/authorization';
 import DashboardComponent from './dashboard-component.jsx';
 import mapStateToProps from './dashboard-selectors.js';
 import useJWTToken from 'hooks/useJWTToken';
@@ -52,7 +51,6 @@ const actions = { ...countryDataActions, ...urlActions };
 function DashboardContainer(props) {
   const locale = useLocale();
   const t = useT();
-  const { getToken } = useJWTToken();
   const {
     viewSettings,
     countryISO,
@@ -63,6 +61,7 @@ function DashboardContainer(props) {
     browsePage,
     lang,
   } = props;
+  const { getToken } = useJWTToken(countryISO);
 
   const [geometry, setGeometry] = useState(null);
   const [speciesInfo, setSpeciesInfo] = useState(null);
@@ -92,7 +91,6 @@ function DashboardContainer(props) {
   const [prioritySpeciesList, setPrioritySpeciesList] = useState();
   const [mapLegendLayers, setMapLegendLayers] = useState([]);
   const [speciesToAvoid, setSpeciesToAvoid] = useState();
-  const [user, setUser] = useState();
   const [hash, setHash] = useState();
   const [flaggedSpecies, setFlaggedSpecies] = useState();
   const [updateFlaggedSpecies, setUpdateFlaggedSpecies] = useState(false);
@@ -1177,12 +1175,10 @@ function DashboardContainer(props) {
     regionName,
     selectedRegionOption,
     provinceName,
-    user,
     hash,
   ]);
 
   return (
-    <AuthorizationProvider>
       <DashboardComponent
         handleMapLoad={handleMapLoad}
         geometry={geometry}
@@ -1220,8 +1216,6 @@ function DashboardContainer(props) {
         setProvinceName={setProvinceName}
         fromTrends={fromTrends}
         setFromTrends={setFromTrends}
-        user={user}
-        setUser={setUser}
         speciesListLoading={speciesListLoading}
         prioritySpeciesList={prioritySpeciesList}
         mapLegendLayers={mapLegendLayers}
@@ -1239,7 +1233,6 @@ function DashboardContainer(props) {
         updateFlaggedSpecies={updateFlaggedSpecies}
         {...props}
       />
-    </AuthorizationProvider>
   );
 }
 

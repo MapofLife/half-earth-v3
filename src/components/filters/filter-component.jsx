@@ -19,7 +19,7 @@ import useJWTToken from 'hooks/useJWTToken';
 
 function FilterComponent(props) {
   const t = useT();
-  const { getToken } = useJWTToken();
+
   const {
     setFilteredTaxaList,
     selectedTaxa,
@@ -33,6 +33,7 @@ function FilterComponent(props) {
     selectedRegion,
     setUpdateFlaggedSpecies,
   } = props;
+  const { getToken } = useJWTToken(countryISO);
 
   const [anyActive, setAnyActive] = useState(false);
   const { lightMode } = useContext(LightModeContext);

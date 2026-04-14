@@ -53,7 +53,6 @@ ChartJS.register(
 
 function DataLayerComponent(props) {
   const t = useT();
-  const { getToken } = useJWTToken();
   const {
     speciesInfo,
     dataLayerData,
@@ -75,6 +74,8 @@ function DataLayerComponent(props) {
     map,
     setSnackBar
   } = props;
+
+  const { getToken } = useJWTToken(countryISO);
 
   const { lightMode } = useContext(LightModeContext);
   const [dataPoints, setDataPoints] = useState();

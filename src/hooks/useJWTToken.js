@@ -1,14 +1,43 @@
+import IdentityManager from "@arcgis/core/identity/IdentityManager"
+import OAuthInfo from "@arcgis/core/identity/OAuthInfo"
 import Portal from "@arcgis/core/portal/Portal"
 import { useState, useEffect, useCallback } from "react";
+
+const getOAuthInfo = (countryISO) => {
+  if(countryISO === 'GUY'){
+    return new OAuthInfo({
+      appId: '2g74U2WEt7zh0Kpx',
+      popup: false,
+      portalUrl: 'https://guyana.maps.arcgis.com',
+    });
+  }
+
+  if(countryISO === 'COD'){
+    return new OAuthInfo({
+      appId: 'qLC0Ks0swCJPymuu',
+      popup: false,
+      portalUrl: 'https://iccn.maps.arcgis.com/',
+    });
+  }
+
+  if(countryISO === 'GIN'){
+    return new OAuthInfo({
+      appId: 'lxtJIxf04Acx574x',
+      popup: false,
+      portalUrl: 'https://guinee.maps.arcgis.com/',
+    });
+  }
+};
 
 /**
  * Custom hook for managing JWT tokens from Clerk
  * Handles token caching, refresh, and provides a consistent interface
  */
-const useJWTToken = () => {
+const useJWTToken = (countryISO) => {
   const [cachedToken, setCachedToken] = useState(null);
   const [tokenExpiry, setTokenExpiry] = useState(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [credential, setCredential] = useState(null);
 
   // Get a fresh token from Clerk session
   const getFreshToken = useCallback(async () => {
@@ -88,6 +117,7 @@ const useJWTToken = () => {
     console.log('Getting credential from portal...');
     const refreshedCredential = await portal.credential.refreshToken();
     console.log('Token refreshed:', refreshedCredential.token);
+    setCredential(refreshedCredential);
     return refreshedCredential.token;
   }, []);
 
@@ -105,6 +135,38 @@ const useJWTToken = () => {
 
     return () => clearInterval(checkInterval);
   }, [cachedToken, tokenExpiry, needsRefresh, getFreshToken]);
+
+  useEffect(() => {
+    const handleCredentialChange = () => {
+      getToken();
+    };
+
+    IdentityManager.on('credential-create', handleCredentialChange);
+    IdentityManager.on('credential-destroy', handleCredentialChange);
+
+    // Optional: periodic check (useful if token expires without network request)
+    const interval = setInterval(() => {
+      if (credential && credential.expires) {
+        const now = Date.now();
+        if (now > credential.expires - 60_000) { // warn 1 minute before expiry
+          checkAuthStatus();
+        }
+      }
+    }, 30_000); // check every 30 seconds
+  }, [cachedToken])
+
+  useEffect(() => {
+      const oauthInfo = getOAuthInfo(countryISO.toUpperCase());
+      IdentityManager.registerOAuthInfos([oauthInfo]);
+      // IdentityManager.checkSignInStatus(oauthInfo.portalUrl)
+      //   .then(getToken)
+      //   .catch((error) => {
+      //     console.log('Not signed in:', error);
+      //     throw Error(error);
+      // });
+    },
+    [countryISO],
+  );
 
   return {
     getToken,

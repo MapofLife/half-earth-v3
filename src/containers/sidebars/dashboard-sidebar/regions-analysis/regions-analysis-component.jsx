@@ -98,7 +98,7 @@ export const getWarningMessages = (t, locale) => ({
 
 function RegionsAnalysisComponent(props) {
   const t = useT();
-  const { getToken } = useJWTToken();
+
   const locale = useLocale();
   const {
     map,
@@ -127,6 +127,7 @@ function RegionsAnalysisComponent(props) {
     uploadedShape,
     setUploadedShape,
   } = props;
+  const { getToken } = useJWTToken(countryISO);
   const { lightMode } = useContext(LightModeContext);
   const [sketchWidgetMode, setSketchWidgetMode] = useState('create');
   const [isPromptModalOpen, setPromptModalOpen] = useState(false);

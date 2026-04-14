@@ -5,29 +5,29 @@ import DashboardView from '../../containers/views/dashboard-view/dashboard-view'
 import { AuthorizationContext } from 'context/authorization'
 
 function DashboardComponent(props) {
-  const { activeLayers, handleMapLoad, countryISO } =
-    props;
-    const { isAuthorized } = useContext(AuthorizationContext);
+  const { activeLayers, handleMapLoad, countryISO } = props;
+  // const { isAuthorized } = useContext(AuthorizationContext);
 
   const countriesRequiringLogin = ['EE', 'GUY', 'COD', 'GIN'];
 
-  useEffect(() => {
-    if (!countriesRequiringLogin.includes(countryISO.toUpperCase())) {
-      setIsAuthorized(true);
-    }
-  }, []);
+  // useEffect(() => {
+  //   // setCountryISO(countryISO);
+  //   if (!countriesRequiringLogin.includes(countryISO.toUpperCase())) {
+  //     setIsAuthorized(true);
+  //   }
+  // }, []);
 
   return (
     <>
-      {!isAuthorized && countriesRequiringLogin.includes(countryISO.toUpperCase()) && (
+      {/* {!isAuthorized && countriesRequiringLogin.includes(countryISO.toUpperCase()) && (
         <DashboardLogin {...props} />
       )}
-      {isAuthorized && (
+      {isAuthorized && ( */}
         <DashboardView
           onMapLoad={(map) => handleMapLoad(map, activeLayers)}
           {...props}
         />
-      )}
+      {/* )} */}
     </>
   );
 }

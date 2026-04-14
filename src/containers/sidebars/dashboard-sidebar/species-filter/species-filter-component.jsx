@@ -39,7 +39,6 @@ import useJWTToken from 'hooks/useJWTToken';
 
 function SpeciesFilterComponent(props) {
   const t = useT();
-  const { getToken } = useJWTToken();
   const { lightMode } = useContext(LightModeContext);
 
   const {
@@ -63,6 +62,8 @@ function SpeciesFilterComponent(props) {
     map,
     countryISO,
   } = props;
+
+  const { getToken } = useJWTToken(countryISO);
 
   const filterStart = [
     {
