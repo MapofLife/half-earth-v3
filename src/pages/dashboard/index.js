@@ -83,7 +83,7 @@ function DashboardContainer(props) {
   const [regionLayers, setRegionLayers] = useState({});
   const [selectedRegionOption, setSelectedRegionOption] = useState(null);
   const [selectedProvince, setSelectedProvince] = useState();
-  const [exploreAllSpecies, setExploreAllSpecies] = useState(false);
+  const [exploreAllSpecies, setExploreAllSpecies] = useState(true);
   const [tabOption, setTabOption] = useState(2);
   const [provinceName, setProvinceName] = useState();
   const [regionName, setRegionName] = useState();
@@ -571,10 +571,6 @@ function DashboardContainer(props) {
 
   const getOccurenceSpecies = async (speciesData) => {
     let url = DASHBOARD_URLS.SPECIES_OCCURENCE_URL;
-
-    // if (exploreAllSpecies) {
-    //   url = DASHBOARD_URLS.SPECIES_OCCURENCE_URL;
-    // }
 
     let whereClause = `iso3 = '${countryISO}'`;
     if (countryISO === 'GUY') {
@@ -1108,7 +1104,6 @@ function DashboardContainer(props) {
           setCountryDataError(error);
         });
 
-      getFlaggedSpeciesList();
       getPrioritySpeciesList();
       getIgnoredSpeciesList();
     }
@@ -1137,18 +1132,15 @@ function DashboardContainer(props) {
   }, []);
 
   useEffect(() => {
-    if (!selectedRegion && !speciesToAvoid) return;
-    getFlaggedSpeciesList();
-  }, [selectedRegion, speciesToAvoid ]);
+    if (!selectedRegion && !speciesToAvoid ) return;
+      getFlaggedSpeciesList();
+      getSpeciesList();
+  }, [selectedRegion, speciesToAvoid]);
 
   useEffect(() => {
     if (!updateFlaggedSpecies) return;
     getFlaggedSpeciesList();
-  }, [updateFlaggedSpecies ]);
-
-  useEffect(() => {
-    getSpeciesList();
-  }, [flaggedSpecies])
+  }, [updateFlaggedSpecies]);
 
 
   useEffect(() => {
