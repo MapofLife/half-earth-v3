@@ -83,7 +83,7 @@ function DashboardContainer(props) {
   const [regionLayers, setRegionLayers] = useState({});
   const [selectedRegionOption, setSelectedRegionOption] = useState(null);
   const [selectedProvince, setSelectedProvince] = useState();
-  const [exploreAllSpecies, setExploreAllSpecies] = useState(true);
+  const [exploreAllSpecies, setExploreAllSpecies] = useState(null);
   const [tabOption, setTabOption] = useState(2);
   const [provinceName, setProvinceName] = useState();
   const [regionName, setRegionName] = useState();
@@ -353,11 +353,11 @@ function DashboardContainer(props) {
           let bucket = taxa;
           if (
             taxa.toLowerCase() === 'vascular_plants' ||
-            taxa.toLowerCase() === 'non_vascular_plants' ||
-            taxa.toLowerCase() === 'other plants'
+            taxa.toLowerCase() === 'non_vascular_plants'
           ) {
             bucket = 'other plants';
           }
+
           // Check if taxa property exists and has a value
           if (!buckets[bucket]) {
             buckets[bucket] = []; // Create a new bucket if it doesn't exist
@@ -631,7 +631,7 @@ function DashboardContainer(props) {
         returnDistinctValues: true,
         geometry: geoRings,
         returnGeometry: false,
-        outFields: ['species', 'taxa', 'source'],
+        outFields: ['*'],
       });
 
       const list = [...speciesData];
