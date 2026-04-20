@@ -50,7 +50,7 @@ function SpeciesListComponent(props) {
       }
     }
 
-    return t(label);
+    return t(label.toLowerCase());
   };
 
   const updateSelectedTaxa = (taxa) => {

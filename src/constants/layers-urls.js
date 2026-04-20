@@ -133,8 +133,8 @@ import {
 
 const { VITE_APP_VERCEL_ENV } = import.meta.env;
 
-const NBIS_BASE_URL = 'https://test-api-dot-api-2-x-dot-map-of-life.appspot.com/2.x/nbis';
-// const NBIS_BASE_URL = 'https://api.mol.org/2.x/nbis';
+// const NBIS_BASE_URL = 'https://test-api-dot-api-2-x-dot-map-of-life.appspot.com/2.x/nbis';
+const NBIS_BASE_URL = 'https://api.mol.org/2.x/nbis';
 
 const isNotProduction =
   VITE_APP_VERCEL_ENV === 'development' || VITE_APP_VERCEL_ENV === 'preview';

@@ -83,7 +83,7 @@ function DashboardContainer(props) {
   const [regionLayers, setRegionLayers] = useState({});
   const [selectedRegionOption, setSelectedRegionOption] = useState(null);
   const [selectedProvince, setSelectedProvince] = useState();
-  const [exploreAllSpecies, setExploreAllSpecies] = useState(true);
+  const [exploreAllSpecies, setExploreAllSpecies] = useState(false);
   const [tabOption, setTabOption] = useState(2);
   const [provinceName, setProvinceName] = useState();
   const [regionName, setRegionName] = useState();
@@ -353,7 +353,8 @@ function DashboardContainer(props) {
           let bucket = taxa;
           if (
             taxa.toLowerCase() === 'vascular_plants' ||
-            taxa.toLowerCase() === 'non_vascular_plants'
+            taxa.toLowerCase() === 'non_vascular_plants' ||
+            taxa.toLowerCase() === 'other plants'
           ) {
             bucket = 'other plants';
           }
@@ -759,7 +760,7 @@ function DashboardContainer(props) {
     setSpeciesListLoading(true);
 
     const body = {
-      lang: "en",
+      lang: tx.currentLocale,
       radius: "25000",
       v2: "true"
     };
