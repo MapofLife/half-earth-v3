@@ -187,7 +187,7 @@ function RegionsAnalysisComponent(props) {
       setSelectedIndex(NAVIGATION.EXPLORE_SPECIES);
       setRegionName(t('Custom Area'));
       // setHash(hash);
-      setSelectedGeometryRings({rings: newGeometry.rings});
+      setSelectedGeometryRings(newGeometry.rings);
       setSelectedRegion(newGeometry);
       setSelectedRegionOption(REGION_OPTIONS.DRAW);
     }, 1000);
