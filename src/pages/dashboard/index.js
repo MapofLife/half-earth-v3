@@ -386,10 +386,12 @@ function DashboardContainer(props) {
     const uniqueObjects = [];
     arr.forEach((obj) => {
       if (obj) {
-        const { scientific_name } = obj;
+        const { scientific_name, scientificname } = obj;
 
-        if (!seenScientificNames.has(scientific_name)) {
-          seenScientificNames.add(scientific_name);
+        const name = scientificname || scientific_name;
+
+        if (!seenScientificNames.has(name)) {
+          seenScientificNames.add(name);
           uniqueObjects.push(obj);
         }
       }
