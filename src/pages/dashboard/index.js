@@ -187,6 +187,8 @@ function DashboardContainer(props) {
         );
 
         setPrivateOccurrenceData(privateOccurrenceItems);
+      } else {
+        setPrivateOccurrenceData([]);
       }
     }
 
