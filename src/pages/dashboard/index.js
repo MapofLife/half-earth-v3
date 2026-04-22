@@ -12,7 +12,6 @@ import { useLocale, useT } from '@transifex/react';
 import * as urlActions from 'actions/url-actions';
 
 import {
-  getCustomAOISpeciesData,
   getAoiFromDataBase,
 } from 'utils/geo-processing-services';
 import { activateLayersOnLoad } from 'utils/layer-manager-utils';
@@ -30,7 +29,6 @@ import {
 import {
   COUNTRIES_DATA_SERVICE_URL,
   DASHBOARD_URLS,
-  LAYERS_URLS,
 } from 'constants/layers-urls';
 import {
   AMPHIBIAN_LOOKUP,
@@ -307,43 +305,6 @@ function DashboardContainer(props) {
     setDataLayerData(filteredData);
   };
 
-  const getTaxaSpecies = async (taxa, slices) => {
-    const json = JSON.parse(slices);
-    let url;
-
-    switch (taxa) {
-      case 'amphibians':
-        url = LAYERS_URLS[AMPHIBIAN_LOOKUP];
-        break;
-      case 'birds':
-        url = LAYERS_URLS[BIRDS_LOOKUP];
-        break;
-      case 'mammals':
-        url = LAYERS_URLS[MAMMALS_LOOKUP];
-        break;
-      case 'reptiles':
-        url = LAYERS_URLS[REPTILES_LOOKUP];
-        break;
-      default:
-        break;
-    }
-
-    const response = await EsriFeatureService.getFeatures({
-      url,
-      whereClause: `SliceNumber IN (${json
-        .map((s) => s.SliceNumber)
-        .join(',')})`,
-      returnGeometry: false,
-    });
-
-    return {
-      taxa,
-      title: t(taxa),
-      count: json.length,
-      species: response.map((r) => r.attributes),
-    };
-  };
-
   const bucketByTaxa = (arrayOfObjects) => {
     const buckets = {};
 
@@ -574,121 +535,16 @@ function DashboardContainer(props) {
   }
 
   const getOccurenceSpecies = async (speciesData) => {
-    let url = DASHBOARD_URLS.SPECIES_OCCURENCE_URL;
+    const list = [...speciesData];
 
-    let whereClause = `iso3 = '${countryISO}'`;
-    if (countryISO === 'GUY') {
-      url = DASHBOARD_URLS.GUY_SPECIES_OCCURENCE_URL;
+    list.forEach((l) => {
+      l.count = l.species.length;
+    });
+
+    if (exploreAllSpecies) {
+      setAllTaxa(list);
     }
-    // else if (selectedRegion) {
-    //   const { GID_1, WDPA_PID, Int_ID, region_key } = selectedRegion;
-    //   if (GID_1) {
-    //     whereClause = `GID_1 = '${GID_1}'`;
-    //   }
-
-    //   if (WDPA_PID) {
-    //     url = DASHBOARD_URLS.WDPA;
-    //     whereClause = `wdpaid = '${WDPA_PID}'`;
-    //   }
-
-    //   if (Int_ID) {
-    //     url = DASHBOARD_URLS.NBIS_URL;
-    //     whereClause = `Int_ID = '${Int_ID}'`;
-    //   }
-
-    //   if (region_key) {
-    //     if (countryISO === 'GUY-FM') {
-    //       url = DASHBOARD_URLS.ZONE_OCCURRENCE;
-    //     }
-
-    //     if (selectedRegionOption === REGION_OPTIONS.RAPID_INVENTORY_32) {
-    //       url = DASHBOARD_URLS.RAPID_INVENTORY_SPECIES;
-    //     }
-    //     whereClause = `region_key = '${region_key}'`;
-    //   }
-    // }
-
-    // if (
-    //   selectedRegion &&
-    //   selectedRegionOption === REGION_OPTIONS.RAPID_INVENTORY_32
-    // ) {
-    //   const { region_key } = selectedRegion;
-    //   url = DASHBOARD_URLS.RAPID_INVENTORY_SPECIES;
-
-    //   whereClause = `region_key = '${region_key}'`;
-    // }
-
-    // if (!selectedRegion?.mgc) {
-    if (
-      selectedRegionOption !== REGION_OPTIONS.RAPID_INVENTORY_32
-    ){
-      let geoRings = null;
-      if (selectedGeometryRings) {
-        geoRings = {
-          rings: selectedGeometryRings,
-        };
-      }
-
-      const occurenceFeatures = await EsriFeatureService.getFeatures({
-        url,
-        whereClause,
-        returnDistinctValues: true,
-        geometry: geoRings,
-        returnGeometry: false,
-        outFields: ['*'],
-      });
-
-      const list = [...speciesData];
-
-      // if (countryISO.toUpperCase() !== 'EE') {
-      const buckets = bucketByTaxa(occurenceFeatures);
-
-      // loop through buckets to get species info
-      // TODO: remove this for the count, but keep for searching species
-      const occurenceData = Object.keys(buckets).map((key) => {
-        return getSpeciesDetails(buckets[key], key, 'points');
-      });
-
-      occurenceData?.forEach((occurrence) => {
-        const foundTaxa = list.find((sp) => sp.taxa === occurrence.taxa);
-
-        if (foundTaxa) {
-          occurrence.species.forEach((species) => {
-            const isFound = speciesToAvoid?.map((item) => item.toUpperCase())
-              .includes(species.scientificname.toUpperCase());
-
-            if (!isFound) {
-              const foundSpecies = foundTaxa?.species.find(
-                (speciesToFind) =>
-                  speciesToFind?.scientificname.toUpperCase() ===
-                  species?.scientificname.toUpperCase()
-              );
-
-              if (!foundSpecies) {
-                foundTaxa?.species.push(species);
-              } else {
-                foundSpecies.source += `,${species.source}`;
-              }
-            }
-          });
-        } else {
-          list.push(occurrence);
-        }
-      });
-
-      list.forEach((l) => {
-        l.count = l.species.length;
-      });
-      // }
-
-      if (exploreAllSpecies) {
-        setAllTaxa(list);
-      }
-      setTaxaList(list);
-    }
-    else {
-      setTaxaList(speciesData);
-    }
+    setTaxaList(list);
     setSpeciesListLoading(false);
   };
 
