@@ -258,7 +258,7 @@ function DataLayerComponent(props) {
   };
 
   const displayHabitatLayer = async () => {
-    setShowHabitatLayer(false);
+    setShowHabitatLayer(true);
   };
 
   const getExpertRangeMapInfo = (taxa) => {
