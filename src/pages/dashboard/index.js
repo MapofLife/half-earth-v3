@@ -616,7 +616,7 @@ function DashboardContainer(props) {
     setSpeciesListLoading(true);
 
     const body = {
-      lang: tx.currentLocale,
+      lang: tx.currentLocale || 'en',
       radius: "25000",
       v2: "true"
     };
