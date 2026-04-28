@@ -31,6 +31,14 @@ const getOAuthInfo = (countryISO) => {
       portalUrl: 'https://guinee.maps.arcgis.com/',
     });
   }
+
+  if(countryISO === 'PER'){
+    return new OAuthInfo({
+      appId: 'H0lqwISTHVGxKWeG',
+      popup: false,
+      portalUrl: 'https://mols.maps.arcgis.com/',
+    });
+  }
 };
 
 function AuthorizationProvider(props) {
