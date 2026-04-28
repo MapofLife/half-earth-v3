@@ -3,43 +3,10 @@ import OAuthInfo from "@arcgis/core/identity/OAuthInfo"
 import Portal from "@arcgis/core/portal/Portal"
 import useJWTToken from 'hooks/useJWTToken';
 import { DASHBOARD_URLS } from 'constants/layers-urls';
-import { createContext, useCallback, useEffect, useState } from "react"
+import { createContext, useCallback, useEffect, useState } from "react";
+import { getOAuthInfo } from 'utils/getOAuthInfo';
 
 const AuthorizationContext = createContext();
-
-const getOAuthInfo = (countryISO) => {
-  if(countryISO === 'GUY'){
-    return new OAuthInfo({
-      appId: '2g74U2WEt7zh0Kpx',
-      popup: false,
-      portalUrl: 'https://guyana.maps.arcgis.com',
-    });
-  }
-
-  if(countryISO === 'COD'){
-    return new OAuthInfo({
-      appId: 'qLC0Ks0swCJPymuu',
-      popup: false,
-      portalUrl: 'https://iccn.maps.arcgis.com/',
-    });
-  }
-
-  if(countryISO === 'GIN'){
-    return new OAuthInfo({
-      appId: 'lxtJIxf04Acx574x',
-      popup: false,
-      portalUrl: 'https://guinee.maps.arcgis.com/',
-    });
-  }
-
-  if(countryISO === 'PER'){
-    return new OAuthInfo({
-      appId: 'H0lqwISTHVGxKWeG',
-      popup: false,
-      portalUrl: 'https://mols.maps.arcgis.com/',
-    });
-  }
-};
 
 function AuthorizationProvider(props) {
   const {countryISO} = props;
