@@ -1,13 +1,13 @@
 import React, { useEffect, useState, useContext } from 'react';
 
 import { T, useT } from '@transifex/react';
-
+import { tx } from '@transifex/native';
 import { getCSSVariable } from 'utils/css-utils';
 
 import cx from 'classnames';
 import { LightModeContext } from 'context/light-mode';
 import { Loading } from 'he-components';
-
+import { DASHBOARD_URLS } from 'constants/layers-urls';
 import DistributionsChartComponent from 'components/charts/distribution-chart/distribution-chart-component';
 import shiScoreDistImg from 'images/dashboard/tutorials/tutorial_shi_scoreDist-en.png?react';
 import shiScoreDistFRImg from 'images/dashboard/tutorials/tutorial_shi_scoreDist-fr.png?react';
@@ -20,66 +20,90 @@ import { useLocale } from '@transifex/react'
 import { SECTION_INFO } from '../../../dashboard-sidebar/tutorials/sections/sections-info';
 
 function ScoreDistributionsSiiComponent(props) {
+  const {
+    siiScoresData,
+    siiSelectSpeciesData,
+    lang,
+    selectedProvince,
+    countryISO,
+    siiActiveTrend
+  } = props;
   const t = useT();
   const bucketSize = 5;
   const locale = useLocale();
-  const { siiScoresData, siiSelectSpeciesData, lang } = props;
   const { lightMode } = useContext(LightModeContext);
   const taxas = ['birds', 'mammals', 'reptiles', 'amphibians'];
   const lowAvg = 'Amphibians';
   const highAvg = 'birds';
 
-  const spsSpecies = [
-    {
-      name: 'Grey Winged Robin Chat',
-      scientificname: 'Cossypha polioptera',
-    },
-    {
-      name: 'Piliocolobus parmentieri',
-      scientificname: 'Piliocolobus parmentieri',
-    },
-    {
-      name: 'Palm Egg Eater',
-      scientificname: 'Dasypeltis palmarum',
-    },
-    {
-      name: 'Caconda Grassland Frog',
-      scientificname: 'Ptychadena bunoderma',
-    },
-  ];
-
+  const [siiSpecies, setSiiSpecies] = useState();
   const [chartData, setChartData] = useState();
   const [taxaData, setTaxaData] = useState();
   const [showTable, setShowTable] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [chartInfo, setChartInfo] = useState();
+  const [lowDist, setLowDist] = useState(0);
+    const [highDist, setHighDist] = useState(7);
+  const threatStatuses = ['EXTINCT', 'EXTINCT IN THE WILD'];
+  const [isSpeciesLoading, setIsSpeciesLoading] = useState(true);
 
   const getChartData = async () => {
     const data = siiScoresData;
-    const taxaSet = {};
+    const taxaSet = { amphibians: {}, birds: {}, mammals: {}, reptiles: {} };
 
     // Loop through each number and place it in the appropriate bucket
-    data.forEach((a) => {
-      const number = +a.protection_score;
-      // Determine the bucket index based on the floor value of the number
-      const bucketIndex = Math.floor(number / 5);
+    // data.forEach((a) => {
+    //   const number = +a.protection_score;
+    //   // Determine the bucket index based on the floor value of the number
+    //   const bucketIndex = Math.floor(number / 5);
 
-      if (!(bucketIndex in taxaSet)) {
-        taxaSet[bucketIndex] = 1;
-      } else {
-        taxaSet[bucketIndex] += 1;
-      }
+    //   if (!(bucketIndex in taxaSet)) {
+    //     taxaSet[bucketIndex] = 1;
+    //   } else {
+    //     taxaSet[bucketIndex] += 1;
+    //   }
+    // });
+
+    data?.forEach((a) => {
+      const group = a.bin.split(',');
+      const bin = group[0] ? group[0].replace(/ /gi, '') : a.bin;
+//TODO: change to sii count
+      taxaSet.amphibians[bin] = a.amphibians_spi_count || a.amphibians;
+      taxaSet.birds[bin] = a.birds_spi_count || a.birds;
+      taxaSet.mammals[bin] = a.mammals_spi_count || a.mammals;
+      taxaSet.reptiles[bin] = a.reptiles_spi_count || a.reptiles;
     });
 
-    const labels = Object.keys(taxaSet).map((key) => +key * 5);
+    // const labels = Object.keys(taxaSet).map((key) => +key * 5);
+    const uniqueKeys = new Set([
+      ...Object.keys(taxaSet.birds),
+      ...Object.keys(taxaSet.mammals),
+      ...Object.keys(taxaSet.reptiles),
+      ...Object.keys(taxaSet.amphibians),
+    ]);
 
     setChartData({
-      labels,
+      labels:  [...uniqueKeys].map((key) => key),
       datasets: [
         {
-          label: t('Items'),
-          data: Object.values(taxaSet),
+          label: t('Birds'),
+          data: Object.values(taxaSet.birds),
           backgroundColor: getCSSVariable('birds'),
+        },
+        {
+          label: t('Mammals'),
+          data: Object.values(taxaSet.mammals),
+          backgroundColor: getCSSVariable('mammals'),
+        },
+        {
+          label: t('Reptiles'),
+          data: Object.values(taxaSet.reptiles),
+          backgroundColor: getCSSVariable('reptiles'),
+        },
+        {
+          label: t('Amphibians'),
+          data: Object.values(taxaSet.amphibians),
+          backgroundColor: getCSSVariable('amphibians'),
         },
       ],
     });
@@ -214,7 +238,7 @@ function ScoreDistributionsSiiComponent(props) {
             habitat_score: s.shs,
             taxa: s.taxa,
           }));
-          setSpsSpecies(formattedSpecies);
+          setSiiSpecies(formattedSpecies);
         });
       }
     }).catch((error) => {
@@ -223,12 +247,100 @@ function ScoreDistributionsSiiComponent(props) {
     });
   };
 
+  const loadSpecies = () => {
+    const species = [];
+    siiSelectSpeciesData.forEach((item) => {
+      if (item.species_shs) {
+        const values = item.species_shs;
+
+        values.forEach((value) => {
+          const val = value;
+          if (!threatStatuses.includes(val.threat_status?.toUpperCase()) && val.species_url) {
+            species.push({
+              species: val.species,
+              commonname: val.commonname,
+              species_url: val.species_url,
+              habitat_score: val.shs_score,
+              taxa: val.taxa,
+            });
+          }
+        });
+
+        if (species.length > 0) {
+          const lastItem = species[species.length - 1];
+          const low = species[0].habitat_score;
+          const high = lastItem.habitat_score;
+
+          setLowDist(low.toFixed(1));
+          setHighDist(high.toFixed(1));
+        } else {
+          setLowDist(0);
+          setHighDist(0);
+        }
+      }
+    });
+
+    if (
+      countryISO.toLowerCase() === 'guy' &&
+      siiActiveTrend === NATIONAL_TREND
+    ) {
+      setSpsSpecies([
+        {
+          species: 'Pipra aureola',
+          commonname: 'Crimson-hooded Manakin',
+          species_url:
+            'https://storage.googleapis.com/mol-assets2/mid/712f124b5e3a4259890d2ed58bf49059.jpg',
+          habitat_score: 84.6,
+          taxa: 'birds',
+        },
+        {
+          species: 'Glossophaga commissarisi',
+          species_url:
+            'https://storage.googleapis.com/mol-assets2/mid/46f5bcb2fce4455aae6964ea69c10342.jpg',
+          habitat_score: 85,
+          taxa: 'reptiles',
+          commonname: 'Commissaris\'s long-tongued bat',
+        },
+        {
+          species: 'Boana sibleszi',
+          species_url:
+            'https://storage.googleapis.com/mol-assets2/mid/3cad5f2a725c41d19a9fa306edde5b7e.jpg',
+          habitat_score: 90.6,
+          commonname: 'La Escalera Tree Frog',
+          taxa: 'amphibians',
+        },
+        {
+          species: 'Gonatodes annularis',
+          species_url:
+            'https://storage.googleapis.com/mol-assets2/mid/7663ecebf87f45349d07dd8fc5eac210.jpg',
+          habitat_score: 91.2,
+          taxa: 'reptiles',
+          commonname: 'Annulated Gecko',
+        },
+      ]);
+    } else {
+      const bird = species.find((item) => item.taxa === 'birds');
+      const mammal = species.find((item) => item.taxa === 'mammals');
+      const reptile = species.find((item) => item.taxa === 'reptiles');
+      const amphibian = species.find((item) => item.taxa === 'amphibians');
+      setSiiSpecies([bird, mammal, reptile, amphibian]);
+    }
+
+    setIsSpeciesLoading(false);
+  };
+
   useEffect(() => {
     if (!siiScoresData.length) return;
     getChartData();
     getTaxaData();
     setIsLoading(false);
   }, [siiScoresData]);
+
+   useEffect(() => {
+      if (!siiSelectSpeciesData || !siiSelectSpeciesData.length) return;
+      setIsSpeciesLoading(true);
+      loadSpecies();
+    }, [siiSelectSpeciesData]);
 
   useEffect(() => {
       if (!lang) return;
@@ -254,33 +366,16 @@ function ScoreDistributionsSiiComponent(props) {
         </span>
         <hr />
         <ul className={styles.spsSpecies}>
-          {spsSpecies.map((species) => {
-            return (
-              <li key={species.scientificname}>
-                <img src="https://place-hold.it/50x50" alt="species" />
-                <div className={styles.spsInfo}>
-                  <span className={styles.name}>{species.name}</span>
-                  <span className={styles.scientificname}>
-                    {species.scientificname}
-                  </span>
-                </div>
-                <span className={styles.spsScore}>SPS: 0.04</span>
-              </li>
-            );
-          })}
-        </ul>
-        <ul className={styles.spsSpecies}>
-          {spsSpecies &&
-            spsSpecies.map((s) => {
-              if(s){
-                return (
-                  <li key={`${s.species}`}>
-                    <button
-                      type="button"
-                      onClick={() => selectSpecies(s.species)}
-                    >
-                      {s.species_url && (
-                        <img src={s.species_url} alt="species" />
+          {siiSpecies && siiSpecies.map((s) => {
+            if(s){
+              return (
+                <li key={`${s.species}`}>
+                  <button
+                    type="button"
+                    onClick={() => selectSpecies(s.species)}
+                  >
+                    {s.species_url && (
+                      <img src={s.species_url} alt="species" />
                       )}
                       {!s?.species_url && <TaxaImageComponent taxa={s?.taxa} />}
                       <div className={styles.spsInfo}>
