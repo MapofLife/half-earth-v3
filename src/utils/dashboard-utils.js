@@ -71,12 +71,12 @@ export const NBS_OP_INTERVENTIONS_FEATURE_ID =
   '41eb11d7bdd1474fb1a208e11546e413';
 
 export const EXPERT_RANGE_MAP_URL =
-  'https://dev-api-dot-api-2-x-dot-map-of-life.appspot.com/2.x/species/drc_rangemap';
+  'https://api.mol.org/2.x/species/drc_rangemap';
 export const TREND_MAP_URL =
-  'https://dev-api-dot-api-2-x-dot-map-of-life.appspot.com/2.x/species/drc_trend';
+  'https://api.mol.org/2.x/species/drc_trend';
 
 export const REGION_RANGE_MAP_URL =
-  'https://dev-api-dot-api-2-x-dot-map-of-life.appspot.com/2.x/species/indicators/habitat-trends/tile-urls';
+  'https://api.mol.org/2.x/species/indicators/habitat-trends/tile-urls';
 
 // LIBERIA LAYERS
 export const PROTECTED_AREA_LIB_FEATURE_URL =

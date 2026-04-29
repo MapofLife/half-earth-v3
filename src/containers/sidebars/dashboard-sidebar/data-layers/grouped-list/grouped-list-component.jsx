@@ -90,6 +90,10 @@ function GroupedListComponent(props) {
         item.color = {r: 255, g: 165, b: 0, a: 0.8};
       }
 
+      if(layer.id.match(/EBIRD/)){
+        item.color = {r: 255, g: 165, b: 0, a: 0.8};
+      }
+
       if (renderer) {
         const { symbol, uniqueValueGroups } = renderer;
 
@@ -100,7 +104,7 @@ function GroupedListComponent(props) {
             item.imageUrl = url;
           }
 
-          if (color) {
+          if (color && color.r && color.g && color.b && color.a > 0) {
             item.color = color;
           }
 
@@ -234,7 +238,7 @@ function GroupedListComponent(props) {
           [id]: layer,
         }));
         loadingCount -= 1;
-        if (loadingCount === 0) {
+        if (loadingCount <= 0) {
           setIsLoading(false);
         }
       });
@@ -257,7 +261,7 @@ function GroupedListComponent(props) {
 
     view.whenLayerView(layer).then(() => {
       loadingCount -= 1;
-      if (loadingCount === 0) {
+      if (loadingCount <= 0) {
         setIsLoading(false);
       }
     });
@@ -305,16 +309,16 @@ function GroupedListComponent(props) {
             map.add(layer);
           }
 
-          view.whenLayerView(layer).then(() => {
-            setRegionLayers((rl) => ({
-              ...rl,
-              [layerName]: layer,
-            }));
-            loadingCount -= 1;
-            if (loadingCount === 0) {
-              setIsLoading(false);
-            }
-          });
+          await view.whenLayerView(layer)
+          setRegionLayers((rl) => ({
+            ...rl,
+            [layerName]: layer,
+          }));
+
+          loadingCount -= 1;
+          if (loadingCount === 0) {
+            setIsLoading(false);
+          }
 
           setMapLegendLayers((ml) => [...ml, item]);
         }
@@ -344,35 +348,6 @@ function GroupedListComponent(props) {
           setIsLoading(true);
           loadingCount += 1;
 
-          // let layerId = GBIF_OCCURENCE_URL;
-          // if (countryISO === 'EE') {
-          //   layerId = REGION_OCCURENCE_ID;
-          // } else if (countryISO === 'GUY') {
-          //   layerId = '5239b39a253c4ab69bb931044406b431';
-          // } else if(countryISO === 'GIN') {
-          //   layerId = '34e596f26f3b4203937e872e91c630b1';
-          // } else if(countryISO === 'COD') {
-          //   layerId = '34e596f26f3b4203937e872e91c630b1';
-          // }
-
-          // if (layerName.match(/EBIRD/)) {
-          //   layer = await EsriFeatureService.getFeatureOccurenceLayer(
-          //     layerId,
-          //     speciesInfo.scientificname,
-          //     layerName,
-          //     'eBird',
-          //     countryISO
-          //   );
-          // } else if (layerName.match(/GBIF/)) {
-          //   layer = await EsriFeatureService.getFeatureOccurenceLayer(
-          //     layerId,
-          //     speciesInfo.scientificname,
-          //     layerName,
-          //     'GBIF',
-          //     countryISO
-          //   );
-          // } else
-
             if (item.type === 'PRIVATE') {
             let portalId = '';
 
@@ -387,13 +362,12 @@ function GroupedListComponent(props) {
             layer = await EsriFeatureService.getFeaturePrivateOccurenceLayer(
               portalId,
               speciesInfo.scientificname,
-              layerName,
+              layerName.toUpperCase(),
               item.dataset_title
             );
-          item.isActive = true;
-          map.add(layer);
           } else {
-            const mvtTileUrlTemplate = `https://production-dot-tiler-dot-map-of-life.appspot.com/0.x/tiles/species/occurrences/3857/{z}/{x}/{y}.mvt?scientificname=${speciesInfo.scientificname}&dsids=9905692e-6a28-4310-b01e-476a471e5bf8,794adb49-7458-41c4-a1c0-56537fdbec1d`;
+            const dsids = item.dataset_id;// 9905692e-6a28-4310-b01e-476a471e5bf8~794adb49-7458-41c4-a1c0-56537fdbec1d';
+            const mvtTileUrlTemplate = `https://tiles.mol.org/0.x/tiles/species/occurrences/3857/{z}/{x}/{y}.mvt?scientificname=${speciesInfo.scientificname}&dsids=${dsids}`;
 
             const mvtStyle = {
               version: 8,
@@ -465,21 +439,23 @@ function GroupedListComponent(props) {
               title: `${speciesInfo.scientificname} Occurrences`,
               visible: true,
               opacity: 0.7,
-              id: layerName,
+              id: layerName.toUpperCase(),
             });
-            map.add(layer);
           }
 
-          view.whenLayerView(layer).then(() => {
-            setRegionLayers((rl) => ({
-              ...rl,
-              [layerName]: layer,
-            }));
-            loadingCount -= 1;
-            if (loadingCount === 0) {
-              setIsLoading(false);
-            }
-          });
+          item.isActive = true;
+          map.add(layer);
+
+          await view.whenLayerView(layer);
+
+          setRegionLayers((rl) => ({
+            ...rl,
+            [layerName]: layer,
+          }));
+          loadingCount -= 1;
+          if (loadingCount === 0) {
+            setIsLoading(false);
+          }
 
           getLayerIcon(layer, item);
         }
@@ -508,21 +484,21 @@ function GroupedListComponent(props) {
 
         map.add(layer);
 
-        view.whenLayerView(layer).then(() => {
-          setRegionLayers((rl) => ({
-            ...rl,
-            [layerName]: layer,
-          }));
-          loadingCount -= 1;
-          if (loadingCount === 0) {
-            setIsLoading(false);
-          }
-        });
+        await view.whenLayerView(layer);
+
+        setRegionLayers((rl) => ({
+          ...rl,
+          [layerName]: layer,
+        }));
+        loadingCount -= 1;
+        if (loadingCount === 0) {
+          setIsLoading(false);
+        }
 
         map.addSource('mapTiles', {
           type: 'vector',
           tiles: [
-            'https://production-dot-tiler-dot-map-of-life.appspot.com/0.x/tiles/regions/regions/{proj}/{z}/{x}/{y}.pbf?region_id=1673cab0-c717-4367-9db0-5c63bf26944d',
+            'https://tiles.mol.org/0.x/tiles/regions/regions/{proj}/{z}/{x}/{y}.pbf?region_id=1673cab0-c717-4367-9db0-5c63bf26944d',
           ],
         });
 

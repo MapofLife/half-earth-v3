@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 
 import { T, useLocale, useT } from '@transifex/react';
-
+import { tx } from '@transifex/native';
 import { getCSSVariable } from 'utils/css-utils';
 
 import cx from 'classnames';
@@ -130,11 +130,11 @@ function ScoreDistributionsSpiComponent(props) {
     },
     onClick: (event, elements) => {
       if (elements.length > 0) {
-        console.log(elements);
+
         const datasetIndex = elements[0].datasetIndex;
         const dataIndex = elements[0].index;
         const value = chartData.datasets[datasetIndex].data[dataIndex];
-        console.log(value);
+
 
         getBucketSpecies((dataIndex * bucketSize), (dataIndex * bucketSize) + bucketSize);
       }
@@ -142,7 +142,7 @@ function ScoreDistributionsSpiComponent(props) {
   };
 
   const getBucketSpecies = (low, high) => {
-    const response = fetch(`${DASHBOARD_URLS.BUCKET_SPECIES_URL}?iso3=${countryISO}&region_key=${selectedProvince?.region_key}&min_value=${low}&max_value=${high}&filter_by=sps`, {
+    const response = fetch(`${DASHBOARD_URLS.BUCKET_SPECIES_URL}?iso3=${countryISO}&region_key=${selectedProvince?.region_key}&min_value=${low}&max_value=${high}&filter_by=sps&lang=${tx.currentLocale}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

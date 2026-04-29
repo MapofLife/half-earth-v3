@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 
 import { T, useLocale, useT } from '@transifex/react';
-
+import { tx } from '@transifex/native';
 import { getCSSVariable } from 'utils/css-utils';
 
 import cx from 'classnames';
@@ -164,7 +164,7 @@ function ScoreDistributionsShiComponent(props) {
   };
 
   const getBucketSpecies = (low, high) => {
-    const response = fetch(`${DASHBOARD_URLS.BUCKET_SPECIES_URL}?iso3=${countryISO}&region_key=${selectedProvince?.region_key}&min_value=${low}&max_value=${high}&filter_by=sps`, {
+    const response = fetch(`${DASHBOARD_URLS.BUCKET_SPECIES_URL}?iso3=${countryISO}&region_key=${selectedProvince?.region_key}&min_value=${low}&max_value=${high}&filter_by=shs&lang=${tx.currentLocale}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -177,7 +177,7 @@ function ScoreDistributionsShiComponent(props) {
             species: s.species,
             commonname: s.commonname,
             species_url: s.species_url,
-            habitat_score: s.sps,
+            habitat_score: s.shs,
             taxa: s.taxa,
           }));
           setSpsSpecies(formattedSpecies);
@@ -371,7 +371,7 @@ function ScoreDistributionsShiComponent(props) {
               !threatStatuses.includes(val.threat_status?.toUpperCase())
             ) {
               species.push({
-                scientificname: val.species,
+                species: val.species,
                 commonname: val.commonname,
                 species_url: val.species_url,
                 habitat_score: val.shs_score,
@@ -404,7 +404,7 @@ function ScoreDistributionsShiComponent(props) {
             const val = value;
             if (!threatStatuses.includes(val.threat_status?.toUpperCase()) && val.species_url) {
               species.push({
-                scientificname: val.species,
+                species: val.species,
                 commonname: val.commonname,
                 species_url: val.species_url,
                 habitat_score: val.shs_score,
@@ -433,7 +433,7 @@ function ScoreDistributionsShiComponent(props) {
       ) {
         setSpsSpecies([
           {
-            scientificname: 'Pipra aureola',
+            species: 'Pipra aureola',
             commonname: 'Crimson-hooded Manakin',
             species_url:
               'https://storage.googleapis.com/mol-assets2/mid/712f124b5e3a4259890d2ed58bf49059.jpg',
@@ -441,7 +441,7 @@ function ScoreDistributionsShiComponent(props) {
             taxa: 'birds',
           },
           {
-            scientificname: 'Glossophaga commissarisi',
+            species: 'Glossophaga commissarisi',
             species_url:
               'https://storage.googleapis.com/mol-assets2/mid/46f5bcb2fce4455aae6964ea69c10342.jpg',
             habitat_score: 85,
@@ -449,7 +449,7 @@ function ScoreDistributionsShiComponent(props) {
             commonname: 'Commissaris\'s long-tongued bat',
           },
           {
-            scientificname: 'Boana sibleszi',
+            species: 'Boana sibleszi',
             species_url:
               'https://storage.googleapis.com/mol-assets2/mid/3cad5f2a725c41d19a9fa306edde5b7e.jpg',
             habitat_score: 90.6,
@@ -457,7 +457,7 @@ function ScoreDistributionsShiComponent(props) {
             taxa: 'amphibians',
           },
           {
-            scientificname: 'Gonatodes annularis',
+            species: 'Gonatodes annularis',
             species_url:
               'https://storage.googleapis.com/mol-assets2/mid/7663ecebf87f45349d07dd8fc5eac210.jpg',
             habitat_score: 91.2,
@@ -556,16 +556,16 @@ function ScoreDistributionsShiComponent(props) {
             {spsSpecies.map((s) => {
               if(s){
                 return (
-                  <li key={s.scientificname ?? s.ScientificName}>
+                  <li key={s.species}>
                     <button
                       type="button"
                       onClick={() =>
-                        selectSpecies(s.scientificname ?? s.ScientificName)
+                        selectSpecies(s.species)
                       }
                     >
                       {s.species_url && (
                         <img
-                          src={s.species_url ?? s.SpeciesImage}
+                          src={s.species_url}
                           alt="species"
                         />
                       )}
@@ -575,7 +575,7 @@ function ScoreDistributionsShiComponent(props) {
                           {s.commonname}
                         </span>
                         <span className={styles.scientificname}>
-                          {s.scientificname ?? s.ScientificName}
+                          {s.species}
                         </span>
                       </div>
                       <span className={styles.spsScore}>

@@ -17,7 +17,7 @@
   .selectedRegion{
     display: flex;
     justify-content: space-between;
-    align-items: start;
+    align-items: center;
     color: var(--font-color);
     padding: 10px;
 
@@ -34,5 +34,28 @@
         font-style: italic;
       }
     }
+  }
+}
+
+.modal {
+  width: 50% !important;
+  height: auto !important;
+}
+
+.modalContent {
+  overflow-y: scroll;
+
+  &::-webkit-scrollbar {
+    width: 0px;
+    background: transparent;
+  }
+}
+
+.closeBtn {
+  background-color: transparent;
+  border: none;
+  svg {
+    height: 20px;
+    width: 20px;
   }
 }

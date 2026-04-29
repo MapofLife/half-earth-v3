@@ -56,8 +56,15 @@ function BioDiversityContainer(props) {
   const [startYear, setStartYear] = useState(1950);
 
   const removeRegionLayers = () => {
+    const layersToRemove = INITIAL_LAYERS;
+
+    if(countryISO.toLowerCase() === 'guy') {
+      layersToRemove.push('GUY-RIVER');
+      layersToRemove.push('GUY-RIVER-NAME');
+    }
+
     map.layers.items.forEach((layer) => {
-      if (!INITIAL_LAYERS.includes(layer.id)) {
+      if (!layersToRemove.includes(layer.id)) {
         map.remove(layer);
       }
     });
@@ -251,7 +258,6 @@ function BioDiversityContainer(props) {
       null,
       countryISO
     );
-    map.add(protectedLayers);
 
     const layerName = LAYER_OPTIONS.HABITAT;
     const webTileLayer = await EsriFeatureService.getXYZLayer(
@@ -260,11 +266,12 @@ function BioDiversityContainer(props) {
       LAYER_TITLE_TYPES.TREND,
       speciesInfo.taxa
     );
-    map.add(webTileLayer);
 
-    view.whenLayerView(webTileLayer).then(() => {
-      setIsLoading(false);
-    });
+    map.add(webTileLayer);
+    await view.whenLayerView(webTileLayer);
+
+    map.add(protectedLayers);
+    await view.whenLayerView(protectedLayers);
 
     // Add layers to Map Legend
     const protectedAreaLayer = {
@@ -305,6 +312,8 @@ function BioDiversityContainer(props) {
         [LAYER_OPTIONS.PROTECTED_AREAS]: protectedLayers,
       });
     }
+
+    setIsLoading(false);
   };
 
   // get habitat score information

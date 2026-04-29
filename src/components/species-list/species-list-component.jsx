@@ -37,6 +37,7 @@ function SpeciesListComponent(props) {
   const [selectedTaxaObj, setSelectedTaxaObj] = useState();
   const [filteredSpecies, setFilteredSpecies] = useState({});
   const [filter, setFilter] = useState();
+  const [validateSpeciesList, setValidateSpeciesList] = useState(false);
 
   const getTaxaTitle = (label, taxa) => {
     const taxaToCheck = Object.values(TAXA_NAMES);
@@ -49,7 +50,7 @@ function SpeciesListComponent(props) {
       }
     }
 
-    return t(label);
+    return t(label.toLowerCase());
   };
 
   const updateSelectedTaxa = (taxa) => {
@@ -105,6 +106,7 @@ function SpeciesListComponent(props) {
     });
   };
 
+  // used to load the species list
   const applyFilter = () => {
     // this.virtualScroll?.scrollToIndex(0);
     const inFilterCheck = (sp) => {
@@ -186,6 +188,18 @@ function SpeciesListComponent(props) {
     setSelectedTaxa('');
   };
 
+  const updateFlaggedSpecies = (speciesToFlag) => {
+    const updatedSpecies = selectedTaxaObj.species.map((sp) => {
+      if (sp.scientificname === speciesToFlag.scientificname) {
+        return { ...sp, flagged: !sp.flagged };
+      }
+      return sp;
+    });
+    setSelectedTaxaObj({ ...selectedTaxaObj, species: updatedSpecies });
+  };
+
+  const getLabel = validateSpeciesList ? t('Validate complete') : t('Validate list');
+
   useEffect(() => {
     if (!selectedTaxa) return;
     updateSelectedTaxa(selectedTaxa);
@@ -193,7 +207,7 @@ function SpeciesListComponent(props) {
 
   useEffect(() => {
     if (!selectedTaxaObj) return;
-
+    // load list of species
     applyFilter();
   }, [selectedTaxaObj]);
 
@@ -263,15 +277,22 @@ function SpeciesListComponent(props) {
       {!isLoading && selectedTaxa && selectedTaxaObj && (
         <div className={styles.speciesList}>
           <div className={styles.header}>
-            <span style={{ marginRight: '5px' }}>{selectedTaxaObj?.count}</span>
-            <span
-              style={{
-                textTransform: 'capitalize',
-                display: 'inline-block',
-              }}
-            >
-              {getTaxaTitle(selectedTaxaObj?.title, selectedTaxaObj?.taxa)}
-            </span>
+            <div>
+              <span style={{ marginRight: '5px' }}>{selectedTaxaObj?.count}</span>
+              <span
+                style={{
+                  textTransform: 'capitalize',
+                  display: 'inline-block',
+                }}
+              >
+                {getTaxaTitle(selectedTaxaObj?.title, selectedTaxaObj?.taxa)}
+              </span>
+            </div>
+            <Button
+              className={styles.close}
+              handleClick={() => setValidateSpeciesList((vsl) => !vsl)}
+              label={getLabel}
+            />
           </div>
           <SearchInput
             className={cx(styles.search)}
@@ -295,7 +316,9 @@ function SpeciesListComponent(props) {
                         <SpeciesGroupContainer
                           species={v}
                           key={idx}
+                          validateSpeciesList={validateSpeciesList}
                           selectedTaxaObj={selectedTaxaObj}
+                          updateFlaggedSpecies={updateFlaggedSpecies}
                           {...props}
                         />
                       )

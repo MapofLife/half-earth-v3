@@ -27,6 +27,8 @@ function MapLegendComponent(props) {
   const t = useT();
   const [leftPosition, setLeftPosition] = useState(0);
   const [collapse, setCollapse] = useState(false);
+  const [layersToShow, setLayersToShow] = useState([]);
+  const [layersLegend, setLayersLegend] = useState([]);
   const spiLow = 0;
   const spiHigh = 100;
   const shiLow = 95;
@@ -182,7 +184,7 @@ function MapLegendComponent(props) {
   };
 
   const findLayerInLegend = (layer) => {
-    const newLayers = [...mapLegendLayers];
+    const newLayers = [...layersToShow];
     const newLayerIndex = newLayers.findIndex(
       (l) => l.label.toUpperCase() === layer.label.toUpperCase()
     );
@@ -218,6 +220,33 @@ function MapLegendComponent(props) {
     return false;
   };
 
+  const reorderArrayAByReverseB = (A, B) => {
+    // Create a Map for case-insensitive lookup: lowercased item → original index in B
+    const indexMap = new Map();
+
+    B.forEach((item, index) => {
+        if (item !== undefined && item !== null) {
+            indexMap.set(item.toString().toLowerCase().trim(), index);
+        }
+    });
+
+    // Sort A so that items appearing LATER in B come FIRST (reverse order)
+    return A.slice().sort((a, b) => {
+        const aStr = a?.id.toString().toLowerCase().trim();
+        const bStr = b?.id.toString().toLowerCase().trim();
+
+        const idxA = indexMap.get(aStr);
+        const idxB = indexMap.get(bStr);
+
+        // Items not found in B go to the end
+        if (idxA === undefined) return 1;
+        if (idxB === undefined) return -1;
+
+        // Higher index in B = should come first (reverse order)
+        return idxB - idxA;
+    });
+  }
+
   useEffect(() => {
     const sidebar = document.getElementById('dashboard-sidebar');
 
@@ -226,7 +255,18 @@ function MapLegendComponent(props) {
     const left = style.getPropertyValue('left');
 
     setLeftPosition(`${rect.width + parseInt(left, 10) + 10}px`);
+
+    // setLayersLegend(Array.from(new Set(mapLegendLayers)));
+    const uniqueLayers = Array.from(new Map(mapLegendLayers.map(item => [item.id, item])).values());
+    setLayersLegend(uniqueLayers);
   }, [mapLegendLayers]);
+
+  useEffect(() => {
+    if(layersLegend.length > 0){
+      const orderedLayers = reorderArrayAByReverseB( layersLegend, map.layers.items.map(item => item.id));
+      setLayersToShow(orderedLayers);
+    }
+  }, [layersLegend]);
 
   return (
     <div
@@ -250,7 +290,7 @@ function MapLegendComponent(props) {
         </button>
       </div>
       <ul className={styles.layers}>
-        {Object.values(mapLegendLayers).map((layer, index) => (
+        {Object.values(layersToShow).map((layer, index) => (
           <li key={`${layer.id}-${layer.label}`}>
             <div className={styles.info}>
               <b>{t(layer.label?.toUpperCase())}</b>
@@ -274,11 +314,11 @@ function MapLegendComponent(props) {
                 <button
                   type="button"
                   className={cx(styles.arrows, styles.down, {
-                    [styles.disabled]: index === mapLegendLayers.length - 1,
+                    [styles.disabled]: index === layersToShow.length - 1,
                   })}
                   aria-label={t('Move layer down')}
                   onClick={() => moveLayerDown(layer)}
-                  disabled={index === mapLegendLayers.length - 1}
+                  disabled={index === layersToShow.length - 1}
                 >
                   <ArrowUpIcon />
                 </button>

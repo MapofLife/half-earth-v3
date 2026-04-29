@@ -1,21 +1,25 @@
 import React, { useContext, useEffect, useState } from 'react';
 
 import { useT } from '@transifex/react';
-
+import { Modal } from 'he-components';
 import DoneIcon from '@mui/icons-material/Done';
 import { Chip } from '@mui/material';
 import cx from 'classnames';
 import { LightModeContext } from 'context/light-mode';
 import { Loading } from 'he-components';
-
+import Checkbox from '@mui/material/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import { DASHBOARD_URLS } from 'constants/layers-urls';
 import Button from 'components/button';
 
 import hrTheme from 'styles/themes/hr-theme.module.scss';
 
 import styles from './filter-component-styles.module.scss';
+import useJWTToken from 'hooks/useJWTToken';
 
 function FilterComponent(props) {
   const t = useT();
+
   const {
     setFilteredTaxaList,
     selectedTaxa,
@@ -24,10 +28,17 @@ function FilterComponent(props) {
     setFilters,
     isLoading,
     updateActiveFilter,
+    flaggedSpecies,
+    countryISO,
+    selectedRegion,
+    setUpdateFlaggedSpecies,
   } = props;
+  const { getToken } = useJWTToken(countryISO);
 
   const [anyActive, setAnyActive] = useState(false);
   const { lightMode } = useContext(LightModeContext);
+  const [showFlaggedSpecies, setShowFlaggedSpecies] = useState(false);
+  const [flaggedSpeciesToReview, setFlaggedSpeciesToReview] = useState([]);
 
   const clearCounts = () => {
     setFilteredTaxaList([]);
@@ -121,6 +132,75 @@ function FilterComponent(props) {
     refreshCounts();
   };
 
+  const approveFlaggedSpecies = async (approvedSpecies) => {
+    // make api call to approve species
+    const token = await getToken();
+
+    approvedSpecies.forEach(async (species) => {
+      const flaggedSpeciesData = {
+        scientificname: species.scientificname,
+        region_field: selectedRegion ? Object.keys(selectedRegion)?.[0] : 'iso3',
+        region_code: selectedRegion ? Object.values(selectedRegion)?.[0] : countryISO,
+        iso3: countryISO,
+      }
+
+      const response = fetch(DASHBOARD_URLS.APPROVE_FLAGGED_SPECIES_URL, {
+        method: 'POST',
+        headers: {
+          iso3: countryISO,
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(flaggedSpeciesData),
+      }).then((res) => {
+        if(res.ok){
+          setShowFlaggedSpecies(false);
+          setUpdateFlaggedSpecies(prev => !prev);
+        }
+      });
+    });
+  }
+
+  const rejectFlaggedSpecies = async (rejectedSpecies) => {
+    // make api call to reject species
+    const token = await getToken();
+
+    rejectedSpecies.forEach(async (species) => {
+      const flaggedSpeciesData = {
+        scientificname: species.scientificname,
+        region_field: selectedRegion ? Object.keys(selectedRegion)?.[0] : 'iso3',
+        region_code: selectedRegion ? Object.values(selectedRegion)?.[0] : countryISO,
+        iso3: countryISO,
+        flag: false,
+      }
+
+      const response = fetch(DASHBOARD_URLS.FLAG_SPECIES_URL, {
+        method: 'POST',
+        headers: {
+          iso3: countryISO,
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(flaggedSpeciesData),
+      }).then((res) => {
+        if(res.ok){
+          setShowFlaggedSpecies(false);
+          setUpdateFlaggedSpecies(prev => !prev);
+        }
+      });
+    });
+  }
+
+  const handleApproveFlaggedSpecies =  () => {
+    const approvedSpecies = flaggedSpeciesToReview.filter(s => s.checked);
+    approveFlaggedSpecies(approvedSpecies);
+  };
+
+  const handleRejectFlaggedSpecies = () => {
+    const rejectedSpecies = flaggedSpeciesToReview.filter(s => s.checked);
+    rejectFlaggedSpecies(rejectedSpecies);
+  }
+
   const clearFilters = () => {
     filters.forEach((f) =>
       f.filters.forEach((ff) => {
@@ -129,6 +209,19 @@ function FilterComponent(props) {
     );
     refreshCounts();
   };
+
+  const updateSpecies = (scientificName) => {
+    setFlaggedSpeciesToReview(prev => prev.map(s => s.scientificname === scientificName ? { ...s, checked: !s.checked } : s));
+  };
+
+  useEffect(() => {
+    if (flaggedSpecies) {
+      setFlaggedSpeciesToReview(flaggedSpecies?.map((species) => ({
+        ...species,
+          checked: false,
+      })));
+    }
+  }, [flaggedSpecies]);
 
   useEffect(() => {
     if (!taxaList) return;
@@ -176,6 +269,61 @@ function FilterComponent(props) {
             </div>
           );
         })}
+      {flaggedSpecies?.length > 0 && (
+        <Button
+          className={styles.viewFlaggedButton}
+          type="rectangular"
+          label={t('View flagged species')}
+          handleClick={() => {setUpdateFlaggedSpecies(prev => !prev); setShowFlaggedSpecies(true);}}
+        />
+      )}
+      <Modal
+        isOpen={showFlaggedSpecies}
+        onRequestClose={() => setShowFlaggedSpecies(false)}
+        theme={styles}>
+          <article className={styles.feedbackContent}>
+            <div className={styles.feedbackHeader}>
+              <span className={styles.feedbackTitle}>{t('Flagged Species')}</span>
+              <span className={styles.feedbackSubtitle}>{t('These are the species that have been flagged for review.')}</span>
+            </div>
+            <div className={styles.feedbackBody}>
+              <div className={styles.flaggedSpeciesList}>
+                <span>{t('Species')}</span>
+                <span>{t('Flagged by')}</span>
+                {flaggedSpeciesToReview?.map((species) => (
+                  <React.Fragment key={`flagged-${species.scientificname}`}>
+                    <FormControlLabel
+                      label={t(species.scientificname)}
+                      control={
+                        <Checkbox
+                          checked={species.checked}
+                          onChange={() => updateSpecies(species.scientificname)}
+                        />
+                      }
+                    />
+                    <span>{species.user_name}</span>
+                  </React.Fragment>
+                ))}
+              </div>
+            </div>
+            <div className={styles.feedbackFooter}>
+              <Button className={styles.cancelButton} label={t('Cancel')} handleClick={() => setShowFlaggedSpecies(false)} />
+
+              <Button
+                className={styles.rejectButton}
+                type="rectangular"
+                label={t('Unflag selected species')}
+                handleClick={handleRejectFlaggedSpecies}
+              />
+              <Button
+                className={styles.submitButton}
+                type="rectangular"
+                label={t('Approve selected species')}
+                handleClick={handleApproveFlaggedSpecies}
+              />
+            </div>
+          </article>
+      </Modal>
     </div>
   );
 }

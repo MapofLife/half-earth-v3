@@ -175,6 +175,7 @@ $featureMapsHeight: 750px;
     display: flex;
     flex-direction: column;
     gap: 8px;
+    height: 100%;
 
     .feedbackHeader{
       display: flex;
@@ -190,6 +191,17 @@ $featureMapsHeight: 750px;
       .feedbackSubtitle{
         font-size: 14px;
         color: $white;
+      }
+    }
+
+    .feedbackBody{
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+
+      span{
+        color: #ffffff;
       }
     }
 
@@ -259,6 +271,37 @@ $featureMapsHeight: 750px;
         &:hover{
           background-color: darken($brand-color-main, 10%);
         }
+
+        &.disabled {
+          color: #aababc;
+          background-color: #5a5a5a;
+        }
       }
+
+      .rejectButton{
+        background-color: $neon-carrot;
+        color: $white;
+        width: auto;
+        font-size: 12px;
+        font-weight: 500;
+        padding: 6px 16px;
+        border-radius: 4px;
+        border: none;
+        cursor: pointer;
+
+        &:hover{
+          background-color: darken($neon-carrot, 10%);
+        }
+      }
+    }
+
+    .flaggedSpeciesList {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      max-height: 500px;
+      overflow-y: auto;
+      align-items: center;
+      font-weight: bold;
+      margin-bottom: 10px;
     }
   }

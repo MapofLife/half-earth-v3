@@ -165,4 +165,20 @@ $tutorial-width: 60vw;
       color: var(--font-color);
     }
   }
+
+  .customAreaButton{
+    background-color: $brand-color-main;
+    color: $white;
+    width: auto;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 6px 16px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+
+    &:hover{
+      background-color: darken($brand-color-main, 10%);
+    }
+  }
 }

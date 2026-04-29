@@ -47,6 +47,11 @@ import SketchWidget from '../../data-global-sidebar/analyze-areas-sidebar-card/s
 import styles from './regions-analysis-styles.module.scss';
 import Polygon from '@arcgis/core/geometry/Polygon'
 import Graphic from '@arcgis/core/Graphic'
+import Select from 'react-select';
+import { DASHBOARD_URLS } from 'constants/layers-urls';
+import useJWTToken from 'hooks/useJWTToken';
+import { Delete } from '@mui/icons-material';
+import { Modal } from 'he-components';
 // import SearchInput from 'components/search-input';
 
 export const getWarningMessages = (t, locale) => ({
@@ -93,6 +98,7 @@ export const getWarningMessages = (t, locale) => ({
 
 function RegionsAnalysisComponent(props) {
   const t = useT();
+
   const locale = useLocale();
   const {
     map,
@@ -107,9 +113,11 @@ function RegionsAnalysisComponent(props) {
     setSelectedRegion,
     selectedIndex,
     selectedRegionOption,
+    setSelectedGeometryRings,
     setMapLegendLayers,
     setSelectedRegionOption,
     setRegionName,
+    setSelectedTaxa,
     countryISO,
     countryName,
     setHash,
@@ -119,6 +127,7 @@ function RegionsAnalysisComponent(props) {
     uploadedShape,
     setUploadedShape,
   } = props;
+  const { getToken } = useJWTToken(countryISO);
   const { lightMode } = useContext(LightModeContext);
   const [sketchWidgetMode, setSketchWidgetMode] = useState('create');
   const [isPromptModalOpen, setPromptModalOpen] = useState(false);
@@ -126,6 +135,10 @@ function RegionsAnalysisComponent(props) {
     title: '',
     description: '',
   });
+  const [selectedCustomArea, setSelectedCustomArea] = useState(null);
+  const [savedCustomAreas, setSavedCustomAreas] = useState([]);
+  const [showDeleteCustomAreaModal, setShowDeleteCustomAreaModal] = useState(false);
+  const [deleteText, setDeleteText] = useState('');
 
   const regionSelectionOptions = [
     {
@@ -168,21 +181,15 @@ function RegionsAnalysisComponent(props) {
   ];
 
   const postDrawCallback = (geometry) => {
-    // const hash = createHashFromGeometry(geometry);
-    // setAoiGeometry({ hash, geometry });
-    // postAoiToDataBase(geometry, { aoiId: hash });
-
-    // console.log('Geometry drawn', geometry);
-
     const newGeometry = webMercatorUtils.webMercatorToGeographic(geometry);
-    console.log('WebMercator to Geographic', newGeometry);
 
     setTimeout(() => {
       setSelectedIndex(NAVIGATION.EXPLORE_SPECIES);
       setRegionName(t('Custom Area'));
       // setHash(hash);
+      setSelectedGeometryRings(newGeometry.rings);
       setSelectedRegion(newGeometry);
-      // setSelectedRegion({ name: t('Custom Area'), iso: countryISO });
+      setSelectedRegionOption(REGION_OPTIONS.DRAW);
     }, 1000);
 
   };
@@ -439,6 +446,71 @@ function RegionsAnalysisComponent(props) {
     );
   };
 
+  const getSavedCustomAreas = async () => {
+    const token = await getToken();
+
+    try {
+      const areas = await fetch(DASHBOARD_URLS.GET_CUSTOM_AREA_URL, {
+        headers: {
+          ISO3: countryISO,
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      const data = await areas.json();
+      setSavedCustomAreas(data);
+    } catch (error) {
+      console.error('Error fetching saved custom areas:', error);
+    }
+  };
+
+  const handleCustomAreaSelect = (selectedOption) => {
+    setSelectedCustomArea(selectedOption);
+  };
+
+  const displayDeleteCustomAreaModal = () => {
+    if (selectedCustomArea) {
+      setDeleteText('');
+      setShowDeleteCustomAreaModal(true);
+    }
+  };
+
+  const handleDeleteCustomArea = async () => {
+    if (selectedCustomArea) {
+      const token = await getToken();
+
+      try {
+        await fetch(`${DASHBOARD_URLS.DELETE_CUSTOM_AREA_URL}`, {
+          method: 'POST',
+          headers: {
+            ISO3: countryISO,
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`
+          },
+          body: JSON.stringify({region_id: selectedCustomArea.region_id}),
+        });
+
+        setSelectedCustomArea(null);
+        getSavedCustomAreas();
+        setShowDeleteCustomAreaModal(false);
+      } catch (error) {
+        console.error('Error deleting custom area:', error);
+      }
+    }
+  };
+
+  const handleLoadCustomArea = () => {
+    if (selectedCustomArea) {
+      const { geojson } = selectedCustomArea;
+      const newGeometry = webMercatorUtils.webMercatorToGeographic(geojson);
+      setSelectedRegion({ customName: selectedCustomArea.region_name, rings: newGeometry.coordinates });
+      setSelectedGeometryRings(newGeometry.coordinates);
+      setSelectedRegionOption(REGION_OPTIONS.DRAW);
+      setRegionName(t('Custom Area'));
+      setSelectedIndex(NAVIGATION.EXPLORE_SPECIES);
+    }
+  };
+
   useEffect(() => {
     browsePage({
       type: DASHBOARD,
@@ -464,6 +536,7 @@ function RegionsAnalysisComponent(props) {
   }, [uploadedShape]);
 
   useEffect(() => {
+    setSelectedTaxa('');
     if (selectedRegionOption && selectedRegion) {
       setSelectedIndex(NAVIGATION.EXPLORE_SPECIES);
     } else {
@@ -476,6 +549,8 @@ function RegionsAnalysisComponent(props) {
         setSelectedRegionOption(REGION_OPTIONS.PROTECTED_AREAS);
         displayLayer(REGION_OPTIONS.PROTECTED_AREAS);
       }
+
+      getSavedCustomAreas();
     }
   }, []);
 
@@ -552,6 +627,37 @@ function RegionsAnalysisComponent(props) {
             />
           </div>
         </div>
+        {countryISO.toUpperCase() === 'GUY' && (<>
+          <span className={styles.selectionSubTitle}>
+            {t('Select a saved custom area')}
+          </span>
+          <div className={styles.customAreaContainer}>
+            <Select
+              className={styles.basicSingle}
+              classNamePrefix="select"
+              name="savedCustomAreas"
+              value={selectedCustomArea}
+              getOptionLabel={(x) => x.region_name}
+              getOptionValue={(x) => x.region_name}
+              options={savedCustomAreas}
+              onChange={handleCustomAreaSelect}
+            />
+            <div className={styles.comingSoon}>
+              <Button
+                type="rectangular"
+                label={t('Load selected area')}
+                handleClick={handleLoadCustomArea}
+              />
+            </div>
+            {selectedCustomArea && <div
+              onClick={displayDeleteCustomAreaModal}
+              title={t('Delete selected area')}>
+              <Delete
+                className={styles.deleteIcon}
+              />
+            </div>}
+          </div>
+        </>)}
         {selectedRegionOption === REGION_OPTIONS.DRAW && (
           <div>
             <SketchWidget
@@ -585,6 +691,39 @@ function RegionsAnalysisComponent(props) {
         title={promptModalContent.title}
         description={promptModalContent.description}
       />
+      <Modal
+        isOpen={showDeleteCustomAreaModal}
+        onRequestClose={() => setShowDeleteCustomAreaModal(false)}
+        theme={styles}>
+          <article className={styles.feedbackContent}>
+            <div className={styles.feedbackHeader}>
+              <span className={styles.feedbackTitle}>{t('Delete custom area')}</span>
+            </div>
+            <div className={styles.feedbackBody}>
+              <span
+              className={styles.feedbackLabel}
+              >{t('You are about to delete this custom area. If you are sure, please type "delete" in the field below.')}</span>
+              <input
+                type="text"
+                className={styles.searchInput}
+                onChange={(e) => setDeleteText(e.target.value)}
+                value={deleteText}
+              />
+
+            </div>
+            <div className={styles.feedbackFooter}>
+              <Button className={styles.cancelButton} label={t('Cancel')} handleClick={() => setShowDeleteCustomAreaModal(false)} />
+              <button
+                type="button"
+                disabled={deleteText.toLowerCase() !== 'delete'}
+                className={cx(styles.submitButton, {
+                  [styles.disabled]: deleteText.toLowerCase() !== 'delete',
+                })}
+                onClick={handleDeleteCustomArea}
+              >{t('Delete')}</button>
+            </div>
+          </article>
+        </Modal>
     </section>
   );
 }

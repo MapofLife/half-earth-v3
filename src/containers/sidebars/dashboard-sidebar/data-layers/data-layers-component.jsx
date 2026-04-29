@@ -38,6 +38,8 @@ import styles from './data-layers-styles.module.scss';
 import DataLayersGroupedList from './grouped-list';
 import { key } from 'localforage'
 import useJWTToken from 'hooks/useJWTToken';
+import { update } from 'lodash'
+import { DASHBOARD_URLS } from 'constants/layers-urls';
 
 ChartJS.register(
   LinearScale,
@@ -51,7 +53,6 @@ ChartJS.register(
 
 function DataLayerComponent(props) {
   const t = useT();
-  const { getToken } = useJWTToken();
   const {
     speciesInfo,
     dataLayerData,
@@ -73,6 +74,8 @@ function DataLayerComponent(props) {
     map,
     setSnackBar
   } = props;
+
+  const { getToken } = useJWTToken(countryISO);
 
   const { lightMode } = useContext(LightModeContext);
   const [dataPoints, setDataPoints] = useState();
@@ -211,7 +214,7 @@ function DataLayerComponent(props) {
         }
         obj.isActive = true;
         obj.parentId = grouped[groupKey].id;
-        obj.id = obj.label;
+        obj.id = obj.label.toUpperCase();
         // TODO: remove logic when not filtering out results
         const foundExpertRange = expertRangeMapIds.find(
           (id) => id === obj.dataset_id
@@ -280,9 +283,9 @@ function DataLayerComponent(props) {
         };
       case 'BIRDS':
         return {
-          label: t('Jetz et al. (2012)'),
+          label: t('Jetzmap 2025'),
           dataset_id: 'd542e050-2ae5-457e-8476-027741538965',
-          dataset_title: 'Jetz Birds 2012',
+          dataset_title: 'Jetzmap 2025',
         };
       default:
         return {
@@ -301,65 +304,58 @@ function DataLayerComponent(props) {
     setMapData(d);
     const { trend_data, trend, data } = d;
 
-      if(d['range map'] && d['range map'].tile_url){
-        setDataPoints((prevDataPoints) => {
+    setDataPoints((prevDataPoints) => {
+      const updatedDataPoints = prevDataPoints ? [...prevDataPoints] : [];
+        if(d['range map'] && d['range map'].tile_url){
+          const rangeMapsExist = prevDataPoints?.find(item => item.id === LAYER_OPTIONS.EXPERT_RANGE_MAPS);
 
-        const rangeMapsExist = prevDataPoints?.find(item => item.id === LAYER_OPTIONS.EXPERT_RANGE_MAPS);
+          if (!rangeMapsExist && Array.isArray(prevDataPoints)) {
+            // const updatedDataPoints = [...prevDataPoints];
 
-        if (!rangeMapsExist && Array.isArray(prevDataPoints)) {
-          const updatedDataPoints = [...prevDataPoints];
+            const {label, dataset_id, dataset_title} = getExpertRangeMapInfo(speciesInfo.taxa);
+            updatedDataPoints.push({
+              label: t('Expert range maps'),
+              items: [{
+                type_title: LAYER_TITLE_TYPES.EXPERT_RANGE_MAPS,
+                label,
+                isActive: false,
+                parentId: LAYER_OPTIONS.EXPERT_RANGE_MAPS,
+                id: 'JETZMAP 2025',
+                dataset_id,
+                dataset_title,
+              }],
 
-          const {label, dataset_id, dataset_title} = getExpertRangeMapInfo(speciesInfo.taxa);
-          updatedDataPoints.push({
-            label: t('Expert range maps'),
-            items: [{
-              type_title: LAYER_TITLE_TYPES.EXPERT_RANGE_MAPS,
-              label,
+              id: LAYER_OPTIONS.EXPERT_RANGE_MAPS,
+              total_no_rows: 1,
               isActive: false,
-              parentId: LAYER_OPTIONS.EXPERT_RANGE_MAPS,
-              id: 'Jetz Birds 2012',
-              dataset_id,
-              dataset_title,
-            }],
-
-            id: LAYER_OPTIONS.EXPERT_RANGE_MAPS,
-            total_no_rows: 1,
-            isActive: false,
-            showChildren: false,
-            type: DATA_POINT_TYPE.PUBLIC,
-          });
-
-          return updatedDataPoints;
-        }
-      });
-    }
-
-
-    if (trend && trend.tile_url) {
-      setDataPoints((prevDataPoints) => {
-        if (Array.isArray(prevDataPoints)) {
-          const updatedDataPoints = [...prevDataPoints];
-          updatedDataPoints.push({
-            label: t('Habitat Loss/Gain'),
-            items: [],
-            id: LAYER_OPTIONS.HABITAT,
-            total_no_rows: 1,
-            isActive: false,
-            showChildren: false,
-            type: DATA_POINT_TYPE.PUBLIC,
-          });
-
-          const habitatLayer = updatedDataPoints.find(
-            (dp) => dp.id === LAYER_OPTIONS.HABITAT
-          );
-
-          if (habitatLayer) {
-            displayHabitatLayer();
+              showChildren: false,
+              type: DATA_POINT_TYPE.PUBLIC,
+            });
           }
-
-          return updatedDataPoints;
         }
-        return [];
+
+        if (trend && trend.tile_url) {
+          if (Array.isArray(prevDataPoints)) {
+            updatedDataPoints.push({
+              label: t('Habitat Loss/Gain'),
+              items: [],
+              id: LAYER_OPTIONS.HABITAT,
+              total_no_rows: 1,
+              isActive: false,
+              showChildren: false,
+              type: DATA_POINT_TYPE.PUBLIC,
+            });
+
+            const habitatLayer = updatedDataPoints.find(
+              (dp) => dp.id === LAYER_OPTIONS.HABITAT
+            );
+
+            if (habitatLayer) {
+              displayHabitatLayer();
+            }
+          }
+        }
+        return updatedDataPoints;
       });
 
       trend_data.shift();
@@ -384,7 +380,8 @@ function DataLayerComponent(props) {
           },
         ],
       });
-    } else if (data?.length > 1) {
+    // } else
+      if (data?.length > 1) {
       // remove Year row
       data.shift();
       setValuesExists(true);
@@ -427,9 +424,10 @@ function DataLayerComponent(props) {
       org: 'guyana_nbis',
     };
 
-    const response = fetch('https://test-api-dot-api-2-x-dot-map-of-life.appspot.com/2.x/nbis/create-feedback', {
+    const response = fetch(DASHBOARD_URLS.CREATE_FEEDBACK_URL, {
       method: 'POST',
       headers: {
+        ISO3: countryISO,
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },

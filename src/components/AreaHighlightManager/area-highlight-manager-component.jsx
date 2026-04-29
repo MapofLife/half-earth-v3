@@ -419,7 +419,7 @@ function AreaHighlightManagerComponent(props) {
         );
         setOnPointerMoveHandler(view.on('pointer-move', handlePointerMove));
       }
-    } else {
+    } else if(selectedIndex !== NAVIGATION.DATA_LAYER){
       setOnClickHandler(
         view.on('click', (event) => handleRegionClicked(event))
       );

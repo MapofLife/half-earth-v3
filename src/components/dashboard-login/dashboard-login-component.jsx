@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 
 import { useT } from '@transifex/react';
 
@@ -10,43 +10,43 @@ import useJWTToken from 'hooks/useJWTToken';
 import Button from 'components/button';
 
 import styles from './dashboard-login-styles.module.scss';
+import { DASHBOARD_URLS } from 'constants/layers-urls';
+import { AuthorizationContext } from 'context/authorization'
 
 // TODO: Research why storing appId in .env file returns undefined
-const info = new OAuthInfo({
-  appId: '2g74U2WEt7zh0Kpx',//'zhWvIGYPUcFL8BbC',
-  popup: false,
-  // portalUrl: 'https://guyana.maps.arcgis.com',
-});
 
 function DashboardLoginComponent(props) {
   const { setLoggedIn, setUser } = props;
-  const [email, setEmail] = React.useState('');
-  const [password, setPassword] = React.useState('');
+  const { isAuthorized, setIsAuthorized, setToken, token, countryISO } = useContext(AuthorizationContext);
+  // const [email, setEmail] = React.useState('');
+  // const [password, setPassword] = React.useState('');
   const t = useT();
+  // const info = getOAuthInfo(countryISO.toUpperCase());
 
-  const { getToken } = useJWTToken();
+  // const { getToken } = useJWTToken();
 
   const handleLogin = () => {
-    IdentityManager.getCredential(info.portalUrl);
-    // if (email.includes('@yale.edu') && password === 'nbis') {
-    //   setLoggedIn(true);
-    // }
+    // IdentityManager.getCredential(info.portalUrl);
   };
 
   const handleLoginSuccess = () => {
     const portal = new Portal();
     portal.authMode = 'immediate';
     portal.load().then(async (response) => {
-      setLoggedIn(true);
+      // setLoggedIn(true);
       setUser(portal.user);
-
+      setIsAuthorized(true);
 
       // Example of using the token to make an authenticated request to the backend
-      const token = await getToken();
+      const refreshedCredential = await portal.credential.refreshToken();
+      console.log('Token refreshed:', refreshedCredential.token);
+      const token = refreshedCredential.token;
+      setToken(token);
       console.log('Obtained token:', token);
 
-      fetch('https://test-api-dot-api-2-x-dot-map-of-life.appspot.com/2.x/nbis/get-arcgis-user-info', {
+      fetch(DASHBOARD_URLS.ARCGIS_USER_INFO_URL, {
         method: 'GET',
+        ISO3: countryISO,
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -70,20 +70,20 @@ function DashboardLoginComponent(props) {
   };
 
   useEffect(() => {
-    IdentityManager.registerOAuthInfos([info]);
-    IdentityManager.checkSignInStatus(info.portalUrl)
-      .then(handleLoginSuccess)
-      .catch((error) => {
-        console.log('Not signed in:', error);
-        throw Error(error);
-      });
+    // IdentityManager.registerOAuthInfos([info]);
+    // IdentityManager.checkSignInStatus(info.portalUrl)
+    //   .then(handleLoginSuccess)
+    //   .catch((error) => {
+    //     console.log('Not signed in:', error);
+    //     throw Error(error);
+    //   });
   }, []);
 
   return (
     <div className={styles.container}>
       <div className={styles.loginForm}>
         <h1 className={styles.title}>{t('Login')}</h1>
-        <FormControl variant="standard">
+        {/* <FormControl variant="standard">
           <TextField
             label={t('Email address')}
             value={email}
@@ -103,7 +103,7 @@ function DashboardLoginComponent(props) {
               setPassword(event.target.value);
             }}
           />
-        </FormControl>
+        </FormControl> */}
         <Button
           className={styles.saveButton}
           type="rectangular"
