@@ -9,14 +9,21 @@ import { LightModeContext } from 'context/light-mode';
 import { Loading } from 'he-components';
 
 import DistributionsChartComponent from 'components/charts/distribution-chart/distribution-chart-component';
-
+import shiScoreDistImg from 'images/dashboard/tutorials/tutorial_shi_scoreDist-en.png?react';
+import shiScoreDistFRImg from 'images/dashboard/tutorials/tutorial_shi_scoreDist-fr.png?react';
 import styles from '../../dashboard-trends-sidebar-styles.module.scss';
 
 import compStyles from './score-distributions-sii-styles.module.scss';
+import ChartInfoComponent from 'components/chart-info-popup/chart-info-component';
+import TaxaImageComponent from 'components/taxa-image';
+import { useLocale } from '@transifex/react'
+import { SECTION_INFO } from '../../../dashboard-sidebar/tutorials/sections/sections-info';
 
 function ScoreDistributionsSiiComponent(props) {
   const t = useT();
-  const { siiScoresData, siiSelectSpeciesData } = props;
+  const bucketSize = 5;
+  const locale = useLocale();
+  const { siiScoresData, siiSelectSpeciesData, lang } = props;
   const { lightMode } = useContext(LightModeContext);
   const taxas = ['birds', 'mammals', 'reptiles', 'amphibians'];
   const lowAvg = 'Amphibians';
@@ -45,6 +52,7 @@ function ScoreDistributionsSiiComponent(props) {
   const [taxaData, setTaxaData] = useState();
   const [showTable, setShowTable] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [chartInfo, setChartInfo] = useState();
 
   const getChartData = async () => {
     const data = siiScoresData;
@@ -77,6 +85,14 @@ function ScoreDistributionsSiiComponent(props) {
     });
   };
 
+  const toolTipTitle = (tooltipItems) => {
+    const bucket = parseInt(tooltipItems[0].label, 10);
+    if(bucket === 120){
+      return '> 120';
+    }
+    return `${bucket} - ${bucket + 5}`;
+  };
+
   // TODO: Using hard coded region id for Congo
   const getTaxaData = async () => {
     const taxaCallsResponses = await Promise.all(
@@ -94,12 +110,14 @@ function ScoreDistributionsSiiComponent(props) {
     setTaxaData({ birdData, mammalData, reptileData, amphibianData });
   };
 
-  useEffect(() => {
-    if (!siiScoresData.length) return;
-    getChartData();
-    getTaxaData();
-    setIsLoading(false);
-  }, [siiScoresData]);
+  const updateChartInfo = () => {
+    setChartInfo({
+      title: t('Score Distributions'),
+      description: t(SECTION_INFO.SHI_SCORE_DISTRIBUTIONS),
+      imgAlt: t('Species Protection Index - Trends'),
+      image: locale === 'fr' ? shiScoreDistFRImg : shiScoreDistImg,
+    });
+  };
 
   const options = {
     plugins: {
@@ -108,6 +126,11 @@ function ScoreDistributionsSiiComponent(props) {
       },
       legend: {
         display: false,
+      },
+      tooltip: {
+        callbacks: {
+          title: toolTipTitle,
+        },
       },
     },
     responsive: true,
@@ -123,8 +146,12 @@ function ScoreDistributionsSiiComponent(props) {
         display: true,
         title: {
           display: true,
-          text: t('Protection Score'),
+          text: t('Score'),
           color: lightMode ? getCSSVariable('black') : getCSSVariable('white'),
+          font: {
+            size: 14,
+            weight: 'bold',
+          },
         },
         grid: {
           color: getCSSVariable('oslo-gray'),
@@ -133,7 +160,7 @@ function ScoreDistributionsSiiComponent(props) {
         },
         ticks: {
           color: getCSSVariable('oslo-gray'),
-          stepSize: 10,
+          stepSize: 5,
         },
       },
       y: {
@@ -143,6 +170,10 @@ function ScoreDistributionsSiiComponent(props) {
           display: true,
           text: t('Number of Species'),
           color: lightMode ? getCSSVariable('black') : getCSSVariable('white'),
+          font: {
+            size: 14,
+            weight: 'bold',
+          },
         },
         grid: {
           color: getCSSVariable('oslo-gray'),
@@ -153,7 +184,61 @@ function ScoreDistributionsSiiComponent(props) {
         },
       },
     },
+    onClick: (event, elements) => {
+      if (elements.length > 0) {
+        console.log(elements);
+        const datasetIndex = elements[0].datasetIndex;
+        const dataIndex = elements[0].index;
+        const value = chartData.datasets[datasetIndex].data[dataIndex];
+        console.log(value);
+
+        getBucketSpecies((dataIndex * bucketSize), (dataIndex * bucketSize) + bucketSize);
+      }
+    }
   };
+
+  const getBucketSpecies = (low, high) => {
+    const response = fetch(`${DASHBOARD_URLS.BUCKET_SPECIES_URL}?iso3=${countryISO}&region_key=${selectedProvince?.region_key}&min_value=${low}&max_value=${high}&filter_by=shs&lang=${tx.currentLocale}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }).then((res) => {
+      if(res.ok){
+        res.json().then((data) => {
+          const species = data || [];
+          const formattedSpecies = species.map((s) => ({
+            species: s.species,
+            commonname: s.commonname,
+            species_url: s.species_url,
+            habitat_score: s.shs,
+            taxa: s.taxa,
+          }));
+          setSpsSpecies(formattedSpecies);
+        });
+      }
+    }).catch((error) => {
+      console.error('Error submitting feedback:', error);
+      alert(t('There was an issue submitting your feedback. Please try again later.'));
+    });
+  };
+
+  useEffect(() => {
+    if (!siiScoresData.length) return;
+    getChartData();
+    getTaxaData();
+    setIsLoading(false);
+  }, [siiScoresData]);
+
+  useEffect(() => {
+      if (!lang) return;
+      updateChartInfo();
+    }, [lang]);
+
+    useEffect(() => {
+      updateChartInfo();
+    }, []);
+
 
   return (
     <div className={cx(lightMode ? styles.light : '', styles.trends)}>
@@ -184,6 +269,37 @@ function ScoreDistributionsSiiComponent(props) {
             );
           })}
         </ul>
+        <ul className={styles.spsSpecies}>
+          {spsSpecies &&
+            spsSpecies.map((s) => {
+              if(s){
+                return (
+                  <li key={`${s.species}`}>
+                    <button
+                      type="button"
+                      onClick={() => selectSpecies(s.species)}
+                    >
+                      {s.species_url && (
+                        <img src={s.species_url} alt="species" />
+                      )}
+                      {!s?.species_url && <TaxaImageComponent taxa={s?.taxa} />}
+                      <div className={styles.spsInfo}>
+                        <span className={styles.name}>{s.commonname}</span>
+                        <span className={styles.scientificname}>
+                          {s.species}
+                        </span>
+                      </div>
+                      <span
+                        className={styles.spsScore}
+                      >{s.species_protection_score_all?.toFixed(
+                        1
+                      )}</span>
+                    </button>
+                  </li>
+                );
+              }
+            })}
+        </ul>
         <div className={styles.options}>
           {/* {!showTable && <Button
             type="rectangular"
@@ -208,7 +324,9 @@ function ScoreDistributionsSiiComponent(props) {
             {/* <SpeciesRichnessComponent countryData={countryData} taxaData={taxaData} /> */}
             {isLoading && <Loading height={200} />}
             {!isLoading && (
-              <DistributionsChartComponent data={chartData} options={options} />
+              <ChartInfoComponent chartInfo={chartInfo} {...props}>
+                <DistributionsChartComponent data={chartData} options={options} />
+              </ChartInfoComponent>
             )}
           </>
         )}

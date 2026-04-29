@@ -7,7 +7,7 @@ function SiiComponent(props) {
   return (
     <>
       <TemporalTrendsSiiComponent {...props} />
-      {/* <ScoreDistributionsSiiComponent {...props} /> */}
+      <ScoreDistributionsSiiComponent {...props} />
     </>
   );
 }
