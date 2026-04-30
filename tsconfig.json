@@ -39,6 +39,9 @@
       "@icons": [
         "icons/*"
       ],
+      "@gbif": [
+        "gbif/*"
+      ],
       "@logos": [
         "logos/*"
       ],

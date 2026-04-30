@@ -976,6 +976,14 @@ function DashboardContainer(props) {
       // Update the address bar without reloading the page
       window.history.replaceState({}, '', url.toString());
 
+    } else if (countryISO === 'PER') {
+      await tx.setCurrentLocale('es');
+      const url = new URL(window.location.href);
+      url.searchParams.set('lang', 'es'); // Add or update the parameter
+
+      // Update the address bar without reloading the page
+      window.history.replaceState({}, '', url.toString());
+
     } else {
       await tx.setCurrentLocale('en');
       const url = new URL(window.location.href);

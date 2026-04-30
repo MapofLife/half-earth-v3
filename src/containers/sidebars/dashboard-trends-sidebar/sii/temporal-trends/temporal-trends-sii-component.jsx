@@ -18,6 +18,7 @@ import styles from '../../dashboard-trends-sidebar-styles.module.scss';
 
 import NationalChartContainer from './national-chart';
 import ProvinceChartContainer from './province-chart';
+import DownloadGbifReport from 'components/DownloadGbifReport';
 
 function TemporalTrendsSiiComponent(props) {
   const t = useT();
@@ -139,6 +140,9 @@ function TemporalTrendsSiiComponent(props) {
                 />
               </div>
             </div>
+            {countryISO.toLowerCase() === 'per' && (
+              <DownloadGbifReport type="sii" />
+            )}
             {/* <span className={styles.helpText}>
             {t('Toggle national SII and province-level breakdown.')}
           </span> */}

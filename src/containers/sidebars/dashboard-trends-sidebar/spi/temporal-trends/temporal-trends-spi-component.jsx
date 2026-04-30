@@ -9,6 +9,7 @@ import { LightModeContext } from 'context/light-mode';
 import last from 'lodash/last';
 
 import Button from 'components/button';
+import DownloadGbifReport from 'components/DownloadGbifReport';
 
 import EsriFeatureService from 'services/esri-feature-service';
 
@@ -106,6 +107,8 @@ function TemporalTrendsSpiComponent(props) {
       }
     }
   };
+
+
 
   useEffect(() => {
     if (clickedRegion) {
@@ -218,6 +221,9 @@ function TemporalTrendsSpiComponent(props) {
                 )}
               </span> */}
               </>
+            )}
+            {countryISO.toLowerCase() === 'per' && (
+              <DownloadGbifReport type="spi" />
             )}
           </div>
         )}
