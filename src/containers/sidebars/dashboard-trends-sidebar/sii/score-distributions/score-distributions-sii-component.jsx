@@ -43,7 +43,7 @@ function ScoreDistributionsSiiComponent(props) {
   const [isLoading, setIsLoading] = useState(true);
   const [chartInfo, setChartInfo] = useState();
   const [lowDist, setLowDist] = useState(0);
-    const [highDist, setHighDist] = useState(7);
+  const [highDist, setHighDist] = useState(7);
   const threatStatuses = ['EXTINCT', 'EXTINCT IN THE WILD'];
   const [isSpeciesLoading, setIsSpeciesLoading] = useState(true);
 
@@ -67,11 +67,10 @@ function ScoreDistributionsSiiComponent(props) {
     data?.forEach((a) => {
       const group = a.bin.split(',');
       const bin = group[0] ? group[0].replace(/ /gi, '') : a.bin;
-//TODO: change to sii count
-      taxaSet.amphibians[bin] = a.amphibians_spi_count || a.amphibians;
-      taxaSet.birds[bin] = a.birds_spi_count || a.birds;
-      taxaSet.mammals[bin] = a.mammals_spi_count || a.mammals;
-      taxaSet.reptiles[bin] = a.reptiles_spi_count || a.reptiles;
+      taxaSet.amphibians[bin] = a.amphibians_sii_count || a.amphibians;
+      taxaSet.birds[bin] = a.birds_sii_count || a.birds;
+      taxaSet.mammals[bin] = a.mammals_sii_count || a.mammals;
+      taxaSet.reptiles[bin] = a.reptiles_sii_count || a.reptiles;
     });
 
     // const labels = Object.keys(taxaSet).map((key) => +key * 5);
@@ -222,7 +221,7 @@ function ScoreDistributionsSiiComponent(props) {
   };
 
   const getBucketSpecies = (low, high) => {
-    const response = fetch(`${DASHBOARD_URLS.BUCKET_SPECIES_URL}?iso3=${countryISO}&region_key=${selectedProvince?.region_key}&min_value=${low}&max_value=${high}&filter_by=shs&lang=${tx.currentLocale}`, {
+    const response = fetch(`${DASHBOARD_URLS.BUCKET_SPECIES_URL}?iso3=${countryISO}&region_key=${selectedProvince?.region_key}&min_value=${low}&max_value=${high}&filter_by=sis_stewardship&lang=${tx.currentLocale}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -235,7 +234,7 @@ function ScoreDistributionsSiiComponent(props) {
             species: s.species,
             commonname: s.commonname,
             species_url: s.species_url,
-            habitat_score: s.shs,
+            sis_stewardship: s.sis_stewardship,
             taxa: s.taxa,
           }));
           setSiiSpecies(formattedSpecies);
@@ -260,7 +259,7 @@ function ScoreDistributionsSiiComponent(props) {
               species: val.species,
               commonname: val.commonname,
               species_url: val.species_url,
-              habitat_score: val.shs_score,
+              sis_stewardship: val.sis_stewardship,
               taxa: val.taxa,
             });
           }
@@ -268,8 +267,8 @@ function ScoreDistributionsSiiComponent(props) {
 
         if (species.length > 0) {
           const lastItem = species[species.length - 1];
-          const low = species[0].habitat_score;
-          const high = lastItem.habitat_score;
+          const low = species[0].sis_stewardship || 0;
+          const high = lastItem.sis_stewardship || 0;
 
           setLowDist(low.toFixed(1));
           setHighDist(high.toFixed(1));
@@ -290,14 +289,14 @@ function ScoreDistributionsSiiComponent(props) {
           commonname: 'Crimson-hooded Manakin',
           species_url:
             'https://storage.googleapis.com/mol-assets2/mid/712f124b5e3a4259890d2ed58bf49059.jpg',
-          habitat_score: 84.6,
+          sis_stewardship: 84.6,
           taxa: 'birds',
         },
         {
           species: 'Glossophaga commissarisi',
           species_url:
             'https://storage.googleapis.com/mol-assets2/mid/46f5bcb2fce4455aae6964ea69c10342.jpg',
-          habitat_score: 85,
+          sis_stewardship: 85,
           taxa: 'reptiles',
           commonname: 'Commissaris\'s long-tongued bat',
         },
@@ -305,7 +304,7 @@ function ScoreDistributionsSiiComponent(props) {
           species: 'Boana sibleszi',
           species_url:
             'https://storage.googleapis.com/mol-assets2/mid/3cad5f2a725c41d19a9fa306edde5b7e.jpg',
-          habitat_score: 90.6,
+          sis_stewardship: 90.6,
           commonname: 'La Escalera Tree Frog',
           taxa: 'amphibians',
         },
@@ -313,7 +312,7 @@ function ScoreDistributionsSiiComponent(props) {
           species: 'Gonatodes annularis',
           species_url:
             'https://storage.googleapis.com/mol-assets2/mid/7663ecebf87f45349d07dd8fc5eac210.jpg',
-          habitat_score: 91.2,
+          sis_stewardship: 91.2,
           taxa: 'reptiles',
           commonname: 'Annulated Gecko',
         },
@@ -336,7 +335,7 @@ function ScoreDistributionsSiiComponent(props) {
     setIsLoading(false);
   }, [siiScoresData]);
 
-   useEffect(() => {
+  useEffect(() => {
       if (!siiSelectSpeciesData || !siiSelectSpeciesData.length) return;
       setIsSpeciesLoading(true);
       loadSpecies();
@@ -362,7 +361,7 @@ function ScoreDistributionsSiiComponent(props) {
         </p>
 
         <span className={styles.spsSpeciesTitle}>
-          {t('Species with SIS between')} <b>0-5:</b>
+          {t('Species Highlights')}
         </span>
         <hr />
         <ul className={styles.spsSpecies}>
@@ -386,7 +385,7 @@ function ScoreDistributionsSiiComponent(props) {
                       </div>
                       <span
                         className={styles.spsScore}
-                      >{s.species_protection_score_all?.toFixed(
+                      >{s.sis_stewardship?.toFixed(
                         1
                       )}</span>
                     </button>

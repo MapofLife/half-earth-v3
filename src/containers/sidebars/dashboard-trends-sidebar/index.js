@@ -469,7 +469,7 @@ function DashboardTrendsSidebarContainer(props) {
       );
 
       if (
-        shiActiveTrend === NATIONAL_TREND &&
+        (shiActiveTrend === NATIONAL_TREND || siiActiveTrend === NATIONAL_TREND) &&
         (tabOption === TABS.SHI || tabOption === TABS.SII)
       ) {
         if (zone5ShiLayer) {
@@ -529,7 +529,8 @@ function DashboardTrendsSidebarContainer(props) {
         if (selectedProvince) {
           if (
             (tabOption === TABS.SPI && activeTrend === PROVINCE_TREND) ||
-            (tabOption === TABS.SHI && shiActiveTrend === PROVINCE_TREND)
+            (tabOption === TABS.SHI && shiActiveTrend === PROVINCE_TREND) ||
+            (tabOption === TABS.SII && siiActiveTrend === PROVINCE_TREND)
           ) {
             // TODO: iso3_regional does not exist in all provinces
             whereClause = `region_key=${selectedProvince.region_key}`;
@@ -612,7 +613,7 @@ function DashboardTrendsSidebarContainer(props) {
       getZoneData();
       getZoneHistogramData();
     }
-  }, [selectedProvince, activeTrend, shiActiveTrend]);
+  }, [selectedProvince, activeTrend, shiActiveTrend, siiActiveTrend]);
 
   return (
     <Component
