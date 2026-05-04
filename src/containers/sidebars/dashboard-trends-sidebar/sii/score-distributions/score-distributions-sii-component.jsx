@@ -249,8 +249,8 @@ function ScoreDistributionsSiiComponent(props) {
   const loadSpecies = () => {
     const species = [];
     siiSelectSpeciesData.forEach((item) => {
-      if (item.species_shs) {
-        const values = item.species_shs;
+      if (item.species_sii) {
+        const values = item.species_sii;
 
         values.forEach((value) => {
           const val = value;
