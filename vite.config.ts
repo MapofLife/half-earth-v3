@@ -127,6 +127,7 @@ export default defineConfig({
       layouts: path.resolve(__dirname, 'src/layouts'),
       pages: path.resolve(__dirname, 'src/pages'),
       icons: path.resolve(__dirname, 'src/assets/icons'),
+      gbif: path.resolve(__dirname, 'src/assets/gbif'),
       logos: path.resolve(__dirname, 'src/assets/logos'),
       styles: path.resolve(__dirname, 'src/styles'),
       router: path.resolve(__dirname, 'src/router'),

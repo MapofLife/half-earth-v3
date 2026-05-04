@@ -34,7 +34,7 @@ function MapLegendComponent(props) {
   const shiLow = 95;
   const shiHigh = 100;
   const siiLow = 0;
-  const siiHigh = 100;
+  const siiHigh = 50;
 
   const getLayerIcon = (layer) => {
     if (layer.parentId === LAYER_OPTIONS.EXPERT_RANGE_MAPS) {
@@ -146,7 +146,7 @@ function MapLegendComponent(props) {
           <img src={SIILegendImage} width="100%" height={20} alt="SII" />
           <div className={styles.legendValues}>
             <span>{siiLow}</span>
-            <span>{siiHigh}</span>
+            <span>{'>'} {siiHigh}</span>
           </div>
         </div>
       );
