@@ -73,27 +73,6 @@ function TemporalTrendsSiiComponent(props) {
     setClickedRegion(null);
     setSiiActiveTrend(option);
     handleRegionSelected(null);
-
-    // if (countryISO.toLowerCase() === 'ee') {
-    //   if (option !== LND && option !== INT) {
-    //     EsriFeatureService.getFeatures({
-    //       url: COUNTRIES_DATA_SERVICE_URL,
-    //       whereClause: `GID_0 = '${option}'`,
-    //       returnGeometry: true,
-    //     }).then((features) => {
-    //       // eslint-disable-next-line no-shadow
-    //       const { geometry } = features[0];
-
-    //       view.goTo({
-    //         target: geometry,
-    //         center: [geometry.longitude - 20, geometry.latitude],
-    //         zoom: 5.5,
-    //         extent: geometry.clone(),
-    //       });
-    //     });
-    //   } else {
-    // }
-    // }
   };
 
   useEffect(() => {
