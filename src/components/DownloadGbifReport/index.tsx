@@ -1,11 +1,12 @@
-import React, { useContext, useEffect, useState } from 'react';
-
-import { useT, T } from '@transifex/react';
-import Button from 'components/button';
 import cx from 'classnames';
+import Button from 'components/button';
+import { LightModeContext } from 'context/light-mode';
+import React, { useContext } from 'react';
+
+import { useT } from '@transifex/react';
+
 // import styles from '../../dashboard-trends-sidebar-styles.module.scss';
 import styles from '../../containers/sidebars/dashboard-trends-sidebar/dashboard-trends-sidebar-styles.module.scss';
-import { LightModeContext } from 'context/light-mode'
 
 const DownloadGbifReport = ({type}) => {
   const t = useT();
@@ -25,7 +26,7 @@ const DownloadGbifReport = ({type}) => {
     try {
       const response = await fetch(url);
       const blob = await response.blob();
-      const blobURL = window.URL.createObjectURL(blob);
+        const blobURL = window.URL.createObjectURL(blob);
 
       const link = document.createElement('a');
       link.href = blobURL;
