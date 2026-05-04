@@ -8,7 +8,7 @@ import { useT } from '@transifex/react';
 // import styles from '../../dashboard-trends-sidebar-styles.module.scss';
 import styles from '../../containers/sidebars/dashboard-trends-sidebar/dashboard-trends-sidebar-styles.module.scss';
 
-const DownloadGbifReport = ({type}) => {
+const DownloadGbifReport = ({ type }) => {
   const t = useT();
   const { lightMode } = useContext(LightModeContext);
 
@@ -18,7 +18,7 @@ const DownloadGbifReport = ({type}) => {
     if (type === 'shi') {
       url = 'dashboard/gbif/per/PER_shi_es_report.pdf';
       fileName = 'PER_shi_es_report.pdf';
-    } else if(type === 'sii') {
+    } else if (type === 'sii') {
       url = 'dashboard/gbif/per/PER_sii_es_report.pdf';
       fileName = 'PER_sii_es_report.pdf';
     }
@@ -26,7 +26,7 @@ const DownloadGbifReport = ({type}) => {
     try {
       const response = await fetch(url);
       const blob = await response.blob();
-        const blobURL = window.URL.createObjectURL(blob);
+      const blobURL = window.URL.createObjectURL(blob);
 
       const link = document.createElement('a');
       link.href = blobURL;
@@ -39,9 +39,9 @@ const DownloadGbifReport = ({type}) => {
       document.body.removeChild(link);
       window.URL.revokeObjectURL(blobURL);
     } catch (error) {
-      console.error("Download failed:", error);
+      console.error('Download failed:', error);
     }
-  }
+  };
 
   return (
     <Button
@@ -50,7 +50,7 @@ const DownloadGbifReport = ({type}) => {
       label={'Descargar informe de GBIF'}
       handleClick={() => downloadReport()}
     />
-  )
-}
+  );
+};
 
-export default DownloadGbifReport
+export default DownloadGbifReport;
