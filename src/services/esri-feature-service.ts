@@ -93,6 +93,10 @@ async function getFeatureLayer(portalItemId, countryISO, id, classType = null) {
     definitionExpression = `pais = 'Guyana'`;
   }
 
+  if(classType === 'PER_LAYER') {
+    definitionExpression = ``;
+  }
+
   if (classType === 'INT') {
     // const className = classType === 'INT' ? 'Intervention' : 'Landscape';
     definitionExpression = `class = 'Intervention'`;

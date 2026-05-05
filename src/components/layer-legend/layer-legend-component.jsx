@@ -370,10 +370,12 @@ function LayerLegendComponent(props) {
   const displayLayer = async (layer) => {
     if (!layer.showLayer) {
       if (layer.portalId) {
+        const classType = countryISO === 'PER' ? 'PER_LAYER': '';
         const featureLayer = await EsriFeatureService.getFeatureLayer(
           layer.portalId,
           countryISO,
-          layer.id
+          layer.id,
+          classType
         );
         setRegionLayers((rl) => ({
           ...rl,
