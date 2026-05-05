@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 import { useT } from '@transifex/react';
 
-import { INDIGENOUS_LANDS_FEATURE_ID } from 'utils/dashboard-utils';
+import { APURIMAC_LANDCOVER_FEATURE_ID, INDIGENOUS_LANDS_FEATURE_ID, PERU_CROPS_FEATURE_ID } from 'utils/dashboard-utils';
 
 import TileLayer from '@arcgis/core/layers/TileLayer';
 import Switch from '@mui/material/Switch';
@@ -12,7 +12,7 @@ import SidebarLegend from 'containers/sidebars/sidebar-legend';
 
 import EsriFeatureService from 'services/esri-feature-service';
 
-import { BIODIVERSITY_SLUG, LAND_HUMAN_PRESSURES_SLUG, MARINE_HUMAN_PRESSURES_SLUG } from 'constants/analyze-areas-constants';
+import { BIODIVERSITY_SLUG, LAND_HUMAN_PRESSURES_SLUG, MARINE_HUMAN_PRESSURES_SLUG, LAND_COVER_SLUG } from 'constants/analyze-areas-constants';
 import { LAYER_OPTIONS } from 'constants/dashboard-constants.js';
 import {
   BIRDS_RICHNESS_1KM,
@@ -37,6 +37,11 @@ import {
   COMMERCIAL_FISHING_HUMAN_PRESSURES_TILE_LAYER,
   ARTISANAL_FISHING_HUMAN_PRESSURES_TILE_LAYER,
   ENERGY_HUMAN_PRESSURES_TILE_LAYER,
+  LAND_COVER_LAYER,
+  APURIMAC_SPECIES_GAIN_HABITY_SUITABILITY_LAYER,
+  APURIMAC_SPECIES_LOSS_HABITY_SUITABILITY_LAYER,
+  APURIMAC_LANDCOVER_LAYER,
+  PERU_CROPS_LAYER,
 } from 'constants/layers-slugs';
 import { LAYERS_URLS } from 'constants/layers-urls';
 
@@ -305,6 +310,63 @@ function LayerLegendComponent(props) {
     },
   ]);
 
+  const [landCoverLayers, setLandCoverLayers] = useState([{
+    type: 'landCover',
+    id: LAND_COVER_LAYER,
+    label: t('Land cover (2022)'),
+    heatMapImage: '',
+    details: ``,
+    showDetails: false,
+    showLayer: false,
+    url: LAND_COVER_LAYER,
+    speciesCount: 0,
+  },
+  {
+    type: 'landCover',
+    id: PERU_CROPS_LAYER,
+    label: t('Peru Crops'),
+    heatMapImage: '',
+    details: ``,
+    showDetails: false,
+    showLayer: false,
+    portalId: PERU_CROPS_FEATURE_ID,
+    speciesCount: 0,
+  },
+  {
+    type: 'landCover',
+    id: APURIMAC_LANDCOVER_LAYER,
+    label: t('Apurimac Landcover change'),
+    heatMapImage: '',
+    details: ``,
+    showDetails: false,
+    showLayer: false,
+    portalId: APURIMAC_LANDCOVER_FEATURE_ID,
+    speciesCount: 0,
+  },
+  {
+    type: 'landCover',
+    id: APURIMAC_SPECIES_LOSS_HABITY_SUITABILITY_LAYER,
+    label: t('Apurímac species with a loss in habitat suitability'),
+    heatMapImage: '',
+    details: ``,
+    showDetails: false,
+    showLayer: false,
+    url: APURIMAC_SPECIES_LOSS_HABITY_SUITABILITY_LAYER,
+    speciesCount: 0,
+  },
+  {
+    type: 'landCover',
+    id: APURIMAC_SPECIES_GAIN_HABITY_SUITABILITY_LAYER,
+    label: t('Apurímac species with a gain in habitat suitability'),
+    heatMapImage: '',
+    details: ``,
+    showDetails: false,
+    showLayer: false,
+    url: APURIMAC_SPECIES_GAIN_HABITY_SUITABILITY_LAYER,
+    speciesCount: 0,
+  },
+]);
+
   const displayLayer = async (layer) => {
     if (!layer.showLayer) {
       if (layer.portalId) {
@@ -377,6 +439,12 @@ function LayerLegendComponent(props) {
           l.id === layer.id ? { ...l, showLayer: !layer.showLayer } : l
         )
       );
+    } else if(layer.type === 'landCover') {
+        setLandCoverLayers((prevLayers) =>
+        prevLayers.map((l) =>
+          l.id === layer.id ? { ...l, showLayer: !layer.showLayer } : l
+        )
+      );
     } else {
       setRichnessLayers((prevLayers) =>
         prevLayers.map((l) =>
@@ -395,6 +463,12 @@ function LayerLegendComponent(props) {
       );
     } else if(layer.type === 'marineUsePressure') {
       setMarineUsePressureLayers((prevLayers) =>
+        prevLayers.map((l) =>
+          l.id === layer.id ? { ...l, showDetails: !l.showDetails } : l
+        )
+      );
+    } else if (layer.type === 'landCover') {
+      setLandCoverLayers((prevLayers) =>
         prevLayers.map((l) =>
           l.id === layer.id ? { ...l, showDetails: !l.showDetails } : l
         )
@@ -418,6 +492,11 @@ function LayerLegendComponent(props) {
       return (
         <SidebarLegend
           legendItem={MARINE_HUMAN_PRESSURES_SLUG}
+          className={styles.legendContainer}
+        />) } else if(layer.type === 'landCover') {
+      return (
+        <SidebarLegend
+          legendItem={LAND_COVER_SLUG}
           className={styles.legendContainer}
         />) } else {
       return (
@@ -568,6 +647,30 @@ function LayerLegendComponent(props) {
                     )}
                   </div>
                 )}
+              </div>
+            </li>
+          ))}
+          <li>
+            <div className={styles.dataLayer}>
+              <div className={styles.layer}>
+                <div className={styles.title}>
+                  <span className={styles.label}><b>{t('Land Cover/Use')}</b></span>
+                </div>
+              </div>
+            </div>
+          </li>
+          {landCoverLayers &&
+          Object.values(landCoverLayers).map((layer) => (
+            <li key={`${layer.id}-${layer.label}`}>
+              <div className={styles.dataLayer}>
+                <div className={styles.layer}>
+                  <div className={styles.title}>
+                    <span className={styles.label}>{layer.label}</span>
+                    <ArrowIcon className={styles.arrowIcon} />
+                  </div>
+                  <Switch onChange={() => displayLayer(layer)} />
+                </div>
+
               </div>
             </li>
           ))}
