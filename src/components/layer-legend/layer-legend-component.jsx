@@ -408,7 +408,7 @@ function LayerLegendComponent(props) {
     }
   };
 
-  const getSidebarLeged = (layer) => {
+  const getSidebarLegend = (layer) => {
     if(layer.type === 'landUsePressure') {
       return (
         <SidebarLegend
@@ -459,7 +459,7 @@ function LayerLegendComponent(props) {
                   </div>
                   <Switch onChange={() => displayLayer(layer)} />
                 </div>
-                {layer.id !== LAYER_OPTIONS.INDIGENOUS_LANDS && (getSidebarLeged(layer))}
+                {layer.id !== LAYER_OPTIONS.INDIGENOUS_LANDS && (getSidebarLegend(layer))}
                 {layer.details && (
                   <div className={styles.details}>
                     <button
@@ -503,7 +503,7 @@ function LayerLegendComponent(props) {
                   </div>
                   <Switch onChange={() => displayLayer(layer)} />
                 </div>
-                {layer.id !== LAYER_OPTIONS.INDIGENOUS_LANDS && (getSidebarLeged(layer))}
+                {layer.id !== LAYER_OPTIONS.INDIGENOUS_LANDS && (getSidebarLegend(layer))}
                 {layer.details && (
                   <div className={styles.details}>
                     <button
@@ -547,7 +547,7 @@ function LayerLegendComponent(props) {
                   </div>
                   <Switch onChange={() => displayLayer(layer)} />
                 </div>
-                {layer.id !== LAYER_OPTIONS.INDIGENOUS_LANDS && (getSidebarLeged(layer))}
+                {layer.id !== LAYER_OPTIONS.INDIGENOUS_LANDS && (getSidebarLegend(layer))}
                 {layer.details && (
                   <div className={styles.details}>
                     <button
