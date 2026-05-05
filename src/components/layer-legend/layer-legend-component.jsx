@@ -42,6 +42,7 @@ import {
   APURIMAC_SPECIES_LOSS_HABITY_SUITABILITY_LAYER,
   APURIMAC_LANDCOVER_LAYER,
   PERU_CROPS_LAYER,
+  POVERTY_AND_DEPRIVATION_LAYER,
 } from 'constants/layers-slugs';
 import { LAYERS_URLS } from 'constants/layers-urls';
 
@@ -363,6 +364,17 @@ function LayerLegendComponent(props) {
     showDetails: false,
     showLayer: false,
     url: APURIMAC_SPECIES_GAIN_HABITY_SUITABILITY_LAYER,
+    speciesCount: 0,
+  },
+  {
+    type: 'landCover',
+    id: POVERTY_AND_DEPRIVATION_LAYER,
+    label: t('Poverty and Deprivation'),
+    heatMapImage: '',
+    details: ``,
+    showDetails: false,
+    showLayer: false,
+    url: POVERTY_AND_DEPRIVATION_LAYER,
     speciesCount: 0,
   },
 ]);

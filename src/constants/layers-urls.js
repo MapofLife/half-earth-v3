@@ -132,6 +132,7 @@ import {
   LAND_COVER_LAYER,
   APURIMAC_SPECIES_LOSS_HABITY_SUITABILITY_LAYER,
   APURIMAC_SPECIES_GAIN_HABITY_SUITABILITY_LAYER,
+  POVERTY_AND_DEPRIVATION_LAYER,
 } from 'constants/layers-slugs';
 
 const { VITE_APP_VERCEL_ENV } = import.meta.env;
@@ -501,7 +502,8 @@ export const LAYERS_URLS = {
     'https://tiles.arcgis.com/tiles/z1kFjaClHV2kVACk/arcgis/rest/services/hsr_binary_loss_and_count_apurimac/MapServer',
   [APURIMAC_SPECIES_GAIN_HABITY_SUITABILITY_LAYER]:
     'https://tiles.arcgis.com/tiles/z1kFjaClHV2kVACk/arcgis/rest/services/hsr_binary_gain_and_count_apurimac/MapServer',
-
+  [POVERTY_AND_DEPRIVATION_LAYER]:
+    'https://tiles.arcgis.com/tiles/7uJv7I3kgh2y7Pe0/arcgis/rest/services/Global_Gridded_Relative_Deprivation_Index/MapServer',
 };
 
 export const DASHBOARD_URLS = {

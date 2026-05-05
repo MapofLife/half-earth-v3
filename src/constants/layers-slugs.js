@@ -229,3 +229,5 @@ export const PERU_CROPS_LAYER = 'peru-crops-layer';
 export const APURIMAC_LANDCOVER_LAYER = 'apurimac-landcover-layer';
 export const APURIMAC_SPECIES_LOSS_HABITY_SUITABILITY_LAYER = 'apurimac-species-loss-habitat-suitability-layer';
 export const APURIMAC_SPECIES_GAIN_HABITY_SUITABILITY_LAYER = 'apurimac-species-gain-habitat-suitability-layer';
+export const POVERTY_AND_DEPRIVATION_LAYER = 'poverty-and-deprivation-layer';
+
