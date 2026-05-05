@@ -12,7 +12,7 @@ import SidebarLegend from 'containers/sidebars/sidebar-legend';
 
 import EsriFeatureService from 'services/esri-feature-service';
 
-import { BIODIVERSITY_SLUG, LAND_HUMAN_PRESSURES_SLUG, MARINE_HUMAN_PRESSURES_SLUG, LAND_COVER_SLUG } from 'constants/analyze-areas-constants';
+import { BIODIVERSITY_SLUG, LAND_HUMAN_PRESSURES_SLUG, MARINE_HUMAN_PRESSURES_SLUG, LAND_COVER_SLUG, SOCIO_ECONOMIC_SLUG } from 'constants/analyze-areas-constants';
 import { LAYER_OPTIONS } from 'constants/dashboard-constants.js';
 import {
   BIRDS_RICHNESS_1KM,
@@ -311,6 +311,20 @@ function LayerLegendComponent(props) {
     },
   ]);
 
+  const [socioEconomicLayers, setSocioEconomicLayers] = useState([
+    {
+      type: 'socioEconomic',
+      id: POVERTY_AND_DEPRIVATION_LAYER,
+      label: t('Poverty and Deprivation'),
+      heatMapImage: '',
+      details: ``,
+      showDetails: false,
+      showLayer: false,
+      url: POVERTY_AND_DEPRIVATION_LAYER,
+      speciesCount: 0,
+    },
+  ]);
+
   const [landCoverLayers, setLandCoverLayers] = useState([{
     type: 'landCover',
     id: LAND_COVER_LAYER,
@@ -364,17 +378,6 @@ function LayerLegendComponent(props) {
     showDetails: false,
     showLayer: false,
     url: APURIMAC_SPECIES_GAIN_HABITY_SUITABILITY_LAYER,
-    speciesCount: 0,
-  },
-  {
-    type: 'landCover',
-    id: POVERTY_AND_DEPRIVATION_LAYER,
-    label: t('Poverty and Deprivation'),
-    heatMapImage: '',
-    details: ``,
-    showDetails: false,
-    showLayer: false,
-    url: POVERTY_AND_DEPRIVATION_LAYER,
     speciesCount: 0,
   },
 ]);
@@ -459,6 +462,12 @@ function LayerLegendComponent(props) {
           l.id === layer.id ? { ...l, showLayer: !layer.showLayer } : l
         )
       );
+    } else if(layer.type === 'socioEconomic') {
+        setSocioEconomicLayers((prevLayers) =>
+        prevLayers.map((l) =>
+          l.id === layer.id ? { ...l, showLayer: !layer.showLayer } : l
+        )
+      );
     } else {
       setRichnessLayers((prevLayers) =>
         prevLayers.map((l) =>
@@ -487,6 +496,12 @@ function LayerLegendComponent(props) {
           l.id === layer.id ? { ...l, showDetails: !l.showDetails } : l
         )
       );
+    } else if (layer.type === 'socioEconomic') {
+      setSocioEconomicLayers((prevLayers) =>
+        prevLayers.map((l) =>
+          l.id === layer.id ? { ...l, showDetails: !l.showDetails } : l
+        )
+      );
     } else {
       setRichnessLayers((prevLayers) =>
         prevLayers.map((l) =>
@@ -502,17 +517,26 @@ function LayerLegendComponent(props) {
         <SidebarLegend
           legendItem={LAND_HUMAN_PRESSURES_SLUG}
           className={styles.legendContainer}
-        />)} else if (layer.type === 'marineUsePressure') {
+        />)
+    } else if (layer.type === 'marineUsePressure') {
       return (
         <SidebarLegend
           legendItem={MARINE_HUMAN_PRESSURES_SLUG}
           className={styles.legendContainer}
-        />) } else if(layer.type === 'landCover') {
+        />)
+    } else if (layer.type === 'landCover') {
       return (
         <SidebarLegend
           legendItem={LAND_COVER_SLUG}
           className={styles.legendContainer}
-        />) } else {
+        />)
+    } else if (layer.type === 'socioEconomic') {
+      return (
+        <SidebarLegend
+          legendItem={SOCIO_ECONOMIC_SLUG}
+          className={styles.legendContainer}
+        />)
+    } else {
       return (
         <SidebarLegend
           legendItem={BIODIVERSITY_SLUG}
@@ -685,6 +709,30 @@ function LayerLegendComponent(props) {
                   <Switch onChange={() => displayLayer(layer)} />
                 </div>
 
+              </div>
+            </li>
+          ))}
+          <li>
+            <div className={styles.dataLayer}>
+              <div className={styles.layer}>
+                <div className={styles.title}>
+                  <span className={styles.label}><b>{t('Socio-Economic')}</b></span>
+                </div>
+              </div>
+            </div>
+          </li>
+          {countryISO === 'PER' && socioEconomicLayers &&
+          Object.values(socioEconomicLayers).map((layer) => (
+            <li key={`${layer.id}-${layer.label}`}>
+              <div className={styles.dataLayer}>
+                <div className={styles.layer}>
+                  <div className={styles.title}>
+                    <span className={styles.label}>{layer.label}</span>
+                    <ArrowIcon className={styles.arrowIcon} />
+                  </div>
+                  <Switch onChange={() => displayLayer(layer)} />
+                </div>
+                {getSidebarLegend(layer)}
               </div>
             </li>
           ))}

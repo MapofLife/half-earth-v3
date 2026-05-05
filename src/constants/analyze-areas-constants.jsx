@@ -38,6 +38,7 @@ export const SPI_SLUG = 'spi';
 export const PROTECTED_ATTRIBUTES_SLUG = 'protected_attributes';
 export const LAND_COVER_SLUG = 'land-cover';
 export const SPECIES_SLUG = 'species';
+export const SOCIO_ECONOMIC_SLUG = 'socio-economic';
 export const FUTURE_PLACES_SLUG = 'future-places';
 export const SPECIFIC_REGIONS = 'specific-regions';
 export const CLEAR_SELECTIONS = 'clear-selections';
