@@ -77,11 +77,7 @@ function getVectorTileLayer(url, id, countryISO) {
 }
 
 async function getFeatureLayer(portalItemId, countryISO, id, classType = null) {
-  let definitionExpression = '';
-
-  if(countryISO !== 'PER') {
-    definitionExpression = `GID_0 = '${countryISO}'`;
-  }
+  let definitionExpression = countryISO ? `GID_0 = '${countryISO}'` : '';
 
   if (
     id === 'GUY-zone5-spi' ||
