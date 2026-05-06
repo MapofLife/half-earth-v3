@@ -185,6 +185,8 @@ async function getXYZLayer(scientificname, id, type, taxa = null) {
     urlTemplate = data['refined map'].tile_url;
   } else if (type === LAYER_TITLE_TYPES.TREND) {
     urlTemplate = data.trend.tile_url;
+  } else if (type === LAYER_TITLE_TYPES.PREDICTION_MAPS) {
+    urlTemplate = data.prediction_map.tile_url;
   }
 
   return new WebTileLayer({
@@ -202,6 +204,8 @@ async function getXYZLayerByURL(data, id, type) {
     urlTemplate = data['refined map'].tile_url;
   } else if (type === LAYER_TITLE_TYPES.TREND) {
     urlTemplate = data.trend.tile_url;
+  } else if (type === LAYER_TITLE_TYPES.PREDICTION_MAPS) {
+    urlTemplate = data.prediction_map.tile_url;
   }
 
   return new WebTileLayer({

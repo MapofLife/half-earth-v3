@@ -50,6 +50,19 @@ function MapLegendComponent(props) {
       );
     }
 
+    if (layer.id === LAYER_OPTIONS.PREDICTION_MAPS) {
+      return (
+        <div style={{ display: 'flex', gap: '5px', marginTop: '5px' }}>
+          <div
+            className={styles.box}
+            style={{
+              backgroundColor: 'rgb(5,104,55)',
+            }}
+          />
+        </div>
+      );
+    }
+
     if (layer.imageUrl) {
       // Use layer image, (Point observations)
       return <img src={layer.imageUrl} width={20} height={20} alt="Point" />;
@@ -146,7 +159,9 @@ function MapLegendComponent(props) {
           <img src={SIILegendImage} width="100%" height={20} alt="SII" />
           <div className={styles.legendValues}>
             <span>{siiLow}</span>
-            <span>{'>'} {siiHigh}</span>
+            <span>
+              {'>'} {siiHigh}
+            </span>
           </div>
         </div>
       );
@@ -225,27 +240,27 @@ function MapLegendComponent(props) {
     const indexMap = new Map();
 
     B.forEach((item, index) => {
-        if (item !== undefined && item !== null) {
-            indexMap.set(item.toString().toLowerCase().trim(), index);
-        }
+      if (item !== undefined && item !== null) {
+        indexMap.set(item.toString().toLowerCase().trim(), index);
+      }
     });
 
     // Sort A so that items appearing LATER in B come FIRST (reverse order)
     return A.slice().sort((a, b) => {
-        const aStr = a?.id.toString().toLowerCase().trim();
-        const bStr = b?.id.toString().toLowerCase().trim();
+      const aStr = a?.id.toString().toLowerCase().trim();
+      const bStr = b?.id.toString().toLowerCase().trim();
 
-        const idxA = indexMap.get(aStr);
-        const idxB = indexMap.get(bStr);
+      const idxA = indexMap.get(aStr);
+      const idxB = indexMap.get(bStr);
 
-        // Items not found in B go to the end
-        if (idxA === undefined) return 1;
-        if (idxB === undefined) return -1;
+      // Items not found in B go to the end
+      if (idxA === undefined) return 1;
+      if (idxB === undefined) return -1;
 
-        // Higher index in B = should come first (reverse order)
-        return idxB - idxA;
+      // Higher index in B = should come first (reverse order)
+      return idxB - idxA;
     });
-  }
+  };
 
   useEffect(() => {
     const sidebar = document.getElementById('dashboard-sidebar');
@@ -257,13 +272,18 @@ function MapLegendComponent(props) {
     setLeftPosition(`${rect.width + parseInt(left, 10) + 10}px`);
 
     // setLayersLegend(Array.from(new Set(mapLegendLayers)));
-    const uniqueLayers = Array.from(new Map(mapLegendLayers.map(item => [item.id, item])).values());
+    const uniqueLayers = Array.from(
+      new Map(mapLegendLayers.map((item) => [item.id, item])).values()
+    );
     setLayersLegend(uniqueLayers);
   }, [mapLegendLayers]);
 
   useEffect(() => {
-    if(layersLegend.length > 0){
-      const orderedLayers = reorderArrayAByReverseB( layersLegend, map.layers.items.map(item => item.id));
+    if (layersLegend.length > 0) {
+      const orderedLayers = reorderArrayAByReverseB(
+        layersLegend,
+        map.layers.items.map((item) => item.id)
+      );
       setLayersToShow(orderedLayers);
     }
   }, [layersLegend]);
