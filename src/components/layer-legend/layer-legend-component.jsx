@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { useT } from '@transifex/react';
 
@@ -50,10 +50,59 @@ import ArrowIcon from 'icons/arrow_right.svg?react';
 
 import styles from './layer-legend-styles.module.scss';
 
+
+
 function LayerLegendComponent(props) {
   const { map, countryISO, setRegionLayers } = props;
   const t = useT();
   const layerIndex = 2;
+
+  const PERU_LAYERS = [
+  {
+    type: 'landCover',
+    id: PERU_CROPS_LAYER,
+    label: t('Peru Crops'),
+    heatMapImage: '',
+    details: ``,
+    showDetails: false,
+    showLayer: false,
+    portalId: PERU_CROPS_FEATURE_ID,
+    speciesCount: 0,
+  },
+  {
+    type: 'landCover',
+    id: APURIMAC_LANDCOVER_LAYER,
+    label: t('Apurimac Landcover change'),
+    heatMapImage: '',
+    details: ``,
+    showDetails: false,
+    showLayer: false,
+    portalId: APURIMAC_LANDCOVER_FEATURE_ID,
+    speciesCount: 0,
+  },
+  {
+    type: 'landCover',
+    id: APURIMAC_SPECIES_LOSS_HABITY_SUITABILITY_LAYER,
+    label: t('Apurímac species with a loss in habitat suitability'),
+    heatMapImage: '',
+    details: ``,
+    showDetails: false,
+    showLayer: false,
+    url: APURIMAC_SPECIES_LOSS_HABITY_SUITABILITY_LAYER,
+    speciesCount: 0,
+  },
+  {
+    type: 'landCover',
+    id: APURIMAC_SPECIES_GAIN_HABITY_SUITABILITY_LAYER,
+    label: t('Apurímac species with a gain in habitat suitability'),
+    heatMapImage: '',
+    details: ``,
+    showDetails: false,
+    showLayer: false,
+    url: APURIMAC_SPECIES_GAIN_HABITY_SUITABILITY_LAYER,
+    speciesCount: 0,
+  },
+];
 
   // const [leftPosition, setLeftPosition] = useState(0);
   const [collapse, setCollapse] = useState(true);
@@ -336,50 +385,6 @@ function LayerLegendComponent(props) {
     url: LAND_COVER_LAYER,
     speciesCount: 0,
   },
-  {
-    type: 'landCover',
-    id: PERU_CROPS_LAYER,
-    label: t('Peru Crops'),
-    heatMapImage: '',
-    details: ``,
-    showDetails: false,
-    showLayer: false,
-    portalId: PERU_CROPS_FEATURE_ID,
-    speciesCount: 0,
-  },
-  {
-    type: 'landCover',
-    id: APURIMAC_LANDCOVER_LAYER,
-    label: t('Apurimac Landcover change'),
-    heatMapImage: '',
-    details: ``,
-    showDetails: false,
-    showLayer: false,
-    portalId: APURIMAC_LANDCOVER_FEATURE_ID,
-    speciesCount: 0,
-  },
-  {
-    type: 'landCover',
-    id: APURIMAC_SPECIES_LOSS_HABITY_SUITABILITY_LAYER,
-    label: t('Apurímac species with a loss in habitat suitability'),
-    heatMapImage: '',
-    details: ``,
-    showDetails: false,
-    showLayer: false,
-    url: APURIMAC_SPECIES_LOSS_HABITY_SUITABILITY_LAYER,
-    speciesCount: 0,
-  },
-  {
-    type: 'landCover',
-    id: APURIMAC_SPECIES_GAIN_HABITY_SUITABILITY_LAYER,
-    label: t('Apurímac species with a gain in habitat suitability'),
-    heatMapImage: '',
-    details: ``,
-    showDetails: false,
-    showLayer: false,
-    url: APURIMAC_SPECIES_GAIN_HABITY_SUITABILITY_LAYER,
-    speciesCount: 0,
-  },
 ]);
 
   const displayLayer = async (layer) => {
@@ -545,6 +550,13 @@ function LayerLegendComponent(props) {
       }
   }
 
+  useEffect(() => {
+    if(countryISO.toLowerCase() === 'per') {
+      setLandCoverLayers((prevLayers) => [...prevLayers, ...PERU_LAYERS]);
+    }
+  }, [countryISO])
+
+
   return (
     <div
       className={cx(styles.container, {
@@ -708,19 +720,19 @@ function LayerLegendComponent(props) {
                   </div>
                   <Switch onChange={() => displayLayer(layer)} />
                 </div>
-
               </div>
             </li>
           ))}
-          <li>
-            <div className={styles.dataLayer}>
-              <div className={styles.layer}>
-                <div className={styles.title}>
-                  <span className={styles.label}><b>{t('Socio-Economic')}</b></span>
-                </div>
+          {countryISO === 'PER' && (
+            <li>
+              <div className={styles.dataLayer}>
+                <div className={styles.layer}>
+                  <div className={styles.title}>
+                    <span className={styles.label}><b>{t('Socio-Economic')}</b></span>
+                  </div>
               </div>
             </div>
-          </li>
+          </li>)}
           {countryISO === 'PER' && socioEconomicLayers &&
           Object.values(socioEconomicLayers).map((layer) => (
             <li key={`${layer.id}-${layer.label}`}>
