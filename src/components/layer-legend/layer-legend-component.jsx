@@ -61,7 +61,7 @@ import ArrowIcon from 'icons/arrow_right.svg?react';
 import styles from './layer-legend-styles.module.scss';
 
 function LayerLegendComponent(props) {
-  const { map, countryISO, setRegionLayers } = props;
+  const { map, countryISO, setRegionLayers, richnessRarityLegendInfo } = props;
   const t = useT();
   const layerIndex = 2;
 
@@ -398,53 +398,13 @@ function LayerLegendComponent(props) {
 
   const displayLayer = async (layer) => {
     if (!layer.showLayer) {
-      if (layer.id === PERU_CROPS_LAYER) {
-        const mapLayers = [
-          'https://services8.arcgis.com/z1kFjaClHV2kVACk/arcgis/rest/services/Peru_Crops/FeatureServer/0',
-          'https://services8.arcgis.com/z1kFjaClHV2kVACk/arcgis/rest/services/Peru_Crops/FeatureServer/1',
-          'https://services8.arcgis.com/z1kFjaClHV2kVACk/arcgis/rest/services/Peru_Crops/FeatureServer/2',
-          'https://services8.arcgis.com/z1kFjaClHV2kVACk/arcgis/rest/services/Peru_Crops/FeatureServer/3',
-          'https://services8.arcgis.com/z1kFjaClHV2kVACk/arcgis/rest/services/Peru_Crops/FeatureServer/4',
-          'https://services8.arcgis.com/z1kFjaClHV2kVACk/arcgis/rest/services/Peru_Crops/FeatureServer/5',
-          'https://services8.arcgis.com/z1kFjaClHV2kVACk/arcgis/rest/services/Peru_Crops/FeatureServer/6',
-          'https://services8.arcgis.com/z1kFjaClHV2kVACk/arcgis/rest/services/Peru_Crops/FeatureServer/7',
-        ];
-        let promises;
-        if (Array.isArray(mapLayers)) {
-          promises = mapLayers.map(
-            async (mapLayer) =>
-              new TileLayer({
-                url: mapLayer,
-                id: layer.id,
-                outFields: ['*'],
-              })
-          );
-        } else {
-          promises = [
-            new TileLayer({
-              url: mapLayers,
-              id: layer.id,
-              outFields: ['*'],
-            }),
-          ];
-        }
-
-        const newLayers = await Promise.all(promises);
-
-        newLayers.forEach((newLayer) => {
-          setRegionLayers((rl) => ({
-            ...rl,
-            [layer.id]: newLayer,
-          }));
-          map.add(newLayer, map.layers.length - layerIndex);
-        });
-      }
       if (layer.portalId) {
         const classType = countryISO === 'PER' ? 'PER_LAYER' : '';
         const featureLayer = await EsriFeatureService.getFeatureLayer(
           layer.portalId,
           countryISO,
-          layer.id
+          layer.id,
+          classType
         );
         setRegionLayers((rl) => ({
           ...rl,
@@ -610,6 +570,23 @@ function LayerLegendComponent(props) {
     }
   }, [countryISO]);
 
+  useEffect(() => {
+    setRichnessLayers((prevLayers) =>
+      prevLayers.map((layer) => {
+        const legendInfo = richnessRarityLegendInfo.find(
+          (info) => info.layerslug === layer.id
+        );
+        if (legendInfo) {
+          return {
+            ...layer,
+            details: `${legendInfo.description}<br/> ${legendInfo.disclaimer}`,
+          };
+        }
+        return layer;
+      })
+    );
+  }, [richnessRarityLegendInfo]);
+
   return (
     <div
       className={cx(styles.container, {
@@ -630,6 +607,17 @@ function LayerLegendComponent(props) {
         />
       </button>
       <ul className={styles.layers}>
+        <li>
+          <div className={styles.dataLayer}>
+            <div className={styles.layer}>
+              <div className={styles.title}>
+                <span className={styles.label}>
+                  <b>{t('Biodiversity Layers')}</b>
+                </span>
+              </div>
+            </div>
+          </div>
+        </li>
         {richnessLayers &&
           Object.values(richnessLayers).map((layer) => (
             <li key={`${layer.id}-${layer.label}`}>
