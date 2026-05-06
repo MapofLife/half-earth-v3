@@ -111,6 +111,21 @@
           border: 1px solid rgba(255, 255, 255, 0.6);
         }
 
+        .predictionGradient {
+          background: linear-gradient(
+            to right,
+            #fff7f3,
+            #fde0dd,
+            #fcc5c0,
+            #fa9fb5,
+            #f768a1,
+            #dd3497,
+            #ae017e,
+            #7a0177,
+            #49006a
+          );
+        }
+
         .circle {
           width: 10px;
           height: 10px;

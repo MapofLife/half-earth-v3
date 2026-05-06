@@ -53,12 +53,7 @@ function MapLegendComponent(props) {
     if (layer.id === LAYER_OPTIONS.PREDICTION_MAPS) {
       return (
         <div style={{ display: 'flex', gap: '5px', marginTop: '5px' }}>
-          <div
-            className={styles.box}
-            style={{
-              backgroundColor: 'rgb(5,104,55)',
-            }}
-          />
+          <div className={cx(styles.box, styles.predictionGradient)} />
         </div>
       );
     }
