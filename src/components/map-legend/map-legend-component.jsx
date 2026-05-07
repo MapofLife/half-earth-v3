@@ -148,8 +148,15 @@ function MapLegendComponent(props) {
       return (
         <div className={cx(styles.wrapper, styles.column)}>
           {layer.classes.map((item) => {
-            const { color } = item.symbol;
-            const backgroundColor = `rgba(${color.r}, ${color.g}, ${color.b}, ${color.a})`;
+            const { color, data } = item.symbol;
+
+            let backgroundColor = 'transparent';
+            if (color.r === 0 && color.g === 0 && color.b === 0) {
+              const [red, blue, green, alpha] =
+                data.symbol.symbolLayers[0].markerGraphics[0].symbol
+                  .symbolLayers[1].color;
+              backgroundColor = `rgba(${red}, ${blue}, ${green}, ${alpha})`;
+            }
             return (
               <div
                 style={{ display: 'flex', gap: '5px' }}
