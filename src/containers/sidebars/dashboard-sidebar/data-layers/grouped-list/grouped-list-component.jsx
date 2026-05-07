@@ -8,6 +8,7 @@ import {
   INDIGENOUS_LANDS_FEATURE_ID,
   REGION_OCCURENCE_ID,
   EEWWF_COUNTRY_LINES_FEATURE_ID,
+  PERU_CROPS_FEATURE_ID,
 } from 'utils/dashboard-utils';
 
 import Checkbox from '@mui/material/Checkbox';
@@ -24,12 +25,14 @@ import {
   LAYER_OPTIONS,
   DATA_POINT_TYPE,
 } from 'constants/dashboard-constants.js';
-import { DASHBOARD_URLS } from 'constants/layers-urls.js';
+import { DASHBOARD_URLS, LAYERS_URLS } from 'constants/layers-urls.js';
 
 import ArrowIcon from 'icons/arrow_right.svg?react';
 
 import styles from './grouped-list-styles.module.scss';
 import VectorTileLayer from '@arcgis/core/layers/VectorTileLayer';
+import { LAND_COVER_LAYER, PERU_CROPS_LAYER } from 'constants/layers-slugs';
+import TileLayer from '@arcgis/core/layers/TileLayer';
 
 function GroupedListComponent(props) {
   const {
@@ -240,6 +243,19 @@ function GroupedListComponent(props) {
         DASHBOARD_URLS.SDM_FEATURE_LAYER_URL,
         id
       );
+    } else if (id === PERU_CROPS_LAYER) {
+      layer = await EsriFeatureService.getFeatureLayer(
+        PERU_CROPS_FEATURE_ID,
+        countryISO,
+        id,
+        'PER_LAYER'
+      );
+    } else {
+      layer = new TileLayer({
+        url: LAYERS_URLS[item.url],
+        id: id,
+        outFields: ['*'],
+      });
     }
 
     // check if item is active to add/remove from Map Legend

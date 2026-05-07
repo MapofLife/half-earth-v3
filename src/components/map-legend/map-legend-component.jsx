@@ -21,6 +21,35 @@ import SPILegendImage from 'images/dashboard/spi_legend.png';
 import HabitatLegendImage from 'images/hab_change_colorRamp.png';
 
 import styles from './map-legend-component-styles.module.scss';
+import pressureStyles from '../../containers/sidebars/sidebar-legend/styles.module.scss';
+import {
+  AGRICULTURE_HUMAN_PRESSURES_TILE_LAYER,
+  ARTISANAL_FISHING_HUMAN_PRESSURES_TILE_LAYER,
+  BUILTUP_HUMAN_PRESSURES_TILE_LAYER,
+  COMMERCIAL_FISHING_HUMAN_PRESSURES_TILE_LAYER,
+  ENERGY_HUMAN_PRESSURES_TILE_LAYER,
+  INTRUSION_HUMAN_PRESSURES_TILE_LAYER,
+  LAND_COVER_LAYER,
+  MARINE_LAND_DRIVERS_HUMAN_PRESSURES_TILE_LAYER,
+  MARINE_OCEAN_DRIVERS_HUMAN_PRESSURES_TILE_LAYER,
+  PERU_CROPS_LAYER,
+  TRANSPORTATION_HUMAN_PRESSURES_TILE_LAYER,
+} from 'constants/layers-slugs';
+
+const landPressureLayers = [
+  ENERGY_HUMAN_PRESSURES_TILE_LAYER,
+  TRANSPORTATION_HUMAN_PRESSURES_TILE_LAYER,
+  AGRICULTURE_HUMAN_PRESSURES_TILE_LAYER,
+  BUILTUP_HUMAN_PRESSURES_TILE_LAYER,
+  INTRUSION_HUMAN_PRESSURES_TILE_LAYER,
+];
+
+const marinePressureLayers = [
+  MARINE_LAND_DRIVERS_HUMAN_PRESSURES_TILE_LAYER,
+  MARINE_OCEAN_DRIVERS_HUMAN_PRESSURES_TILE_LAYER,
+  COMMERCIAL_FISHING_HUMAN_PRESSURES_TILE_LAYER,
+  ARTISANAL_FISHING_HUMAN_PRESSURES_TILE_LAYER,
+];
 
 function MapLegendComponent(props) {
   const { mapLegendLayers, map, setMapLegendLayers, countryISO } = props;
@@ -45,6 +74,26 @@ function MapLegendComponent(props) {
             style={{
               backgroundColor: 'rgb(23, 40, 135)',
             }}
+          />
+        </div>
+      );
+    }
+
+    if (landPressureLayers.includes(layer.id)) {
+      return (
+        <div style={{ display: 'flex', gap: '5px', marginTop: '5px' }}>
+          <div
+            className={cx(styles.box, pressureStyles['land-human-pressures'])}
+          />
+        </div>
+      );
+    }
+
+    if (marinePressureLayers.includes(layer.id)) {
+      return (
+        <div style={{ display: 'flex', gap: '5px', marginTop: '5px' }}>
+          <div
+            className={cx(styles.box, pressureStyles['marine-human-pressures'])}
           />
         </div>
       );
