@@ -60,6 +60,7 @@ function DashboardTrendsSidebarContainer(props) {
   const [zoneData, setZoneData] = useState([]);
   const [zoneHistrogramData, setZoneHistrogramData] = useState([]);
   const [shiCountryData, setShiCountryData] = useState([]);
+  const [siiCountryData, setSiiCountryData] = useState([]);
   const [provinces, setProvinces] = useState([]);
 
   const [spiScoresData, setSpiScoresData] = useState([]);
@@ -77,21 +78,27 @@ function DashboardTrendsSidebarContainer(props) {
   const getCountryData = async (countryURL) => {
     const response = await fetch(countryURL);
     const data = await response.json();
-    setProvinces(data.filter(item => item.level === 'states'));
+    setProvinces(data.filter((item) => item.level === 'states'));
     setShiProvinceTrendData(data);
-    setSpiValue(last(data.filter(item => item.level === 'country')).spi.toFixed(1));
+    setSpiValue(
+      last(data.filter((item) => item.level === 'country')).spi.toFixed(1)
+    );
     const shiValues =
-      data.find((item) => item.year === SHI_LATEST_YEAR && item.level === 'country').habitat_index ||
-      0;
+      data.find(
+        (item) => item.year === SHI_LATEST_YEAR && item.level === 'country'
+      ).habitat_index || 0;
     const siiValues =
-      data.find((item) => item.year === SII_LATEST_YEAR && item.level === 'country').sii || 0;
+      data.find(
+        (item) => item.year === SII_LATEST_YEAR && item.level === 'country'
+      ).sii || 0;
     setShiValue(parseFloat(shiValues).toFixed(1));
     setSiiValue(parseFloat(siiValues).toFixed(1));
     setCountryData(data);
     setShiCountryData(data);
+    setSiiCountryData(data);
   };
 
-  const getHistogramData = async(histogramURL) => {
+  const getHistogramData = async (histogramURL) => {
     const response = await fetch(histogramURL);
     const data = await response.json();
     setSpiScoresData(data);
@@ -469,7 +476,8 @@ function DashboardTrendsSidebarContainer(props) {
       );
 
       if (
-        (shiActiveTrend === NATIONAL_TREND || siiActiveTrend === NATIONAL_TREND) &&
+        (shiActiveTrend === NATIONAL_TREND ||
+          siiActiveTrend === NATIONAL_TREND) &&
         (tabOption === TABS.SHI || tabOption === TABS.SII)
       ) {
         if (zone5ShiLayer) {
@@ -536,7 +544,9 @@ function DashboardTrendsSidebarContainer(props) {
             whereClause = `region_key=${selectedProvince.region_key}`;
           }
 
-          getHistogramData(`${DASHBOARD_URLS.SPI_HISTOGRAM_URL}?iso3=${countryCode}&${whereClause}`);
+          getHistogramData(
+            `${DASHBOARD_URLS.SPI_HISTOGRAM_URL}?iso3=${countryCode}&${whereClause}`
+          );
         }
       }
     } else {
@@ -624,6 +634,7 @@ function DashboardTrendsSidebarContainer(props) {
       provinces={provinces}
       countryData={countryData}
       shiCountryData={shiCountryData}
+      siiCountryData={siiCountryData}
       spiScoresData={spiScoresData}
       shiScoresData={shiScoresData}
       siiScoresData={siiScoresData}

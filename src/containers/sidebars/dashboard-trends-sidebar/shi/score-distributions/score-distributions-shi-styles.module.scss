@@ -3,7 +3,7 @@
 @import 'styles/typography-extends';
 @import 'styles/common-animations.module';
 
-.chartArea{
+.chartArea {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -11,13 +11,13 @@
 
   --font-color: #{$white};
 
-  &.light{
+  &.light {
     --font-color: #{$black};
   }
 
-  .title{
+  .title {
     color: var(--font-color);
-    font-family: "Open Sans";
+    font-family: 'Open Sans';
     font-size: $font-size-sm;
     font-style: normal;
     font-weight: 700;

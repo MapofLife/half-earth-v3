@@ -3,19 +3,25 @@
 @import 'styles/typography-extends';
 @import 'styles/common-animations.module';
 
-.chartArea{
+.chartArea {
   display: flex;
   flex-direction: column;
   align-items: center;
   flex-grow: 1;
 
-  .btnGroup{
+  --font-color: #{$white};
+
+  &.light {
+    --font-color: #{$black};
+  }
+
+  .btnGroup {
     width: 75%;
   }
 
-  .title{
+  .title {
     color: var(--font-color);
-    font-family: "Open Sans";
+    font-family: 'Open Sans';
     font-size: $font-size-sm;
     font-style: normal;
     font-weight: 700;
@@ -23,11 +29,11 @@
     text-transform: uppercase;
   }
 
-  .chartWrapper{
-    position:relative;
+  .chartWrapper {
+    position: relative;
     width: 100%;
 
-    .info{
+    .info {
       position: absolute;
       top: -5px;
       right: 0;

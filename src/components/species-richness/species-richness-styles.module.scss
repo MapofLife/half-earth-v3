@@ -3,7 +3,7 @@
 @import 'styles/typography-extends';
 @import 'styles/common-animations.module';
 
-.container{
+.container {
   display: flex;
   flex-direction: column;
   padding: 10px 5px 10px 26px;
@@ -15,12 +15,22 @@
   --font-color: #{$white};
   --border-color: #{$brand-color-main};
 
-  &.light{
+  &.light {
     --font-color: #{$black};
     --border-color: #{$mol-blue};
   }
 
-  .spis{
+  .title {
+    color: var(--font-color);
+    font-family: 'Open Sans';
+    font-size: $font-size-sm;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    text-transform: uppercase;
+  }
+
+  .spis {
     display: flex;
     gap: 10px;
     align-items: center;
@@ -31,16 +41,16 @@
     box-shadow: -2px 4px 4px 0px rgba(0, 0, 0, 0.25);
     padding: 15px 0;
 
-    .spi{
+    .spi {
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
 
-      .score{
+      .score {
         color: var(--font-color);
         text-align: center;
-        font-family: "Open Sans";
+        font-family: 'Open Sans';
         font-size: 20px;
         font-style: normal;
         font-weight: 700;
@@ -48,23 +58,23 @@
         margin-bottom: -20px;
       }
 
-      .taxoGroup{
+      .taxoGroup {
         display: flex;
         flex-direction: column;
         margin-top: -60px;
         align-items: center;
 
-        .richness{
+        .richness {
           color: var(--font-color);
           text-align: center;
-          font-family: "Open Sans";
+          font-family: 'Open Sans';
           font-size: 11px;
           font-style: italic;
           font-weight: 400;
           line-height: normal;
         }
 
-        .score{
+        .score {
           font-size: 16px;
           font-weight: 600;
           text-transform: uppercase;

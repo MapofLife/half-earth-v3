@@ -16,8 +16,9 @@ import styles from '../../dashboard-trends-sidebar-styles.module.scss';
 import compStyles from './score-distributions-sii-styles.module.scss';
 import ChartInfoComponent from 'components/chart-info-popup/chart-info-component';
 import TaxaImageComponent from 'components/taxa-image';
-import { useLocale } from '@transifex/react'
+import { useLocale } from '@transifex/react';
 import { SECTION_INFO } from '../../../dashboard-sidebar/tutorials/sections/sections-info';
+import SpeciesRichnessComponent from '../../../../../components/species-richness/species-richness-component';
 
 function ScoreDistributionsSiiComponent(props) {
   const {
@@ -26,7 +27,7 @@ function ScoreDistributionsSiiComponent(props) {
     lang,
     selectedProvince,
     countryISO,
-    siiActiveTrend
+    siiActiveTrend,
   } = props;
   const t = useT();
   const bucketSize = 5;
@@ -82,7 +83,7 @@ function ScoreDistributionsSiiComponent(props) {
     ]);
 
     setChartData({
-      labels:  [...uniqueKeys].map((key) => key),
+      labels: [...uniqueKeys].map((key) => key),
       datasets: [
         {
           label: t('Birds'),
@@ -110,7 +111,7 @@ function ScoreDistributionsSiiComponent(props) {
 
   const toolTipTitle = (tooltipItems) => {
     const bucket = parseInt(tooltipItems[0].label, 10);
-    if(bucket === 120){
+    if (bucket === 120) {
       return '> 120';
     }
     return `${bucket} - ${bucket + 5}`;
@@ -215,35 +216,47 @@ function ScoreDistributionsSiiComponent(props) {
         const value = chartData.datasets[datasetIndex].data[dataIndex];
         console.log(value);
 
-        getBucketSpecies((dataIndex * bucketSize), (dataIndex * bucketSize) + bucketSize);
+        getBucketSpecies(
+          dataIndex * bucketSize,
+          dataIndex * bucketSize + bucketSize
+        );
       }
-    }
+    },
   };
 
   const getBucketSpecies = (low, high) => {
-    const response = fetch(`${DASHBOARD_URLS.BUCKET_SPECIES_URL}?iso3=${countryISO}&region_key=${selectedProvince?.region_key}&min_value=${low}&max_value=${high}&filter_by=sis_stewardship&lang=${tx.currentLocale}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    }).then((res) => {
-      if(res.ok){
-        res.json().then((data) => {
-          const species = data || [];
-          const formattedSpecies = species.map((s) => ({
-            species: s.species,
-            commonname: s.commonname,
-            species_url: s.species_url,
-            sis_stewardship: s.sis_stewardship,
-            taxa: s.taxa,
-          }));
-          setSiiSpecies(formattedSpecies);
-        });
+    const response = fetch(
+      `${DASHBOARD_URLS.BUCKET_SPECIES_URL}?iso3=${countryISO}&region_key=${selectedProvince?.region_key}&min_value=${low}&max_value=${high}&filter_by=sis_stewardship&lang=${tx.currentLocale}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
       }
-    }).catch((error) => {
-      console.error('Error submitting feedback:', error);
-      alert(t('There was an issue submitting your feedback. Please try again later.'));
-    });
+    )
+      .then((res) => {
+        if (res.ok) {
+          res.json().then((data) => {
+            const species = data || [];
+            const formattedSpecies = species.map((s) => ({
+              species: s.species,
+              commonname: s.commonname,
+              species_url: s.species_url,
+              sis_stewardship: s.sis_stewardship,
+              taxa: s.taxa,
+            }));
+            setSiiSpecies(formattedSpecies);
+          });
+        }
+      })
+      .catch((error) => {
+        console.error('Error submitting feedback:', error);
+        alert(
+          t(
+            'There was an issue submitting your feedback. Please try again later.'
+          )
+        );
+      });
   };
 
   const loadSpecies = () => {
@@ -254,7 +267,10 @@ function ScoreDistributionsSiiComponent(props) {
 
         values.forEach((value) => {
           const val = value;
-          if (!threatStatuses.includes(val.threat_status?.toUpperCase()) && val.species_url) {
+          if (
+            !threatStatuses.includes(val.threat_status?.toUpperCase()) &&
+            val.species_url
+          ) {
             species.push({
               species: val.species,
               commonname: val.commonname,
@@ -298,7 +314,7 @@ function ScoreDistributionsSiiComponent(props) {
             'https://storage.googleapis.com/mol-assets2/mid/46f5bcb2fce4455aae6964ea69c10342.jpg',
           sis_stewardship: 85,
           taxa: 'reptiles',
-          commonname: 'Commissaris\'s long-tongued bat',
+          commonname: "Commissaris's long-tongued bat",
         },
         {
           species: 'Boana sibleszi',
@@ -336,20 +352,19 @@ function ScoreDistributionsSiiComponent(props) {
   }, [siiScoresData]);
 
   useEffect(() => {
-      if (!siiSelectSpeciesData || !siiSelectSpeciesData.length) return;
-      setIsSpeciesLoading(true);
-      loadSpecies();
-    }, [siiSelectSpeciesData]);
+    if (!siiSelectSpeciesData || !siiSelectSpeciesData.length) return;
+    setIsSpeciesLoading(true);
+    loadSpecies();
+  }, [siiSelectSpeciesData]);
 
   useEffect(() => {
-      if (!lang) return;
-      updateChartInfo();
-    }, [lang]);
+    if (!lang) return;
+    updateChartInfo();
+  }, [lang]);
 
-    useEffect(() => {
-      updateChartInfo();
-    }, []);
-
+  useEffect(() => {
+    updateChartInfo();
+  }, []);
 
   return (
     <div className={cx(lightMode ? styles.light : '', styles.trends)}>
@@ -365,16 +380,17 @@ function ScoreDistributionsSiiComponent(props) {
         </span>
         <hr />
         <ul className={styles.spsSpecies}>
-          {siiSpecies && siiSpecies.map((s) => {
-            if(s){
-              return (
-                <li key={`${s.species}`}>
-                  <button
-                    type="button"
-                    onClick={() => selectSpecies(s.species)}
-                  >
-                    {s.species_url && (
-                      <img src={s.species_url} alt="species" />
+          {siiSpecies &&
+            siiSpecies.map((s) => {
+              if (s) {
+                return (
+                  <li key={`${s.species}`}>
+                    <button
+                      type="button"
+                      onClick={() => selectSpecies(s.species)}
+                    >
+                      {s.species_url && (
+                        <img src={s.species_url} alt="species" />
                       )}
                       {!s?.species_url && <TaxaImageComponent taxa={s?.taxa} />}
                       <div className={styles.spsInfo}>
@@ -383,11 +399,9 @@ function ScoreDistributionsSiiComponent(props) {
                           {s.species}
                         </span>
                       </div>
-                      <span
-                        className={styles.spsScore}
-                      >{s.sis_stewardship?.toFixed(
-                        1
-                      )}</span>
+                      <span className={styles.spsScore}>
+                        {s.sis_stewardship?.toFixed(1)}
+                      </span>
                     </button>
                   </li>
                 );
@@ -412,22 +426,23 @@ function ScoreDistributionsSiiComponent(props) {
           </span> */}
         </div>
       </div>
-      <div className={compStyles.chartArea}>
+      <div
+        className={cx(lightMode ? compStyles.light : '', compStyles.chartArea)}
+      >
+        <SpeciesRichnessComponent sii {...props} />
         {!showTable && (
           <>
-            {/* <SpeciesRichnessComponent countryData={countryData} taxaData={taxaData} /> */}
             {isLoading && <Loading height={200} />}
             {!isLoading && (
               <ChartInfoComponent chartInfo={chartInfo} {...props}>
-                <DistributionsChartComponent data={chartData} options={options} />
+                <DistributionsChartComponent
+                  data={chartData}
+                  options={options}
+                />
               </ChartInfoComponent>
             )}
           </>
         )}
-        {/* {showTable && (<>
-          <SpeciesRichnessComponent countryData={countryData} taxaData={taxaData} />
-          <DistributionsTableContainer chartData={siiData?.scoresData} {...props} />
-        </>)} */}
       </div>
     </div>
   );
