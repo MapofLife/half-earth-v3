@@ -4,7 +4,10 @@ import { Modal } from 'he-components';
 import { useT } from '@transifex/react';
 
 import { getCSSVariable } from 'utils/css-utils';
-import { REGION_RANGE_MAP_URL } from 'utils/dashboard-utils';
+import {
+  PERU_CROPS_FEATURE_ID,
+  REGION_RANGE_MAP_URL,
+} from 'utils/dashboard-utils';
 
 import {
   Chart as ChartJS,
@@ -40,6 +43,19 @@ import { key } from 'localforage';
 import useJWTToken from 'hooks/useJWTToken';
 import { update } from 'lodash';
 import { DASHBOARD_URLS } from 'constants/layers-urls';
+import {
+  AGRICULTURE_HUMAN_PRESSURES_TILE_LAYER,
+  ARTISANAL_FISHING_HUMAN_PRESSURES_TILE_LAYER,
+  BUILTUP_HUMAN_PRESSURES_TILE_LAYER,
+  COMMERCIAL_FISHING_HUMAN_PRESSURES_TILE_LAYER,
+  ENERGY_HUMAN_PRESSURES_TILE_LAYER,
+  INTRUSION_HUMAN_PRESSURES_TILE_LAYER,
+  LAND_COVER_LAYER,
+  MARINE_LAND_DRIVERS_HUMAN_PRESSURES_TILE_LAYER,
+  MARINE_OCEAN_DRIVERS_HUMAN_PRESSURES_TILE_LAYER,
+  PERU_CROPS_LAYER,
+  TRANSPORTATION_HUMAN_PRESSURES_TILE_LAYER,
+} from 'constants/layers-slugs';
 
 ChartJS.register(
   LinearScale,
@@ -115,6 +131,111 @@ function DataLayerComponent(props) {
       showChildren: false,
       type: DATA_POINT_TYPE.REGIONS_DATA,
       id: LAYER_OPTIONS.ADMINISTRATIVE_LAYERS,
+    },
+    {
+      id: LAND_COVER_LAYER,
+      items: [],
+      total_no_rows: '',
+      isActive: false,
+      showChildren: false,
+      type: DATA_POINT_TYPE.REGIONS_DATA,
+      label: t('Land cover (2022)'),
+      url: LAND_COVER_LAYER,
+    },
+  ]);
+  const [landUsePressureLayers, setLandUsePressureLayers] = useState([
+    {
+      id: ENERGY_HUMAN_PRESSURES_TILE_LAYER,
+      label: t('Energy and extractive resources'),
+      url: ENERGY_HUMAN_PRESSURES_TILE_LAYER,
+      items: [],
+      total_no_rows: '',
+      isActive: false,
+      showChildren: false,
+      type: DATA_POINT_TYPE.LAND_USE_PRESSURES,
+    },
+    {
+      id: TRANSPORTATION_HUMAN_PRESSURES_TILE_LAYER,
+      label: t('Transportation'),
+      url: TRANSPORTATION_HUMAN_PRESSURES_TILE_LAYER,
+      items: [],
+      total_no_rows: '',
+      isActive: false,
+      showChildren: false,
+      type: DATA_POINT_TYPE.LAND_USE_PRESSURES,
+    },
+    {
+      id: AGRICULTURE_HUMAN_PRESSURES_TILE_LAYER,
+      label: t('Agriculture pressures'),
+      url: AGRICULTURE_HUMAN_PRESSURES_TILE_LAYER,
+      items: [],
+      total_no_rows: '',
+      isActive: false,
+      showChildren: false,
+      type: DATA_POINT_TYPE.LAND_USE_PRESSURES,
+    },
+    {
+      id: BUILTUP_HUMAN_PRESSURES_TILE_LAYER,
+      label: t('Urban and Built up'),
+      url: BUILTUP_HUMAN_PRESSURES_TILE_LAYER,
+      items: [],
+      total_no_rows: '',
+      isActive: false,
+      showChildren: false,
+      type: DATA_POINT_TYPE.LAND_USE_PRESSURES,
+    },
+    {
+      id: INTRUSION_HUMAN_PRESSURES_TILE_LAYER,
+      label: t('Human Intrusion'),
+      url: INTRUSION_HUMAN_PRESSURES_TILE_LAYER,
+      items: [],
+      total_no_rows: '',
+      isActive: false,
+      showChildren: false,
+      type: DATA_POINT_TYPE.LAND_USE_PRESSURES,
+    },
+  ]);
+
+  const [marineUsePressureLayers, setMarineUsePressureLayers] = useState([
+    {
+      id: MARINE_LAND_DRIVERS_HUMAN_PRESSURES_TILE_LAYER,
+      label: t('Land-based drivers'),
+      url: MARINE_LAND_DRIVERS_HUMAN_PRESSURES_TILE_LAYER,
+      items: [],
+      total_no_rows: '',
+      isActive: false,
+      showChildren: false,
+      type: DATA_POINT_TYPE.MARINE_USE_PRESSURES,
+    },
+    {
+      id: MARINE_OCEAN_DRIVERS_HUMAN_PRESSURES_TILE_LAYER,
+      label: t('Ocean-based drivers'),
+      url: MARINE_OCEAN_DRIVERS_HUMAN_PRESSURES_TILE_LAYER,
+      items: [],
+      total_no_rows: '',
+      isActive: false,
+      showChildren: false,
+      type: DATA_POINT_TYPE.MARINE_USE_PRESSURES,
+    },
+    {
+      id: COMMERCIAL_FISHING_HUMAN_PRESSURES_TILE_LAYER,
+      label: t('Commercial fishing'),
+      url: COMMERCIAL_FISHING_HUMAN_PRESSURES_TILE_LAYER,
+      items: [],
+      total_no_rows: '',
+      isActive: false,
+      showChildren: false,
+      type: DATA_POINT_TYPE.MARINE_USE_PRESSURES,
+    },
+    {
+      id: ARTISANAL_FISHING_HUMAN_PRESSURES_TILE_LAYER,
+      label: t('Artisnal fishing'),
+      url: ARTISANAL_FISHING_HUMAN_PRESSURES_TILE_LAYER,
+      items: [],
+      total_no_rows: '',
+      isActive: false,
+      showChildren: false,
+      type: DATA_POINT_TYPE.MARINE_USE_PRESSURES,
     },
   ]);
   const [isLoading, setIsLoading] = useState(true);
@@ -622,6 +743,19 @@ function DataLayerComponent(props) {
           id: LAYER_OPTIONS.INDIGENOUS_LANDS,
         },
       ]);
+    } else if (countryISO.toUpperCase() === 'PER') {
+      setRegionsData((prev) => [
+        ...prev,
+        {
+          id: PERU_CROPS_LAYER,
+          label: t('Peru Crops'),
+          items: [],
+          total_no_rows: '',
+          isActive: false,
+          showChildren: false,
+          type: DATA_POINT_TYPE.REGIONS_DATA,
+        },
+      ]);
     }
     setSpeciesDataLoading(true);
   }, []);
@@ -671,7 +805,32 @@ function DataLayerComponent(props) {
               {valuesExists && showHabitatChart && (
                 <Line options={chartOptions} data={chartData} />
               )}
-
+              <hr className={hrTheme.dark} />
+              <button
+                className={styles.distributionTitle}
+                type="button"
+                onClick={() => {}}
+              >
+                <span>{t('Land Use Pressure')}</span>
+              </button>
+              <DataLayersGroupedList
+                dataPoints={landUsePressureLayers}
+                setDataPoints={setLandUsePressureLayers}
+                {...props}
+              />
+              <hr className={hrTheme.dark} />
+              <button
+                className={styles.distributionTitle}
+                type="button"
+                onClick={() => {}}
+              >
+                <span>{t('Marine Use Pressure')}</span>
+              </button>
+              <DataLayersGroupedList
+                dataPoints={marineUsePressureLayers}
+                setDataPoints={setMarineUsePressureLayers}
+                {...props}
+              />
               <hr className={hrTheme.dark} />
               {privateOccurrenceData.length > 0 && (
                 <>
