@@ -387,6 +387,19 @@ function SpeciesRichnessComponent(props) {
           `${selectedProvince?.name} SHI ${t('BY TAXONOMIC GROUP')}`
         );
       }
+    }
+    if (sii) {
+      if (siiActiveTrend === NATIONAL_TREND || !selectedProvince) {
+        setTitleText(`${t('NATIONAL SII BY TAXONOMIC GROUP')}`);
+      } else if (siiActiveTrend === PROVINCE_TREND && selectedProvince) {
+        setTitleText(
+          `${selectedProvince?.name} SII ${t('BY TAXONOMIC GROUP')}`
+        );
+      } else if (acceptedZones.includes(activeTrend) && selectedProvince) {
+        setTitleText(
+          `${selectedProvince?.name} SII ${t('BY TAXONOMIC GROUP')}`
+        );
+      }
     } else if (activeTrend === NATIONAL_TREND || !selectedProvince) {
       setTitleText(`${t('NATIONAL SPI BY TAXONOMIC GROUP')}`);
     } else if (activeTrend === PROVINCE_TREND && selectedProvince) {
