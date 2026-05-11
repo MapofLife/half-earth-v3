@@ -47,7 +47,7 @@ const DownloadGbifReport = ({ type }) => {
     <Button
       type="rectangular"
       className={cx(styles.saveButton, styles.notActive)}
-      label={'Descargar informe de GBIF'}
+      label={'Descargar informe de GBF'}
       handleClick={() => downloadReport()}
     />
   );
