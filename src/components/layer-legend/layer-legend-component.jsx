@@ -573,7 +573,7 @@ function LayerLegendComponent(props) {
   useEffect(() => {
     setRichnessLayers((prevLayers) =>
       prevLayers.map((layer) => {
-        const legendInfo = richnessRarityLegendInfo.find(
+        const legendInfo = richnessRarityLegendInfo?.find(
           (info) => info.layerslug === layer.id
         );
         if (legendInfo) {

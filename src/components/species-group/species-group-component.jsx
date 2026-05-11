@@ -14,7 +14,7 @@ import TaxaImageComponent from '../taxa-image';
 
 import styles from './species-group-component.module.scss';
 import { MOL_IMAGES_THUMBS_BASE } from 'constants/dashboard-constants.js';
-import { FlagOutlined, FlagSharp } from '@mui/icons-material'
+import { FlagOutlined, FlagSharp } from '@mui/icons-material';
 import { DASHBOARD_URLS } from 'constants/layers-urls.js';
 import useJWTToken from 'hooks/useJWTToken';
 
@@ -29,7 +29,7 @@ function SpeciesGroupComponent(props) {
     setMapLegendLayers,
     validateSpeciesList,
     countryISO,
-    updateFlaggedSpecies,
+    updateSpeciesToFlag,
     selectedRegion,
   } = props;
   const { getToken } = useJWTToken(countryISO);
@@ -72,37 +72,57 @@ function SpeciesGroupComponent(props) {
       headers: {
         ISO3: countryISO,
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
         scientificname: speciesToFlag.scientificname,
-        region_field: selectedRegion ? Object.keys(selectedRegion)?.[0] : 'iso3',
-        region_code: selectedRegion ? Object.values(selectedRegion)?.[0] : countryISO,
+        region_field: selectedRegion
+          ? Object.keys(selectedRegion)?.[0]
+          : 'iso3',
+        region_code: selectedRegion
+          ? Object.values(selectedRegion)?.[0]
+          : countryISO,
         flag: !speciesToFlag.flagged,
         iso3: countryISO,
-      })
-    }).then((response) => {
-      if (response.ok) {
-        updateFlaggedSpecies(speciesToFlag);
-      } else {
-        alert(`Failed to flag ${speciesToFlag.scientificname}. Please try again later.`);
-      }
+      }),
     })
-    .catch(() => {
-      alert(`An error occurred while flagging ${speciesToFlag.scientificname}. Please try again later.`);
-    });
+      .then((response) => {
+        if (response.ok) {
+          updateSpeciesToFlag(speciesToFlag);
+        } else {
+          alert(
+            `Failed to flag ${speciesToFlag.scientificname}. Please try again later.`
+          );
+        }
+      })
+      .catch((error) => {
+        alert(
+          `An error occurred while flagging ${speciesToFlag.scientificname}. Please try again later.`
+        );
+      });
   };
 
   return (
-    <div style={{ display: 'flex',  alignItems: 'flex-start' }}>
+    <div style={{ display: 'flex', alignItems: 'flex-start' }}>
       {validateSpeciesList && (
-        <button className={cx(species.flagged ? styles.selected : '', styles.flagSpecies)} onClick={() => flagSpecies(species)}>
-          {species.flagged ? <FlagSharp/> : <FlagOutlined/>}
+        <button
+          className={cx(
+            species.flagged ? styles.selected : '',
+            styles.flagSpecies
+          )}
+          onClick={() => flagSpecies(species)}
+        >
+          {species.flagged ? <FlagSharp /> : <FlagOutlined />}
         </button>
       )}
       {!validateSpeciesList && species.flagged && (
-        <div className={cx(species.flagged ? styles.selected : '', styles.flagSpecies)}>
-          <FlagSharp/>
+        <div
+          className={cx(
+            species.flagged ? styles.selected : '',
+            styles.flagSpecies
+          )}
+        >
+          <FlagSharp />
         </div>
       )}
       <button
