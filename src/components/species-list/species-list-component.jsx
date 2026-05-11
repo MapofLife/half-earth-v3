@@ -111,7 +111,7 @@ function SpeciesListComponent(props) {
     // this.virtualScroll?.scrollToIndex(0);
     const inFilterCheck = (sp) => {
       return (
-        sp.common?.some(s => s?.toLowerCase().includes(filter)) ||
+        sp.common?.some((s) => s?.toLowerCase().includes(filter)) ||
         sp.scientificname?.toLowerCase().indexOf(filter) > -1
       );
     };
@@ -128,7 +128,7 @@ function SpeciesListComponent(props) {
 
     // group by family common
     let groupByFamily = familySortedSpecies?.reduce((group, result) => {
-      const catName = result.scientificname ?? '__blank';//.scientific_name[0] ?? '__blank';
+      const catName = result.scientificname ?? '__blank'; //.scientific_name[0] ?? '__blank';
 
       const updateResult = { ...result };
 
@@ -188,7 +188,7 @@ function SpeciesListComponent(props) {
     setSelectedTaxa('');
   };
 
-  const updateFlaggedSpecies = (speciesToFlag) => {
+  const updateSpeciesToFlag = (speciesToFlag) => {
     const updatedSpecies = selectedTaxaObj.species.map((sp) => {
       if (sp.scientificname === speciesToFlag.scientificname) {
         return { ...sp, flagged: !sp.flagged };
@@ -198,7 +198,9 @@ function SpeciesListComponent(props) {
     setSelectedTaxaObj({ ...selectedTaxaObj, species: updatedSpecies });
   };
 
-  const getLabel = validateSpeciesList ? t('Validate complete') : t('Validate list');
+  const getLabel = validateSpeciesList
+    ? t('Validate complete')
+    : t('Validate list');
 
   useEffect(() => {
     if (!selectedTaxa) return;
@@ -278,7 +280,9 @@ function SpeciesListComponent(props) {
         <div className={styles.speciesList}>
           <div className={styles.header}>
             <div>
-              <span style={{ marginRight: '5px' }}>{selectedTaxaObj?.count}</span>
+              <span style={{ marginRight: '5px' }}>
+                {selectedTaxaObj?.count}
+              </span>
               <span
                 style={{
                   textTransform: 'capitalize',
@@ -318,7 +322,7 @@ function SpeciesListComponent(props) {
                           key={idx}
                           validateSpeciesList={validateSpeciesList}
                           selectedTaxaObj={selectedTaxaObj}
-                          updateFlaggedSpecies={updateFlaggedSpecies}
+                          updateSpeciesToFlag={updateSpeciesToFlag}
                           {...props}
                         />
                       )
