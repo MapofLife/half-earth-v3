@@ -544,10 +544,7 @@ function ScoreDistributionsShiComponent(props) {
         </p>
 
         <span className={styles.spsSpeciesTitle}>
-          {t('Species with SHS between')}{' '}
-          <b>
-            {lowDist} - {highDist}:
-          </b>
+          {t('Species Highlights')}
         </span>
         <hr />
         {isSpeciesLoading && <Loading height={200} />}

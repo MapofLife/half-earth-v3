@@ -11,9 +11,7 @@ import { useLocale, useT } from '@transifex/react';
 
 import * as urlActions from 'actions/url-actions';
 
-import {
-  getAoiFromDataBase,
-} from 'utils/geo-processing-services';
+import { getAoiFromDataBase } from 'utils/geo-processing-services';
 import { activateLayersOnLoad } from 'utils/layer-manager-utils';
 import { setBasemap } from 'utils/layer-manager-utils.js';
 
@@ -37,8 +35,8 @@ import {
   GADM_1_ADMIN_AREAS_FEATURE_LAYER,
   MAMMALS_LOOKUP,
   REPTILES_LOOKUP,
-  WDPA_OECM_FEATURE_DATA_LAYER
- } from 'constants/layers-slugs.js';
+  WDPA_OECM_FEATURE_DATA_LAYER,
+} from 'constants/layers-slugs.js';
 import { layersConfig } from 'constants/mol-layers-configs';
 import DashboardComponent from './dashboard-component.jsx';
 import mapStateToProps from './dashboard-selectors.js';
@@ -87,6 +85,7 @@ function DashboardContainer(props) {
   const [regionName, setRegionName] = useState();
   const [speciesListLoading, setSpeciesListLoading] = useState(true);
   const [prioritySpeciesList, setPrioritySpeciesList] = useState();
+  const [richnessRarityLegendInfo, setRichnessRarityLegendInfo] = useState();
   const [mapLegendLayers, setMapLegendLayers] = useState([]);
   const [speciesToAvoid, setSpeciesToAvoid] = useState();
   const [hash, setHash] = useState();
@@ -167,13 +166,13 @@ function DashboardContainer(props) {
       let url = '';
       if (countryISO === 'COD') {
         url = DASHBOARD_URLS.PRIVATE_COD_OCCURENCE_LAYER;
-      } else if(countryISO === 'GUY') {
+      } else if (countryISO === 'GUY') {
         url = DASHBOARD_URLS.PRIVATE_GUY_OCCURENCE_LAYER;
-      } else if(countryISO === 'GIN') {
+      } else if (countryISO === 'GIN') {
         url = DASHBOARD_URLS.PRIVATE_GIN_OCCURENCE_LAYER;
       }
 
-    const privateOccurrenceDataResponse =
+      const privateOccurrenceDataResponse =
         await EsriFeatureService.getFeatures({
           url,
           whereClause: `scientificname = '${scientificName}'`,
@@ -363,12 +362,13 @@ function DashboardContainer(props) {
   const getProtectAreasSpeciesDetails = (speciesData, taxa) => {
     const results = speciesData.species.map(
       ({ scientific_name, common_name, attributes }) => {
-        if(attributes !== 'NA'){
+        if (attributes !== 'NA') {
           const { source, species_url, threat_status } = JSON.parse(
             attributes.replace(/NA/g, null).replace(/NaN/g, 'null')
           )[0];
 
-          const isFound = speciesToAvoid?.map((item) => item.toUpperCase())
+          const isFound = speciesToAvoid
+            ?.map((item) => item.toUpperCase())
             .includes(scientific_name.toUpperCase());
 
           if (!isFound) {
@@ -381,12 +381,12 @@ function DashboardContainer(props) {
               taxa,
             };
           }
-        } else if(attributes === 'NA') {
+        } else if (attributes === 'NA') {
           return {
-              scientific_name,
-              source: 'range',
-              taxa,
-            };
+            scientific_name,
+            source: 'range',
+            taxa,
+          };
         }
       }
     );
@@ -402,24 +402,27 @@ function DashboardContainer(props) {
   };
 
   const getCustomAreasSpeciesDetails = (speciesData, taxa) => {
-    const results = speciesData.map(({ name, commonName, threat_status, species_url }) => {
-      const isFound = speciesToAvoid?.map((item) => item.toUpperCase())
-        .includes(name.toUpperCase());
-      let common_name = commonName || name;
-      if (Array.isArray(commonName)) {
-        [common_name] = commonName;
+    const results = speciesData.map(
+      ({ name, commonName, threat_status, species_url }) => {
+        const isFound = speciesToAvoid
+          ?.map((item) => item.toUpperCase())
+          .includes(name.toUpperCase());
+        let common_name = commonName || name;
+        if (Array.isArray(commonName)) {
+          [common_name] = commonName;
+        }
+        if (!isFound) {
+          return {
+            common_name,
+            scientific_name: name,
+            threat_status,
+            source: 'range',
+            species_url,
+            taxa,
+          };
+        }
       }
-      if (!isFound) {
-        return {
-          common_name,
-          scientific_name: name,
-          threat_status,
-          source: 'range',
-          species_url,
-          taxa,
-        };
-      }
-    });
+    );
 
     const species = removeDuplicatesByScientificName(results);
 
@@ -436,7 +439,9 @@ function DashboardContainer(props) {
       const { source, species_url, threat_status, commonnames } =
         countryISO !== 'EEWWF'
           ? attributes
-          : JSON.parse(attributes.replace(/NA/g, null).replace(/NaN/g, 'null'))[0];
+          : JSON.parse(
+              attributes.replace(/NA/g, null).replace(/NaN/g, 'null')
+            )[0];
 
       return {
         common_name: commonnames,
@@ -466,9 +471,9 @@ function DashboardContainer(props) {
 
     if (countryISO === 'COD') {
       url = DASHBOARD_URLS.PRIVATE_COD_OCCURENCE_LAYER;
-    } else if(countryISO === 'GUY') {
+    } else if (countryISO === 'GUY') {
       url = DASHBOARD_URLS.PRIVATE_GUY_OCCURENCE_LAYER;
-    } else if(countryISO === 'GIN') {
+    } else if (countryISO === 'GIN') {
       url = DASHBOARD_URLS.PRIVATE_GIN_OCCURENCE_LAYER;
     }
 
@@ -504,7 +509,8 @@ function DashboardContainer(props) {
 
       if (foundTaxa) {
         occurrence.species.forEach((species) => {
-          const isFound = speciesToAvoid?.map((item) => item.toUpperCase())
+          const isFound = speciesToAvoid
+            ?.map((item) => item.toUpperCase())
             .includes(species.scientificname.toUpperCase());
 
           if (!isFound) {
@@ -532,7 +538,7 @@ function DashboardContainer(props) {
     });
 
     setTaxaList(list);
-  }
+  };
 
   const getOccurenceSpecies = async (speciesData) => {
     const list = [...speciesData];
@@ -556,48 +562,41 @@ function DashboardContainer(props) {
       result = await response.json();
     }
 
-    const seasons = [
-      '',
-      'Resident',
-      'Breeding',
-      'Non-breeding',
-      'Passage',
-      '',
-    ];
+    const seasons = ['', 'Resident', 'Breeding', 'Non-breeding', 'Passage', ''];
 
-    const {taxas, datasets} = result;
+    const { taxas, datasets } = result;
 
-    taxas?.forEach(taxa => {
+    taxas?.forEach((taxa) => {
       const taxaDatasetSet = new Set();
-      taxa.species.forEach(species => {
-
-        const foundFlaggedSpecies = flaggedSpecies?.find(fs => fs.scientificname === species.scientificname);
-        if(foundFlaggedSpecies){
+      taxa.species.forEach((species) => {
+        const foundFlaggedSpecies = flaggedSpecies?.find(
+          (fs) => fs.scientificname === species.scientificname
+        );
+        if (foundFlaggedSpecies) {
           species.flagged = foundFlaggedSpecies;
         } else {
           species.flagged = false;
         }
 
-        if(foundFlaggedSpecies?.deleted){
+        if (foundFlaggedSpecies?.deleted) {
           return;
         } else {
           const speciesDatasets = Object.keys(species.dataset);
-          speciesDatasets.forEach(d => {
+          speciesDatasets.forEach((d) => {
             taxaDatasetSet.add(d);
           });
           const speciesDataset2 = {};
-          speciesDatasets.forEach(k => {
-            speciesDataset2[datasets[k].dataset_id] =
-              species.dataset[k];
+          speciesDatasets.forEach((k) => {
+            speciesDataset2[datasets[k].dataset_id] = species.dataset[k];
           });
-          species.datasetList = speciesDatasets.map(dsid => ({
+          species.datasetList = speciesDatasets.map((dsid) => ({
             dataset_id: datasets[dsid].dataset_id,
             product_type: datasets[dsid].product_type,
             title: datasets[dsid].title,
             seasonality: species.dataset[dsid],
             seasonalityString: species.dataset[dsid]
-              .map(s => (s === null ? 'Resident' : seasons[s]))
-              .filter(s => s.length > 0)
+              .map((s) => (s === null ? 'Resident' : seasons[s]))
+              .filter((s) => s.length > 0)
               .join(', '),
           }));
           species.dataset = speciesDataset2;
@@ -610,24 +609,25 @@ function DashboardContainer(props) {
       });
     });
     return result;
-  }
+  };
 
   const getSpeciesList = async () => {
     setSpeciesListLoading(true);
 
     const body = {
       lang: tx.currentLocale || 'en',
-      radius: "25000",
-      v2: "true"
+      radius: '25000',
+      v2: 'true',
     };
 
     // if (exploreAllSpecies) {
-      body.iso3 = countryISO;
+    body.iso3 = countryISO;
     // }
 
     if (selectedRegion) {
       delete body.iso3;
-      const { GID_1, WDPA_PID, mgc, Int_ID, region_key, rings, nbis_id } = selectedRegion;
+      const { GID_1, WDPA_PID, mgc, Int_ID, region_key, rings, nbis_id } =
+        selectedRegion;
       if (GID_1) {
         body.gid1 = GID_1;
       }
@@ -636,17 +636,16 @@ function DashboardContainer(props) {
         body.wdpaid = WDPA_PID;
       }
 
-      if(rings){
+      if (rings) {
         body.geojson = {
           type: 'Polygon',
           coordinates: [...rings],
-        }
+        };
       }
 
-      if(nbis_id){
+      if (nbis_id) {
         body.nbis_id = nbis_id;
       }
-
     }
 
     const speciesList = await fetch(DASHBOARD_URLS.REGIONS_MOL_DATA, {
@@ -659,9 +658,11 @@ function DashboardContainer(props) {
 
     const data = await speciesList.json();
     const speciesLoaded = await loadSpecies(data);
-    if(speciesLoaded?.taxas){
-      if(selectedRegionOption !== REGION_OPTIONS.RAPID_INVENTORY_32){
-      const privateDataAndSpecies = await getPrivateOccurrenceSpecies(speciesLoaded.taxas);
+    if (speciesLoaded?.taxas) {
+      if (selectedRegionOption !== REGION_OPTIONS.RAPID_INVENTORY_32) {
+        const privateDataAndSpecies = await getPrivateOccurrenceSpecies(
+          speciesLoaded.taxas
+        );
       }
       getOccurenceSpecies(speciesLoaded.taxas);
     } else {
@@ -731,19 +732,42 @@ function DashboardContainer(props) {
     }
   };
 
+  const getRichnessRarityLegendInfo = async () => {
+    const url =
+      'https://services1.arcgis.com/7uJv7I3kgh2y7Pe0/arcgis/rest/services/biodiversity_layer_metadata/FeatureServer';
+    const whereClause = ``;
+
+    const features = await EsriFeatureService.getFeatures({
+      url,
+      whereClause,
+      returnGeometry: false,
+    });
+
+    if (features) {
+      const layerInfo = features.map(({ attributes }) => attributes);
+      setRichnessRarityLegendInfo(layerInfo);
+    } else {
+      setRichnessRarityLegendInfo([]);
+    }
+  };
+
   const getFlaggedSpeciesList = async () => {
     const token = await getToken();
 
     let url = DASHBOARD_URLS.GET_FLAGGED_SPECIES_URL;
 
-    url += `?region_field=${selectedRegion ? Object.keys(selectedRegion)?.[0] : 'iso3'}&region_code=${selectedRegion ? Object.values(selectedRegion)?.[0] : countryISO}&iso3=${countryISO}`;
+    url += `?region_field=${
+      selectedRegion ? Object.keys(selectedRegion)?.[0] : 'iso3'
+    }&region_code=${
+      selectedRegion ? Object.values(selectedRegion)?.[0] : countryISO
+    }&iso3=${countryISO}`;
 
     const response = await fetch(url, {
       method: 'GET',
       headers: {
         ISO3: countryISO,
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       },
     });
 
@@ -965,6 +989,7 @@ function DashboardContainer(props) {
         });
 
       getPrioritySpeciesList();
+      getRichnessRarityLegendInfo();
       getIgnoredSpeciesList();
     }
 
@@ -975,14 +1000,20 @@ function DashboardContainer(props) {
 
       // Update the address bar without reloading the page
       window.history.replaceState({}, '', url.toString());
+    } else if (countryISO === 'PER') {
+      await tx.setCurrentLocale('es');
+      const url = new URL(window.location.href);
+      url.searchParams.set('lang', 'es'); // Add or update the parameter
 
+      // Update the address bar without reloading the page
+      window.history.replaceState({}, '', url.toString());
     } else {
       await tx.setCurrentLocale('en');
       const url = new URL(window.location.href);
       url.searchParams.set('lang', 'en'); // Add or update the parameter
 
       // Update the address bar without reloading the page
-      window.history.replaceState({}, '', url.toString())
+      window.history.replaceState({}, '', url.toString());
     }
 
     // Cleanup event listener on component unmount
@@ -992,16 +1023,15 @@ function DashboardContainer(props) {
   }, []);
 
   useEffect(() => {
-    if (!selectedRegion && !speciesToAvoid ) return;
-      getFlaggedSpeciesList();
-      getSpeciesList();
+    if (!selectedRegion && !speciesToAvoid) return;
+    getFlaggedSpeciesList();
+    getSpeciesList();
   }, [selectedRegion, speciesToAvoid]);
 
   useEffect(() => {
     if (!updateFlaggedSpecies) return;
     getFlaggedSpeciesList();
   }, [updateFlaggedSpecies]);
-
 
   useEffect(() => {
     if (!scientificName) return;
@@ -1032,60 +1062,61 @@ function DashboardContainer(props) {
   ]);
 
   return (
-      <DashboardComponent
-        handleMapLoad={handleMapLoad}
-        geometry={geometry}
-        speciesInfo={speciesInfo}
-        setSpeciesInfo={setSpeciesInfo}
-        data={data}
-        dataLayerData={dataLayerData}
-        setDataLayerData={setDataLayerData}
-        privateOccurrenceData={privateOccurrenceData}
-        dataByCountry={dataByCountry}
-        spiDataByCountry={spiDataByCountry}
-        taxaList={taxaList}
-        setTaxaList={setTaxaList}
-        selectedTaxa={selectedTaxa}
-        setSelectedTaxa={setSelectedTaxa}
-        filteredTaxaList={filteredTaxaList}
-        setFilteredTaxaList={setFilteredTaxaList}
-        scientificName={scientificName}
-        setScientificName={setScientificName}
-        selectedIndex={selectedIndex}
-        setSelectedIndex={setSelectedIndex}
-        setSelectedRegion={setSelectedRegion}
-        selectedRegion={selectedRegion}
-        regionLayers={regionLayers}
-        setRegionLayers={setRegionLayers}
-        selectedRegionOption={selectedRegionOption}
-        setSelectedRegionOption={setSelectedRegionOption}
-        setHash={setHash}
-        hash={hash}
-        selectedProvince={selectedProvince}
-        setSelectedProvince={setSelectedProvince}
-        tabOption={tabOption}
-        setTabOption={setTabOption}
-        provinceName={provinceName}
-        setProvinceName={setProvinceName}
-        fromTrends={fromTrends}
-        setFromTrends={setFromTrends}
-        speciesListLoading={speciesListLoading}
-        prioritySpeciesList={prioritySpeciesList}
-        mapLegendLayers={mapLegendLayers}
-        setMapLegendLayers={setMapLegendLayers}
-        setExploreAllSpecies={setExploreAllSpecies}
-        exploreAllSpecies={exploreAllSpecies}
-        regionName={regionName}
-        setRegionName={setRegionName}
-        allTaxa={allTaxa}
-        setSelectedGeometryRings={setSelectedGeometryRings}
-        selectedGeometryRings={selectedGeometryRings}
-        setGeometry={setGeometry}
-        flaggedSpecies={flaggedSpecies}
-        setUpdateFlaggedSpecies={setUpdateFlaggedSpecies}
-        updateFlaggedSpecies={updateFlaggedSpecies}
-        {...props}
-      />
+    <DashboardComponent
+      handleMapLoad={handleMapLoad}
+      geometry={geometry}
+      speciesInfo={speciesInfo}
+      setSpeciesInfo={setSpeciesInfo}
+      data={data}
+      dataLayerData={dataLayerData}
+      setDataLayerData={setDataLayerData}
+      privateOccurrenceData={privateOccurrenceData}
+      dataByCountry={dataByCountry}
+      spiDataByCountry={spiDataByCountry}
+      taxaList={taxaList}
+      setTaxaList={setTaxaList}
+      selectedTaxa={selectedTaxa}
+      setSelectedTaxa={setSelectedTaxa}
+      filteredTaxaList={filteredTaxaList}
+      setFilteredTaxaList={setFilteredTaxaList}
+      scientificName={scientificName}
+      setScientificName={setScientificName}
+      selectedIndex={selectedIndex}
+      setSelectedIndex={setSelectedIndex}
+      setSelectedRegion={setSelectedRegion}
+      selectedRegion={selectedRegion}
+      regionLayers={regionLayers}
+      setRegionLayers={setRegionLayers}
+      selectedRegionOption={selectedRegionOption}
+      setSelectedRegionOption={setSelectedRegionOption}
+      setHash={setHash}
+      hash={hash}
+      selectedProvince={selectedProvince}
+      setSelectedProvince={setSelectedProvince}
+      tabOption={tabOption}
+      setTabOption={setTabOption}
+      provinceName={provinceName}
+      setProvinceName={setProvinceName}
+      fromTrends={fromTrends}
+      setFromTrends={setFromTrends}
+      speciesListLoading={speciesListLoading}
+      prioritySpeciesList={prioritySpeciesList}
+      mapLegendLayers={mapLegendLayers}
+      setMapLegendLayers={setMapLegendLayers}
+      setExploreAllSpecies={setExploreAllSpecies}
+      exploreAllSpecies={exploreAllSpecies}
+      regionName={regionName}
+      setRegionName={setRegionName}
+      allTaxa={allTaxa}
+      setSelectedGeometryRings={setSelectedGeometryRings}
+      selectedGeometryRings={selectedGeometryRings}
+      setGeometry={setGeometry}
+      flaggedSpecies={flaggedSpecies}
+      setUpdateFlaggedSpecies={setUpdateFlaggedSpecies}
+      updateFlaggedSpecies={updateFlaggedSpecies}
+      richnessRarityLegendInfo={richnessRarityLegendInfo}
+      {...props}
+    />
   );
 }
 

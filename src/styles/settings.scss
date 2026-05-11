@@ -34,10 +34,10 @@ $area: #7ddecc;
 $area-protected: #3abc64;
 $habitat-country: #23c9e5;
 $habitat-country-compare: #228d19;
-$half-earth-green: #6FBE46;
+$half-earth-green: #6fbe46;
 $half-earth-green-hover: #14ff3b;
-$tangerine: #F7991F;
-$tangerine-hover: #FF9B30;
+$tangerine: #f7991f;
+$tangerine-hover: #ff9b30;
 
 // Project colors
 $space-background: #09141a;
@@ -106,6 +106,15 @@ $carbon-layer-gradient: linear-gradient(
   rgba($navy-he, 0.1) 0%,
   #a838004d 30%,
   $carbon-layer 100%
+);
+
+$socio-economic-gradient: linear-gradient(
+  90deg,
+  rgba(5, 48, 97, 1) 0%,
+  rgba(67, 147, 195, 1) 15%,
+  rgba(247, 247, 247, 1) 54%,
+  rgba(214, 96, 77, 1) 73%,
+  rgba(103, 0, 31, 1) 100%
 );
 $spi-gradient: linear-gradient(
   270deg,

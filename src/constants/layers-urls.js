@@ -129,6 +129,10 @@ import {
   TREES_RICHNESS,
   TREES_RARITY,
   FEATURED_PLACES_PORTAL_ID,
+  LAND_COVER_LAYER,
+  APURIMAC_SPECIES_LOSS_HABITY_SUITABILITY_LAYER,
+  APURIMAC_SPECIES_GAIN_HABITY_SUITABILITY_LAYER,
+  POVERTY_AND_DEPRIVATION_LAYER,
 } from 'constants/layers-slugs';
 
 const { VITE_APP_VERCEL_ENV } = import.meta.env;
@@ -492,6 +496,14 @@ export const LAYERS_URLS = {
   [REPTILE_RARITY_NATIONAL]:
     'https://tiles.arcgis.com/tiles/IkktFdUAcY3WrH25/arcgis/rest/services/reptiles_mean_rarity_nationally_scaled_SEA_NA_SACA/MapServer',
 
+  [LAND_COVER_LAYER]:
+    'https://tiles.arcgis.com/tiles/7uJv7I3kgh2y7Pe0/arcgis/rest/services/ESA_LandCover_CCI_2022/MapServer',
+  [APURIMAC_SPECIES_LOSS_HABITY_SUITABILITY_LAYER]:
+    'https://tiles.arcgis.com/tiles/z1kFjaClHV2kVACk/arcgis/rest/services/hsr_binary_loss_and_count_apurimac/MapServer',
+  [APURIMAC_SPECIES_GAIN_HABITY_SUITABILITY_LAYER]:
+    'https://tiles.arcgis.com/tiles/z1kFjaClHV2kVACk/arcgis/rest/services/hsr_binary_gain_and_count_apurimac/MapServer',
+  [POVERTY_AND_DEPRIVATION_LAYER]:
+    'https://tiles.arcgis.com/tiles/7uJv7I3kgh2y7Pe0/arcgis/rest/services/Global_Gridded_Relative_Deprivation_Index/MapServer',
 };
 
 export const DASHBOARD_URLS = {

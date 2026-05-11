@@ -17,7 +17,10 @@ import {
 import cx from 'classnames';
 import last from 'lodash/last';
 
-import { SHI_LATEST_YEAR } from 'constants/dashboard-constants.js';
+import {
+  SHI_LATEST_YEAR,
+  SII_LATEST_YEAR,
+} from 'constants/dashboard-constants.js';
 
 import AmphibiansBlack from 'images/dashboard/amphibian_icon_black.png?react';
 import AmphibiansWhite from 'images/dashboard/amphibian_icon_white.png?react';
@@ -61,8 +64,11 @@ function SpeciesRichnessComponent(props) {
     zoneData,
     shiActiveTrend,
     shiCountryData,
+    siiCountryData,
+    siiActiveTrend,
     countryISO,
     shi,
+    sii,
   } = props;
 
   const acceptedZones = ['ACC_3', 'ACC_5', 'MEX', 'PER', 'BRA', 'MDG', 'VNM'];
@@ -111,6 +117,11 @@ function SpeciesRichnessComponent(props) {
     if (shi) {
       data = formattedData.richness_taxa_shi;
       spiData = formattedData.habitat_index_taxa;
+    }
+
+    if (sii) {
+      data = formattedData.richness_taxa_sii;
+      spiData = formattedData.sii_taxa;
     }
 
     const { reptiles, amphibians, mammals, birds } = data;
@@ -208,6 +219,35 @@ function SpeciesRichnessComponent(props) {
         if (formattedData) {
           populateScores(formattedData);
         }
+      }
+    } else if (sii) {
+      let values;
+      let total;
+
+      let formattedData = [];
+      if (siiActiveTrend === PROVINCE_TREND) {
+        let regionData = [];
+        if (!selectedProvince) {
+          regionData = provinces.find(
+            (item) =>
+              item.year === SII_LATEST_YEAR && item.name === provinces[0].name
+          );
+        } else {
+          regionData = provinces.find(
+            (item) =>
+              item.year === SII_LATEST_YEAR &&
+              item.name === selectedProvince.name
+          );
+        }
+        formattedData = regionData;
+      } else {
+        formattedData = siiCountryData.find(
+          (item) => item.year === SII_LATEST_YEAR
+        );
+      }
+
+      if (formattedData) {
+        populateScores(formattedData);
       }
     } else {
       let formattedData = [];
@@ -347,6 +387,19 @@ function SpeciesRichnessComponent(props) {
           `${selectedProvince?.name} SHI ${t('BY TAXONOMIC GROUP')}`
         );
       }
+    }
+    if (sii) {
+      if (siiActiveTrend === NATIONAL_TREND || !selectedProvince) {
+        setTitleText(`${t('NATIONAL SII BY TAXONOMIC GROUP')}`);
+      } else if (siiActiveTrend === PROVINCE_TREND && selectedProvince) {
+        setTitleText(
+          `${selectedProvince?.name} SII ${t('BY TAXONOMIC GROUP')}`
+        );
+      } else if (acceptedZones.includes(activeTrend) && selectedProvince) {
+        setTitleText(
+          `${selectedProvince?.name} SII ${t('BY TAXONOMIC GROUP')}`
+        );
+      }
     } else if (activeTrend === NATIONAL_TREND || !selectedProvince) {
       setTitleText(`${t('NATIONAL SPI BY TAXONOMIC GROUP')}`);
     } else if (activeTrend === PROVINCE_TREND && selectedProvince) {
@@ -364,18 +417,19 @@ function SpeciesRichnessComponent(props) {
   }, []);
 
   useEffect(() => {
-    if (!countryData.length || !shiCountryData.length) return;
+    if (!countryData.length || !shiCountryData.length || !siiCountryData.length)
+      return;
     getData();
-  }, [countryData, shiCountryData]);
+  }, [countryData, shiCountryData, siiCountryData]);
 
   useEffect(() => {
     if (!selectedProvince) return;
     getData();
-  }, [selectedProvince, activeTrend, shiActiveTrend]);
+  }, [selectedProvince, activeTrend, shiActiveTrend, siiActiveTrend]);
 
   return (
     <div className={cx(lightMode ? styles.light : '', styles.container)}>
-      <div className={compStyles.title}>{titleText}</div>
+      <div className={styles.title}>{titleText}</div>
       <div className={styles.spis}>
         <SpiArcChartComponent
           value={scores.birds.count}

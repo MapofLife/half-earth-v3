@@ -8,6 +8,7 @@ import {
   INDIGENOUS_LANDS_FEATURE_ID,
   REGION_OCCURENCE_ID,
   EEWWF_COUNTRY_LINES_FEATURE_ID,
+  PERU_CROPS_FEATURE_ID,
 } from 'utils/dashboard-utils';
 
 import Checkbox from '@mui/material/Checkbox';
@@ -24,12 +25,14 @@ import {
   LAYER_OPTIONS,
   DATA_POINT_TYPE,
 } from 'constants/dashboard-constants.js';
-import { DASHBOARD_URLS } from 'constants/layers-urls.js';
+import { DASHBOARD_URLS, LAYERS_URLS } from 'constants/layers-urls.js';
 
 import ArrowIcon from 'icons/arrow_right.svg?react';
 
 import styles from './grouped-list-styles.module.scss';
-import VectorTileLayer from '@arcgis/core/layers/VectorTileLayer'
+import VectorTileLayer from '@arcgis/core/layers/VectorTileLayer';
+import { LAND_COVER_LAYER, PERU_CROPS_LAYER } from 'constants/layers-slugs';
+import TileLayer from '@arcgis/core/layers/TileLayer';
 
 function GroupedListComponent(props) {
   const {
@@ -46,6 +49,7 @@ function GroupedListComponent(props) {
     isPrivate,
     setMapLegendLayers,
     showHabitatLayer,
+    showPredictionMap,
     setIsLoading,
     mapData,
   } = props;
@@ -86,12 +90,12 @@ function GroupedListComponent(props) {
     view.whenLayerView(layer).then(() => {
       const { renderer } = layer; // Get the renderer
 
-      if(layer.id.match(/GBIF/)){
-        item.color = {r: 255, g: 165, b: 0, a: 0.8};
+      if (layer.id.match(/GBIF/)) {
+        item.color = { r: 255, g: 165, b: 0, a: 0.8 };
       }
 
-      if(layer.id.match(/EBIRD/)){
-        item.color = {r: 255, g: 165, b: 0, a: 0.8};
+      if (layer.id.match(/EBIRD/)) {
+        item.color = { r: 255, g: 165, b: 0, a: 0.8 };
       }
 
       if (renderer) {
@@ -189,7 +193,11 @@ function GroupedListComponent(props) {
         setIsLoading(true);
         loadingCount += 1;
         setIsHabitatChartLoading(true);
-        layer = await EsriFeatureService.getXYZLayerByURL(mapData, id, LAYER_TITLE_TYPES.TREND);
+        layer = await EsriFeatureService.getXYZLayerByURL(
+          mapData,
+          id,
+          LAYER_TITLE_TYPES.TREND
+        );
 
         view.whenLayerView(layer).then((layerView) => {
           layerView.watch('updating', (val) => {
@@ -201,6 +209,16 @@ function GroupedListComponent(props) {
         });
       } else {
         setShowHabitatChart(false);
+      }
+    } else if (id === LAYER_OPTIONS.PREDICTION_MAPS) {
+      if (!item.isActive) {
+        setIsLoading(true);
+        loadingCount += 1;
+        layer = await EsriFeatureService.getXYZLayerByURL(
+          mapData,
+          id,
+          LAYER_TITLE_TYPES.PREDICTION_MAPS
+        );
       }
     } else if (id === LAYER_OPTIONS.POINT_OBSERVATIONS) {
       if (isPrivate) {
@@ -225,6 +243,19 @@ function GroupedListComponent(props) {
         DASHBOARD_URLS.SDM_FEATURE_LAYER_URL,
         id
       );
+    } else if (id === PERU_CROPS_LAYER) {
+      layer = await EsriFeatureService.getFeatureLayer(
+        PERU_CROPS_FEATURE_ID,
+        countryISO,
+        id,
+        'PER_LAYER'
+      );
+    } else {
+      layer = new TileLayer({
+        url: LAYERS_URLS[item.url],
+        id: id,
+        outFields: ['*'],
+      });
     }
 
     // check if item is active to add/remove from Map Legend
@@ -285,7 +316,11 @@ function GroupedListComponent(props) {
           //   speciesInfo.taxa
           // );
 
-          layer = await EsriFeatureService.getXYZLayerByURL(mapData, layerName, LAYER_TITLE_TYPES.EXPERT_RANGE_MAPS);
+          layer = await EsriFeatureService.getXYZLayerByURL(
+            mapData,
+            layerName,
+            LAYER_TITLE_TYPES.EXPERT_RANGE_MAPS
+          );
 
           item.isActive = true;
 
@@ -309,7 +344,7 @@ function GroupedListComponent(props) {
             map.add(layer);
           }
 
-          await view.whenLayerView(layer)
+          await view.whenLayerView(layer);
           setRegionLayers((rl) => ({
             ...rl,
             [layerName]: layer,
@@ -348,14 +383,14 @@ function GroupedListComponent(props) {
           setIsLoading(true);
           loadingCount += 1;
 
-            if (item.type === 'PRIVATE') {
+          if (item.type === 'PRIVATE') {
             let portalId = '';
 
             if (countryISO === 'GUY') {
               portalId = '56b7ab3ca9e74495ae6534ea965ca368';
-            } else if(countryISO === 'GIN') {
+            } else if (countryISO === 'GIN') {
               portalId = '34e596f26f3b4203937e872e91c630b1';
-            } else if(countryISO === 'COD') {
+            } else if (countryISO === 'COD') {
               portalId = '34e596f26f3b4203937e872e91c630b1';
             }
 
@@ -366,19 +401,20 @@ function GroupedListComponent(props) {
               item.dataset_title
             );
           } else {
-            const dsids = item.dataset_id;// 9905692e-6a28-4310-b01e-476a471e5bf8~794adb49-7458-41c4-a1c0-56537fdbec1d';
+            const dsids = item.dataset_id; // 9905692e-6a28-4310-b01e-476a471e5bf8~794adb49-7458-41c4-a1c0-56537fdbec1d';
             const mvtTileUrlTemplate = `https://tiles.mol.org/0.x/tiles/species/occurrences/3857/{z}/{x}/{y}.mvt?scientificname=${speciesInfo.scientificname}&dsids=${dsids}`;
 
             const mvtStyle = {
               version: 8,
-              glyphs: 'https://basemaps.arcgis.com/arcgis/rest/services/World_Basemap/VectorTileServer/resources/fonts/{fontstack}/{range}.pbf',
+              glyphs:
+                'https://basemaps.arcgis.com/arcgis/rest/services/World_Basemap/VectorTileServer/resources/fonts/{fontstack}/{range}.pbf',
               sources: {
                 'species-occurrence': {
                   type: 'vector',
                   tiles: [mvtTileUrlTemplate],
                   minzoom: 0,
-                  maxzoom: 22
-                }
+                  maxzoom: 22,
+                },
               },
               layers: [
                 // Fill layer for polygons
@@ -389,8 +425,8 @@ function GroupedListComponent(props) {
                   'source-layer': 'occurrence',
                   paint: {
                     'fill-color': '#FFA500',
-                    'fill-opacity': 0.8
-                  }
+                    'fill-opacity': 0.8,
+                  },
                 },
                 // Outline layer for polygon boundaries
                 {
@@ -401,8 +437,8 @@ function GroupedListComponent(props) {
                   paint: {
                     'line-color': '#FFA500',
                     'line-width': 2,
-                    'line-opacity': 0.9
-                  }
+                    'line-opacity': 0.9,
+                  },
                 },
                 {
                   id: 'points-circles',
@@ -415,7 +451,7 @@ function GroupedListComponent(props) {
                     'circle-radius': 8,
                     'circle-stroke-color': '#FFA500',
                     'circle-stroke-width': 2,
-                    'circle-opacity': 1
+                    'circle-opacity': 1,
                   },
                 },
                 {
@@ -429,10 +465,10 @@ function GroupedListComponent(props) {
                     'circle-radius': 8,
                     'circle-stroke-color': '#FFA500',
                     'circle-stroke-width': 2,
-                    'circle-opacity': 1
+                    'circle-opacity': 1,
                   },
                 },
-              ]
+              ],
             };
             layer = new VectorTileLayer({
               style: mvtStyle,
@@ -620,7 +656,20 @@ function GroupedListComponent(props) {
   }, [showHabitatLayer]);
 
   useEffect(() => {
-    if(!mapData) return;
+    if (!showPredictionMap) return;
+    displaySingleLayer({
+      label: t('Prediction Map'),
+      items: [],
+      id: LAYER_OPTIONS.PREDICTION_MAPS,
+      total_no_rows: '',
+      isActive: false,
+      showChildren: false,
+      type: DATA_POINT_TYPE.PUBLIC,
+    });
+  }, [showPredictionMap]);
+
+  useEffect(() => {
+    if (!mapData) return;
     activateDefault();
   }, [map, mapData]);
 

@@ -57,6 +57,8 @@ export const GUY_FM_RAPID_INVENTORY_32_FEATURE_ID =
   'cc6b9e1c42c747a2bd220f82039cf0b0';
 export const RAPID_INVENTORY_32_FEATURE_ID = 'e5a8033abb494173af8896d6ba6d0415';
 export const INDIGENOUS_LANDS_FEATURE_ID = 'f02ae30f5a784e9e920729a5afef92c0';
+export const PERU_CROPS_FEATURE_ID = 'a047064754ee46c78b54f22d99284024';
+export const APURIMAC_LANDCOVER_FEATURE_ID = '78c6f87b51884e1d88872563ad01388d';
 
 export const EEWWF_COUNTRY_LINES_FEATURE_ID =
   '48e26caf25de440e8deef5bc52ed975e';
@@ -72,8 +74,7 @@ export const NBS_OP_INTERVENTIONS_FEATURE_ID =
 
 export const EXPERT_RANGE_MAP_URL =
   'https://api.mol.org/2.x/species/drc_rangemap';
-export const TREND_MAP_URL =
-  'https://api.mol.org/2.x/species/drc_trend';
+export const TREND_MAP_URL = 'https://api.mol.org/2.x/species/drc_trend';
 
 export const REGION_RANGE_MAP_URL =
   'https://api.mol.org/2.x/species/indicators/habitat-trends/tile-urls';
@@ -94,10 +95,11 @@ export const PROTECTED_AREA_SLE_FEATURE_URL =
 export const PROTECTED_AREA_GUY_FEATURE_URL =
   'd610d9ad96bc4071a31b3aacdfbf844d';
 
-export const GBIF_OCCURENCE_URL = '41fc325e009a46f08c1e3026d14a47ae';//'1ccb994557a74bc6bd773250d8eebc15';
+export const GBIF_OCCURENCE_URL = '41fc325e009a46f08c1e3026d14a47ae'; //'1ccb994557a74bc6bd773250d8eebc15';
 export const GUY_RIVER_ID = 'e7557c32f8a2475e95aab9471fc9b4c5';
 export const GUY_RIVER_NAME_ID = '4182314c3f9c4b4db823618b501f914c';
-export const GUY_RIVER_NAME_URL = 'https://services1.arcgis.com/7uJv7I3kgh2y7Pe0/arcgis/rest/services/Rivers_Guyana/FeatureServer'
+export const GUY_RIVER_NAME_URL =
+  'https://services1.arcgis.com/7uJv7I3kgh2y7Pe0/arcgis/rest/services/Rivers_Guyana/FeatureServer';
 export const REGION_OCCURENCE_ID = '9f732963e1a7495f889577ca30e44562';
 
 export const DASHBOARD_TABLE_URL =

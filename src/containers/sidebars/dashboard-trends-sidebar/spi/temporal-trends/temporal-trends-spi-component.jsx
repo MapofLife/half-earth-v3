@@ -9,6 +9,7 @@ import { LightModeContext } from 'context/light-mode';
 import last from 'lodash/last';
 
 import Button from 'components/button';
+import DownloadGbifReport from 'components/DownloadGbifReport';
 
 import EsriFeatureService from 'services/esri-feature-service';
 
@@ -107,6 +108,8 @@ function TemporalTrendsSpiComponent(props) {
     }
   };
 
+
+
   useEffect(() => {
     if (clickedRegion) {
       if (countryISO.toLowerCase() === 'ee') {
@@ -155,7 +158,7 @@ function TemporalTrendsSpiComponent(props) {
                 className={cx(styles.saveButton, {
                   [styles.notActive]: activeTrend !== PROVINCE_TREND,
                 })}
-                label={PROVINCE_TREND}
+                label={t('Province')}
                 handleClick={() => handleActionChange(PROVINCE_TREND)}
               />
               <Button
@@ -163,7 +166,7 @@ function TemporalTrendsSpiComponent(props) {
                 className={cx(styles.saveButton, {
                   [styles.notActive]: activeTrend !== NATIONAL_TREND,
                 })}
-                label={NATIONAL_TREND}
+                label={t('National')}
                 handleClick={() => handleActionChange(NATIONAL_TREND)}
               />
             </div>
@@ -218,6 +221,9 @@ function TemporalTrendsSpiComponent(props) {
                 )}
               </span> */}
               </>
+            )}
+            {countryISO.toLowerCase() === 'per' && (
+              <DownloadGbifReport type="spi" />
             )}
           </div>
         )}

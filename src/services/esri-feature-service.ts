@@ -93,6 +93,10 @@ async function getFeatureLayer(portalItemId, countryISO, id, classType = null) {
     definitionExpression = `pais = 'Guyana'`;
   }
 
+  if(classType === 'PER_LAYER') {
+    definitionExpression = ``;
+  }
+
   if (classType === 'INT') {
     // const className = classType === 'INT' ? 'Intervention' : 'Landscape';
     definitionExpression = `class = 'Intervention'`;
@@ -181,6 +185,8 @@ async function getXYZLayer(scientificname, id, type, taxa = null) {
     urlTemplate = data['refined map'].tile_url;
   } else if (type === LAYER_TITLE_TYPES.TREND) {
     urlTemplate = data.trend.tile_url;
+  } else if (type === LAYER_TITLE_TYPES.PREDICTION_MAPS) {
+    urlTemplate = data.prediction_map.tile_url;
   }
 
   return new WebTileLayer({
@@ -198,6 +204,8 @@ async function getXYZLayerByURL(data, id, type) {
     urlTemplate = data['refined map'].tile_url;
   } else if (type === LAYER_TITLE_TYPES.TREND) {
     urlTemplate = data.trend.tile_url;
+  } else if (type === LAYER_TITLE_TYPES.PREDICTION_MAPS) {
+    urlTemplate = data.prediction_map.tile_url;
   }
 
   return new WebTileLayer({

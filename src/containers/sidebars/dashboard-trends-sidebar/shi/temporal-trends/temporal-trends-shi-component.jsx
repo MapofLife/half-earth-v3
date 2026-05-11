@@ -29,6 +29,7 @@ import styles from '../../dashboard-trends-sidebar-styles.module.scss';
 import NationalChartContainer from './national-chart';
 import ProvinceChartContainer from './province-chart';
 import ZoneChartContainer from './zone-chart';
+import DownloadGbifReport from 'components/DownloadGbifReport';
 
 function TemporalTrendsShiComponent(props) {
   const t = useT();
@@ -128,7 +129,7 @@ function TemporalTrendsShiComponent(props) {
                   className={cx(styles.saveButton, {
                     [styles.notActive]: shiActiveTrend !== PROVINCE_TREND,
                   })}
-                  label={PROVINCE_TREND}
+                  label={t('Province')}
                   handleClick={() => handleActionChange(PROVINCE_TREND)}
                 />
               )}
@@ -137,13 +138,16 @@ function TemporalTrendsShiComponent(props) {
                 className={cx(styles.saveButton, {
                   [styles.notActive]: shiActiveTrend !== NATIONAL_TREND,
                 })}
-                label={NATIONAL_TREND}
+                label={t('National')}
                 handleClick={() => handleActionChange(NATIONAL_TREND)}
               />
             </div>
             <span className={styles.helpText}>
               {t('Toggle national SHI and province-level breakdown.')}
             </span>
+            {countryISO.toLowerCase() === 'per' && (
+              <DownloadGbifReport type="shi" />
+            )}
             {/* <Button
             type="rectangular"
             className={cx(styles.saveButton, styles.notActive)}

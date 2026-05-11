@@ -17,7 +17,8 @@ export const TAXA_NAMES = {
   REPTILES: 'REPTILES',
 };
 
-export const MOL_IMAGES_THUMBS_BASE = 'https://storage.googleapis.com/mol-assets2/thumbs/';
+export const MOL_IMAGES_THUMBS_BASE =
+  'https://storage.googleapis.com/mol-assets2/thumbs/';
 
 export const LAYER_TITLE_TYPES = {
   EXPERT_RANGE_MAPS: 'EXPERT RANGE MAPS',
@@ -26,6 +27,7 @@ export const LAYER_TITLE_TYPES = {
   TREND: 'TREND',
   HABITAT: 'HABITAT LOSS/GAIN',
   PROTECTED_AREAS: 'PROTECTED AREAS',
+  PREDICTION_MAPS: 'PREDICTION MAPS',
 };
 
 export const DASHBOARD_LAYER_SLUGS = {
@@ -96,12 +98,15 @@ export const LAYER_OPTIONS = {
   RAPID_INVENTORY_32: 'RAPID_INVENTORY_32',
   EEWWF_COUNTRY_LINES: 'EEWWF_COUNTRY_LINES',
   SDM: 'SDM',
+  PREDICTION_MAPS: 'PREDICTION_MAPS',
 };
 
 export const DATA_POINT_TYPE = {
   PRIVATE: 'PRIVATE',
   PUBLIC: 'PUBLIC',
   REGIONS_DATA: 'REGIONS_DATA',
+  LAND_USE_PRESSURES: 'LAND_USE_PRESSURES',
+  MARINE_USE_PRESSURES: 'MARINE_USE_PRESSURES',
 };
 
 export const SPECIES_IMAGE_URL =

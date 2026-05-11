@@ -21,6 +21,35 @@ import SPILegendImage from 'images/dashboard/spi_legend.png';
 import HabitatLegendImage from 'images/hab_change_colorRamp.png';
 
 import styles from './map-legend-component-styles.module.scss';
+import pressureStyles from '../../containers/sidebars/sidebar-legend/styles.module.scss';
+import {
+  AGRICULTURE_HUMAN_PRESSURES_TILE_LAYER,
+  ARTISANAL_FISHING_HUMAN_PRESSURES_TILE_LAYER,
+  BUILTUP_HUMAN_PRESSURES_TILE_LAYER,
+  COMMERCIAL_FISHING_HUMAN_PRESSURES_TILE_LAYER,
+  ENERGY_HUMAN_PRESSURES_TILE_LAYER,
+  INTRUSION_HUMAN_PRESSURES_TILE_LAYER,
+  LAND_COVER_LAYER,
+  MARINE_LAND_DRIVERS_HUMAN_PRESSURES_TILE_LAYER,
+  MARINE_OCEAN_DRIVERS_HUMAN_PRESSURES_TILE_LAYER,
+  PERU_CROPS_LAYER,
+  TRANSPORTATION_HUMAN_PRESSURES_TILE_LAYER,
+} from 'constants/layers-slugs';
+
+const landPressureLayers = [
+  ENERGY_HUMAN_PRESSURES_TILE_LAYER,
+  TRANSPORTATION_HUMAN_PRESSURES_TILE_LAYER,
+  AGRICULTURE_HUMAN_PRESSURES_TILE_LAYER,
+  BUILTUP_HUMAN_PRESSURES_TILE_LAYER,
+  INTRUSION_HUMAN_PRESSURES_TILE_LAYER,
+];
+
+const marinePressureLayers = [
+  MARINE_LAND_DRIVERS_HUMAN_PRESSURES_TILE_LAYER,
+  MARINE_OCEAN_DRIVERS_HUMAN_PRESSURES_TILE_LAYER,
+  COMMERCIAL_FISHING_HUMAN_PRESSURES_TILE_LAYER,
+  ARTISANAL_FISHING_HUMAN_PRESSURES_TILE_LAYER,
+];
 
 function MapLegendComponent(props) {
   const { mapLegendLayers, map, setMapLegendLayers, countryISO } = props;
@@ -34,7 +63,7 @@ function MapLegendComponent(props) {
   const shiLow = 95;
   const shiHigh = 100;
   const siiLow = 0;
-  const siiHigh = 100;
+  const siiHigh = 50;
 
   const getLayerIcon = (layer) => {
     if (layer.parentId === LAYER_OPTIONS.EXPERT_RANGE_MAPS) {
@@ -46,6 +75,34 @@ function MapLegendComponent(props) {
               backgroundColor: 'rgb(23, 40, 135)',
             }}
           />
+        </div>
+      );
+    }
+
+    if (landPressureLayers.includes(layer.id)) {
+      return (
+        <div style={{ display: 'flex', gap: '5px', marginTop: '5px' }}>
+          <div
+            className={cx(styles.box, pressureStyles['land-human-pressures'])}
+          />
+        </div>
+      );
+    }
+
+    if (marinePressureLayers.includes(layer.id)) {
+      return (
+        <div style={{ display: 'flex', gap: '5px', marginTop: '5px' }}>
+          <div
+            className={cx(styles.box, pressureStyles['marine-human-pressures'])}
+          />
+        </div>
+      );
+    }
+
+    if (layer.id === LAYER_OPTIONS.PREDICTION_MAPS) {
+      return (
+        <div style={{ display: 'flex', gap: '5px', marginTop: '5px' }}>
+          <div className={cx(styles.box, styles.predictionGradient)} />
         </div>
       );
     }
@@ -91,8 +148,15 @@ function MapLegendComponent(props) {
       return (
         <div className={cx(styles.wrapper, styles.column)}>
           {layer.classes.map((item) => {
-            const { color } = item.symbol;
-            const backgroundColor = `rgba(${color.r}, ${color.g}, ${color.b}, ${color.a})`;
+            const { color, data } = item.symbol;
+
+            let backgroundColor = 'transparent';
+            if (color.r === 0 && color.g === 0 && color.b === 0) {
+              const [red, blue, green, alpha] =
+                data.symbol.symbolLayers[0].markerGraphics[0].symbol
+                  .symbolLayers[1].color;
+              backgroundColor = `rgba(${red}, ${blue}, ${green}, ${alpha})`;
+            }
             return (
               <div
                 style={{ display: 'flex', gap: '5px' }}
@@ -146,7 +210,9 @@ function MapLegendComponent(props) {
           <img src={SIILegendImage} width="100%" height={20} alt="SII" />
           <div className={styles.legendValues}>
             <span>{siiLow}</span>
-            <span>{siiHigh}</span>
+            <span>
+              {'>'} {siiHigh}
+            </span>
           </div>
         </div>
       );
@@ -225,27 +291,27 @@ function MapLegendComponent(props) {
     const indexMap = new Map();
 
     B.forEach((item, index) => {
-        if (item !== undefined && item !== null) {
-            indexMap.set(item.toString().toLowerCase().trim(), index);
-        }
+      if (item !== undefined && item !== null) {
+        indexMap.set(item.toString().toLowerCase().trim(), index);
+      }
     });
 
     // Sort A so that items appearing LATER in B come FIRST (reverse order)
     return A.slice().sort((a, b) => {
-        const aStr = a?.id.toString().toLowerCase().trim();
-        const bStr = b?.id.toString().toLowerCase().trim();
+      const aStr = a?.id.toString().toLowerCase().trim();
+      const bStr = b?.id.toString().toLowerCase().trim();
 
-        const idxA = indexMap.get(aStr);
-        const idxB = indexMap.get(bStr);
+      const idxA = indexMap.get(aStr);
+      const idxB = indexMap.get(bStr);
 
-        // Items not found in B go to the end
-        if (idxA === undefined) return 1;
-        if (idxB === undefined) return -1;
+      // Items not found in B go to the end
+      if (idxA === undefined) return 1;
+      if (idxB === undefined) return -1;
 
-        // Higher index in B = should come first (reverse order)
-        return idxB - idxA;
+      // Higher index in B = should come first (reverse order)
+      return idxB - idxA;
     });
-  }
+  };
 
   useEffect(() => {
     const sidebar = document.getElementById('dashboard-sidebar');
@@ -257,13 +323,18 @@ function MapLegendComponent(props) {
     setLeftPosition(`${rect.width + parseInt(left, 10) + 10}px`);
 
     // setLayersLegend(Array.from(new Set(mapLegendLayers)));
-    const uniqueLayers = Array.from(new Map(mapLegendLayers.map(item => [item.id, item])).values());
+    const uniqueLayers = Array.from(
+      new Map(mapLegendLayers.map((item) => [item.id, item])).values()
+    );
     setLayersLegend(uniqueLayers);
   }, [mapLegendLayers]);
 
   useEffect(() => {
-    if(layersLegend.length > 0){
-      const orderedLayers = reorderArrayAByReverseB( layersLegend, map.layers.items.map(item => item.id));
+    if (layersLegend.length > 0) {
+      const orderedLayers = reorderArrayAByReverseB(
+        layersLegend,
+        map.layers.items.map((item) => item.id)
+      );
       setLayersToShow(orderedLayers);
     }
   }, [layersLegend]);

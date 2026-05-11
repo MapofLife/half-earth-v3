@@ -18,6 +18,7 @@ import styles from '../../dashboard-trends-sidebar-styles.module.scss';
 
 import NationalChartContainer from './national-chart';
 import ProvinceChartContainer from './province-chart';
+import DownloadGbifReport from 'components/DownloadGbifReport';
 
 function TemporalTrendsSiiComponent(props) {
   const t = useT();
@@ -72,27 +73,6 @@ function TemporalTrendsSiiComponent(props) {
     setClickedRegion(null);
     setSiiActiveTrend(option);
     handleRegionSelected(null);
-
-    // if (countryISO.toLowerCase() === 'ee') {
-    //   if (option !== LND && option !== INT) {
-    //     EsriFeatureService.getFeatures({
-    //       url: COUNTRIES_DATA_SERVICE_URL,
-    //       whereClause: `GID_0 = '${option}'`,
-    //       returnGeometry: true,
-    //     }).then((features) => {
-    //       // eslint-disable-next-line no-shadow
-    //       const { geometry } = features[0];
-
-    //       view.goTo({
-    //         target: geometry,
-    //         center: [geometry.longitude - 20, geometry.latitude],
-    //         zoom: 5.5,
-    //         extent: geometry.clone(),
-    //       });
-    //     });
-    //   } else {
-    // }
-    // }
   };
 
   useEffect(() => {
@@ -126,7 +106,7 @@ function TemporalTrendsSiiComponent(props) {
                   className={cx(styles.saveButton, {
                     [styles.notActive]: siiActiveTrend !== PROVINCE_TREND,
                   })}
-                  label={PROVINCE_TREND}
+                  label={t('Province')}
                   handleClick={() => handleActionChange(PROVINCE_TREND)}
                 />
                 <Button
@@ -134,11 +114,14 @@ function TemporalTrendsSiiComponent(props) {
                   className={cx(styles.saveButton, {
                     [styles.notActive]: siiActiveTrend !== NATIONAL_TREND,
                   })}
-                  label={NATIONAL_TREND}
+                  label={t('National')}
                   handleClick={() => handleActionChange(NATIONAL_TREND)}
                 />
               </div>
             </div>
+            {countryISO.toLowerCase() === 'per' && (
+              <DownloadGbifReport type="sii" />
+            )}
             {/* <span className={styles.helpText}>
             {t('Toggle national SII and province-level breakdown.')}
           </span> */}
