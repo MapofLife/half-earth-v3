@@ -13,6 +13,7 @@ import codLogo from 'logos/iccn_logo_clean.png';
 import codWhiteLogo from 'logos/iccn_logo_clean_whiteText.png';
 import ginLogo from 'logos/ogpnrf_logo.jpeg';
 import sleLogo from 'logos/sierra-leone.png';
+import pcmLogo from 'logos/PCM-Ambiente.png';
 
 import DashboardTrendsSidebarContainer from 'containers/sidebars/dashboard-trends-sidebar';
 
@@ -71,7 +72,7 @@ function DashboardSidebar(props) {
     } else if (countryISO.toUpperCase() === 'GUY') {
       setLogo(<img className={styles.logo} src={guyLogo} alt="Logo" />);
     } else if (countryISO.toUpperCase() === 'PER') {
-      setLogo(<img className={styles.logo} src={codLogo} alt="Logo" />);
+      setLogo(<img className={styles.logo} src={pcmLogo} alt="Logo" />);
     }
   }, []);
 
