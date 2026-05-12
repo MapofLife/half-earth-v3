@@ -35,7 +35,38 @@ import {
   PERU_CROPS_LAYER,
   TRANSPORTATION_HUMAN_PRESSURES_TILE_LAYER,
   APURIMAC_LANDCOVER_LAYER,
+  BIRDS_RICHNESS_1KM,
+  BIRDS_RARITY_1KM,
+  AMPHIB_RARITY_1KM,
+  AMPHIB_RICHNESS_1KM,
+  HUMMINGBIRDS_RARITY,
+  HUMMINGBIRDS_RICHNESS,
+  MAMMALS_RICHNESS_1KM,
+  MAMMALS_RARITY_1KM,
+  ANTS_RICHNESS_1KM,
+  ANTS_RARITY_1KM,
+  REPTILES_RARITY_1KM,
+  REPTILES_RICHNESS_1KM,
+  POVERTY_AND_DEPRIVATION_LAYER,
+  APURIMAC_SPECIES_GAIN_HABITY_SUITABILITY_LAYER,
+  APURIMAC_SPECIES_LOSS_HABITY_SUITABILITY_LAYER,
 } from 'constants/layers-slugs';
+
+const richnessLayers = [
+  LAYER_OPTIONS.INDIGENOUS_LANDS,
+  BIRDS_RICHNESS_1KM,
+  BIRDS_RARITY_1KM,
+  AMPHIB_RARITY_1KM,
+  AMPHIB_RICHNESS_1KM,
+  HUMMINGBIRDS_RARITY,
+  HUMMINGBIRDS_RICHNESS,
+  MAMMALS_RICHNESS_1KM,
+  MAMMALS_RARITY_1KM,
+  ANTS_RICHNESS_1KM,
+  ANTS_RARITY_1KM,
+  REPTILES_RARITY_1KM,
+  REPTILES_RICHNESS_1KM,
+];
 
 const landPressureLayers = [
   ENERGY_HUMAN_PRESSURES_TILE_LAYER,
@@ -51,6 +82,8 @@ const marinePressureLayers = [
   COMMERCIAL_FISHING_HUMAN_PRESSURES_TILE_LAYER,
   ARTISANAL_FISHING_HUMAN_PRESSURES_TILE_LAYER,
 ];
+
+const socioEconomicLayers = [POVERTY_AND_DEPRIVATION_LAYER];
 
 function MapLegendComponent(props) {
   const { mapLegendLayers, map, setMapLegendLayers, countryISO } = props;
@@ -76,6 +109,38 @@ function MapLegendComponent(props) {
               backgroundColor: 'rgb(23, 40, 135)',
             }}
           />
+        </div>
+      );
+    }
+
+    if (layer.id === APURIMAC_SPECIES_LOSS_HABITY_SUITABILITY_LAYER) {
+      return (
+        <div style={{ display: 'flex', gap: '5px', marginTop: '5px' }}>
+          <div className={cx(styles.box, pressureStyles['apurimac-loss'])} />
+        </div>
+      );
+    }
+
+    if (layer.id === APURIMAC_SPECIES_GAIN_HABITY_SUITABILITY_LAYER) {
+      return (
+        <div style={{ display: 'flex', gap: '5px', marginTop: '5px' }}>
+          <div className={cx(styles.box, pressureStyles['apurimac-gain'])} />
+        </div>
+      );
+    }
+
+    if (socioEconomicLayers.includes(layer.id)) {
+      return (
+        <div style={{ display: 'flex', gap: '5px', marginTop: '5px' }}>
+          <div className={cx(styles.box, pressureStyles['socio-economic'])} />
+        </div>
+      );
+    }
+
+    if (richnessLayers.includes(layer.id)) {
+      return (
+        <div style={{ display: 'flex', gap: '5px', marginTop: '5px' }}>
+          <div className={cx(styles.box, pressureStyles['biodiversity'])} />
         </div>
       );
     }

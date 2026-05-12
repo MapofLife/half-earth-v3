@@ -61,7 +61,14 @@ import ArrowIcon from 'icons/arrow_right.svg?react';
 import styles from './layer-legend-styles.module.scss';
 
 function LayerLegendComponent(props) {
-  const { map, countryISO, setRegionLayers, richnessRarityLegendInfo } = props;
+  const {
+    map,
+    view,
+    countryISO,
+    setRegionLayers,
+    richnessRarityLegendInfo,
+    setMapLegendLayers,
+  } = props;
   const t = useT();
   const layerIndex = 2;
 
@@ -428,7 +435,19 @@ function LayerLegendComponent(props) {
           ...rl,
           [layer.id]: featureLayer,
         }));
+
         map.add(featureLayer, map.layers.length - layerIndex);
+
+        view.whenLayerView(featureLayer).then(() => {
+          const { renderer } = featureLayer;
+          const { uniqueValueGroups } = renderer;
+          const layerInfo = {
+            ...layer,
+            classes: uniqueValueGroups[0].classes,
+          };
+
+          setMapLegendLayers((ml) => [layerInfo, ...ml]);
+        });
       } else if (layer.url) {
         const mapLayers = LAYERS_URLS[layer.url];
         let promises;
@@ -458,13 +477,23 @@ function LayerLegendComponent(props) {
             ...rl,
             [layer.id]: newLayer,
           }));
+
           map.add(newLayer, map.layers.length - layerIndex);
         });
+
+        setMapLegendLayers((ml) => [layer, ...ml]);
       }
     } else {
       const layerToRemove = map.layers.items.filter(
         (mapLayer) => mapLayer.id === layer.id
       );
+
+      setMapLegendLayers((ml) => {
+        const filtered = ml.filter(
+          (l) => l.id !== layer.id || l.parentId !== layer.parentId
+        );
+        return filtered;
+      });
 
       setRegionLayers((rl) => {
         const { [layer.id]: name, ...rest } = rl;
