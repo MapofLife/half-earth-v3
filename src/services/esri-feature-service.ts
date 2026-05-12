@@ -93,7 +93,7 @@ async function getFeatureLayer(portalItemId, countryISO, id, classType = null) {
     definitionExpression = `pais = 'Guyana'`;
   }
 
-  if(classType === 'PER_LAYER') {
+  if(classType === 'PER_LAYER' || 'APURIMAC_LANDCOVER_LAYER') {
     definitionExpression = ``;
   }
 

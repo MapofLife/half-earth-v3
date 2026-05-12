@@ -7,6 +7,7 @@ import { getCSSVariable } from 'utils/css-utils';
 import {
   PERU_CROPS_FEATURE_ID,
   REGION_RANGE_MAP_URL,
+  APURIMAC_LANDCOVER_FEATURE_ID,
 } from 'utils/dashboard-utils';
 
 import {
@@ -55,6 +56,7 @@ import {
   MARINE_OCEAN_DRIVERS_HUMAN_PRESSURES_TILE_LAYER,
   PERU_CROPS_LAYER,
   TRANSPORTATION_HUMAN_PRESSURES_TILE_LAYER,
+  APURIMAC_LANDCOVER_LAYER,
 } from 'constants/layers-slugs';
 
 ChartJS.register(
@@ -778,6 +780,18 @@ function DataLayerComponent(props) {
             countryISO.toUpperCase() === 'PER'
               ? t('Cultivos de Perú')
               : t('Peru Crops'),
+          items: [],
+          total_no_rows: '',
+          isActive: false,
+          showChildren: false,
+          type: DATA_POINT_TYPE.REGIONS_DATA,
+        },
+        {
+          id: APURIMAC_LANDCOVER_LAYER,
+          label:
+            countryISO.toUpperCase() === 'PER'
+              ? t('Cambio en la cubierta del suelo de Apurímac')
+              : t('Apurimac Landcover change'),
           items: [],
           total_no_rows: '',
           isActive: false,
