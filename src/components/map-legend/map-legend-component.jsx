@@ -34,6 +34,7 @@ import {
   MARINE_OCEAN_DRIVERS_HUMAN_PRESSURES_TILE_LAYER,
   PERU_CROPS_LAYER,
   TRANSPORTATION_HUMAN_PRESSURES_TILE_LAYER,
+  APURIMAC_LANDCOVER_LAYER,
 } from 'constants/layers-slugs';
 
 const landPressureLayers = [
@@ -152,9 +153,17 @@ function MapLegendComponent(props) {
 
             let backgroundColor = 'transparent';
             if (color.r === 0 && color.g === 0 && color.b === 0) {
-              const [red, blue, green, alpha] =
-                data.symbol.symbolLayers[0].markerGraphics[0].symbol
-                  .symbolLayers[1].color;
+              const symbolColors =
+                layer.id === APURIMAC_LANDCOVER_LAYER
+                  ? data.symbol.symbolLayers[1]
+                  : data.symbol.symbolLayers[0];
+              const [red, blue, green, alpha] = symbolColors.color
+                ? symbolColors.color
+                : symbolColors.markerGraphics[0].symbol.symbolLayers[1].color;
+
+              // const [red, blue, green, alpha] =
+              //   data.symbol.symbolLayers[0].markerGraphics[0].symbol
+              //     .symbolLayers[1].color;
               backgroundColor = `rgba(${red}, ${blue}, ${green}, ${alpha})`;
             }
             return (
