@@ -658,7 +658,10 @@ function GroupedListComponent(props) {
   useEffect(() => {
     if (!showPredictionMap) return;
     displaySingleLayer({
-      label: t('Prediction Map'),
+      label:
+        countryISO.toUpperCase() === 'PER'
+          ? t('Mapas de predicción')
+          : t('Prediction maps'),
       items: [],
       id: LAYER_OPTIONS.PREDICTION_MAPS,
       total_no_rows: '',

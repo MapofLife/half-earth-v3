@@ -139,7 +139,10 @@ function DataLayerComponent(props) {
       isActive: false,
       showChildren: false,
       type: DATA_POINT_TYPE.REGIONS_DATA,
-      label: t('Land cover (2022)'),
+      label:
+        countryISO.toUpperCase() === 'PER'
+          ? t('Capas de cubierta del suelo (2022)')
+          : t('Land cover (2022)'),
       url: LAND_COVER_LAYER,
     },
   ]);
@@ -249,32 +252,52 @@ function DataLayerComponent(props) {
   const [feedbackOptions, setFeedbackOptions] = useState([
     {
       checked: false,
-      label: 'There is an issue with expert range map',
+      label:
+        countryISO.toUpperCase() === 'PER'
+          ? t('Hay un problema con el mapa de rango experto.')
+          : t('There is an issue with expert range map'),
       info: '',
       key: 'issue_expert_range_map',
     },
     {
       checked: false,
-      label: 'There is an issue with point observations.',
+      label:
+        countryISO.toUpperCase() === 'PER'
+          ? t('Hay un problema con las observaciones de puntos.')
+          : t('There is an issue with point observations.'),
       info: '',
       key: 'issue_point_observation',
     },
     {
       checked: false,
       label:
-        'This is an issue with other spatial distribution data type (please specify in the box below).',
+        countryISO.toUpperCase() === 'PER'
+          ? t(
+              'Este es un problema con otro tipo de datos de distribución espacial (por favor, especifique en el recuadro de abajo).'
+            )
+          : t(
+              'This is an issue with other spatial distribution data type (please specify in the box below).'
+            ),
       info: '',
       key: 'issue_other_spatial',
     },
     {
       checked: false,
-      label: 'There is a taxonomic issue',
+      label:
+        countryISO.toUpperCase() === 'PER'
+          ? t('Hay un problema con la taxonomía.')
+          : t('There is a taxonomic issue'),
       info: '',
       key: 'issue_taxonomic',
     },
     {
       checked: false,
-      label: 'Other issues (please specify in the box below)',
+      label:
+        countryISO.toUpperCase() === 'PER'
+          ? t(
+              'Otras cuestiones (por favor, especifique en el recuadro de abajo)'
+            )
+          : t('Other issues (please specify in the box below)'),
       info: '',
       key: 'issue_other',
     },
@@ -498,7 +521,10 @@ function DataLayerComponent(props) {
         Array.isArray(prevDataPoints)
       ) {
         updatedDataPoints.push({
-          label: t('Prediction maps'),
+          label:
+            countryISO.toUpperCase() === 'PER'
+              ? t('Mapas de predicción')
+              : t('Prediction maps'),
           items: [],
           id: LAYER_OPTIONS.PREDICTION_MAPS,
           total_no_rows: 1,
@@ -748,7 +774,10 @@ function DataLayerComponent(props) {
         ...prev,
         {
           id: PERU_CROPS_LAYER,
-          label: t('Peru Crops'),
+          label:
+            countryISO.toUpperCase() === 'PER'
+              ? t('Cultivos de Perú')
+              : t('Peru Crops'),
           items: [],
           total_no_rows: '',
           isActive: false,
@@ -811,7 +840,11 @@ function DataLayerComponent(props) {
                 type="button"
                 onClick={() => {}}
               >
-                <span>{t('Land Use Pressure')}</span>
+                {countryISO.toUpperCase() === 'PER' ? (
+                  <span>{t('Capas de presión por uso del suelo')}</span>
+                ) : (
+                  <span>{t('Land Use Pressure')}</span>
+                )}
               </button>
               <DataLayersGroupedList
                 dataPoints={landUsePressureLayers}
@@ -824,7 +857,11 @@ function DataLayerComponent(props) {
                 type="button"
                 onClick={() => {}}
               >
-                <span>{t('Marine Use Pressure')}</span>
+                {countryISO.toUpperCase() === 'PER' ? (
+                  <span>{t('Capas de presión para uso marino')}</span>
+                ) : (
+                  <span>{t('Marine Use Pressure')}</span>
+                )}
               </button>
               <DataLayersGroupedList
                 dataPoints={marineUsePressureLayers}
@@ -879,7 +916,11 @@ function DataLayerComponent(props) {
       <Button
         className={styles.sendFeedbackButton}
         type="rectangular"
-        label={t('Send Data Feedback')}
+        label={
+          countryISO.toUpperCase() === 'PER'
+            ? t('Cultivos de Perú')
+            : t('Enviar comentarios sobre los datos')
+        }
         handleClick={showProvideFeedbackModal}
       />
       <Modal
@@ -890,15 +931,25 @@ function DataLayerComponent(props) {
         <article className={styles.feedbackContent}>
           <div className={styles.feedbackHeader}>
             <span className={styles.feedbackTitle}>
-              {t('Send Data Feedback')}
+              {countryISO.toUpperCase() === 'PER'
+                ? t('Cultivos de Perú')
+                : t('Enviar comentarios sobre los datos')}
             </span>
             <span className={styles.feedbackSubtitle}>
-              {t(
-                'Notice an error in the species distributional or taxonomic data? Select the data issue below and please describe the issue in the comment box.'
-              )}
+              {countryISO.toUpperCase() === 'PER'
+                ? t(
+                    '¿Has detectado algún error en los datos de distribución o taxonómicos de las especies? Selecciona el problema a continuación y descríbelo en el cuadro de comentarios.'
+                  )
+                : t(
+                    'Notice an error in the species distributional or taxonomic data? Select the data issue below and please describe the issue in the comment box.'
+                  )}
             </span>
           </div>
-          <span className={styles.feedbackLabel}>{t('Data Issues')}</span>
+          <span className={styles.feedbackLabel}>
+            {countryISO.toUpperCase() === 'PER'
+              ? t('Problemas con los datos')
+              : t('Data Issues')}
+          </span>
           <div className={styles.feedbackOption}>
             {feedbackOptions.map((option, index) => (
               <label className={styles.optionLabel} key={index}>
@@ -917,14 +968,22 @@ function DataLayerComponent(props) {
             ))}
           </div>
           <span className={styles.feedbackLabel}>
-            {t('Additional comments')}
+            {countryISO.toUpperCase() === 'PER'
+              ? t('Comentarios adicionales')
+              : t('Additional comments')}
           </span>
 
           <textarea
             className={styles.additionalComments}
             value={additionalComments}
             onChange={(e) => setAdditionalComments(e.target.value)}
-            placeholder={t('Add additional comments for data issues...')}
+            placeholder={
+              countryISO.toUpperCase() === 'PER'
+                ? t(
+                    'Agrega comentarios adicionales sobre los problemas de datos...'
+                  )
+                : t('Add additional comments for data issues...')
+            }
           ></textarea>
           <div className={styles.feedbackFooter}>
             <Button
@@ -936,7 +995,11 @@ function DataLayerComponent(props) {
             <Button
               className={styles.submitButton}
               type="rectangular"
-              label={t('Send Feedback')}
+              label={
+                countryISO.toUpperCase() === 'PER'
+                  ? t('Enviar comentarios')
+                  : t('Send Feedback')
+              }
               handleClick={handleProvideFeedback}
             />
           </div>

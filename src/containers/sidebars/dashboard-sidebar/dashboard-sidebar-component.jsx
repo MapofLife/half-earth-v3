@@ -41,13 +41,12 @@ function DashboardSidebar(props) {
     setRegionLayers,
     setRegionName,
     setHash,
-    setSelectedRegionOption
+    setSelectedRegionOption,
   } = props;
 
   const { lightMode, toggleLightMode } = useContext(LightModeContext);
   const [speciesDataLoading, setSpeciesDataLoading] = useState(true);
   const [logo, setLogo] = useState();
-
 
   useEffect(() => {
     if (
@@ -71,25 +70,10 @@ function DashboardSidebar(props) {
       setLogo(<div />);
     } else if (countryISO.toUpperCase() === 'GUY') {
       setLogo(<img className={styles.logo} src={guyLogo} alt="Logo" />);
-    } else {
+    } else if (countryISO.toUpperCase() === 'PER') {
       setLogo(<img className={styles.logo} src={codLogo} alt="Logo" />);
     }
   }, []);
-
-  useEffect(() => {
-    if (
-      countryISO.toUpperCase() !== 'SLE' &&
-      countryISO.toUpperCase() !== 'GIN' &&
-      countryISO.toUpperCase() !== 'GUY' &&
-      countryISO.toUpperCase() !== 'GUY-FM'
-    ) {
-      if (lightMode) {
-        setLogo(<img className={styles.logo} src={codLogo} alt="Logo" />);
-      } else {
-        setLogo(<img className={styles.logo} src={codWhiteLogo} alt="Logo" />);
-      }
-    }
-  }, [lightMode]);
 
   return (
     <div
