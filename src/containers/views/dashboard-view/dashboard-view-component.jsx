@@ -27,7 +27,7 @@ import {
   MEX,
   PROVINCE_TREND,
 } from '../../sidebars/dashboard-trends-sidebar/dashboard-trends-sidebar-component';
-import { Snackbar } from '@mui/material'
+import { Snackbar } from '@mui/material';
 
 const { VITE_APP_ARGISJS_API_VERSION: API_VERSION } = import.meta.env;
 const LabelsLayer = loadable(() => import('containers/layers/labels-layer'));
@@ -77,20 +77,20 @@ function DashboardViewComponent(props) {
   // const [showTopNav, setShowTopNav] = useState(true);
 
   const [snackBar, setSnackBar] = useState({
+    open: false,
+    message: '',
+  });
+
+  const handleSnackBarClose = () => {
+    setSnackBar({
       open: false,
       message: '',
     });
-
-    const handleSnackBarClose = () => {
-      setSnackBar({
-        open: false,
-        message: '',
-      });
-    };
+  };
 
   const handleRegionSelected = (foundRegion) => {
     highlight?.remove();
-    if(foundRegion){
+    if (foundRegion) {
       highlight = layerView?.highlight(foundRegion.graphic);
     }
   };
@@ -104,7 +104,7 @@ function DashboardViewComponent(props) {
         // this.uploaded = atob(e.target.result)
         const result = JSON.parse(e.target.result);
         if (result.features.length > 1) {
-          result.features = [ result.features[0] ];
+          result.features = [result.features[0]];
         }
         setUploadedShape(result);
       };
@@ -113,17 +113,17 @@ function DashboardViewComponent(props) {
     }
 
     if (filename.match(/\.shp$/)) {
-      reader.onload = e => {
-        shapefile.read(e.target.result).then(source => {
+      reader.onload = (e) => {
+        shapefile.read(e.target.result).then((source) => {
           if (source.features.length > 1) {
-            source.features = [ source.features[0] ];
+            source.features = [source.features[0]];
           }
           setUploadedShape(source);
         });
       };
       reader.readAsArrayBuffer(event.target.files[0]);
     }
-  }
+  };
 
   const closeModal = () => {
     setImagePopup(null);
@@ -218,17 +218,38 @@ function DashboardViewComponent(props) {
             >
               <MinimizeIcon />
             </button>
-            <div style={{display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '10px'}}>
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '10px',
+                marginBottom: '10px',
+              }}
+            >
               <b>Upload an Area</b>
-              <span>Select a <b>.geojson</b> or a <b>.shp</b> file to get a species list.</span>
+              <span>
+                Select a <b>.geojson</b> or a <b>.shp</b> file to get a species
+                list.
+              </span>
 
-              <span>If the file contains multiple features, only the first feature will be used. If multiple features are required, please dissolve them into a single feature.</span>
+              <span>
+                If the file contains multiple features, only the first feature
+                will be used. If multiple features are required, please dissolve
+                them into a single feature.
+              </span>
 
-              <span>Please ensure your shapefile is in <b>WGS84 EPSG:4326 (latitude, longitude) projection</b>.</span>
+              <span>
+                Please ensure your shapefile is in{' '}
+                <b>WGS84 EPSG:4326 (latitude, longitude) projection</b>.
+              </span>
 
               <span>The area must be less than 25,000km2.</span>
             </div>
-            <input type="file" onChange={(e) => previewFile(e)} accept=".geojson, .shp" />
+            <input
+              type="file"
+              onChange={(e) => previewFile(e)}
+              accept=".geojson, .shp"
+            />
           </div>
         </>
       )}
@@ -254,8 +275,9 @@ function DashboardViewComponent(props) {
       <LightModeProvider>
         {/* <TopMenuContainer {...props} /> */}
         {showLegend && <MapLegendContainer map={map} {...props} />}
-        {(selectedIndex === NAVIGATION.REGION || selectedIndex === NAVIGATION.EXPLORE_SPECIES) && (
-          <LayerLegendContainer map={map} {...props} />
+        {(selectedIndex === NAVIGATION.REGION ||
+          selectedIndex === NAVIGATION.EXPLORE_SPECIES) && (
+          <LayerLegendContainer map={map} view={view} {...props} />
         )}
         <DashboardSidebarContainer
           map={map}
