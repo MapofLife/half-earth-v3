@@ -94,7 +94,7 @@ async function getFeatureLayer(portalItemId, countryISO, id, classType = null) {
     definitionExpression = `pais = 'Guyana'`;
   }
 
-  if(classType === 'PER_LAYER' || 'APURIMAC_LANDCOVER_LAYER') {
+  if(classType === 'PER_LAYER' || classType === 'APURIMAC_LANDCOVER_LAYER') {
     definitionExpression = ``;
   }
 
@@ -314,9 +314,10 @@ async function addProtectedAreaLayer(id, countryISO = 'COD') {
   }
 
   const featureLayer = new FeatureLayer({
-    portalItem: {
-      id: featurePortalId,
-    },
+    // portalItem: {
+    //   id: featurePortalId,
+    // },
+    url: featurePortalId,
     outFields: ['*'],
     definitionExpression,
     id: id ?? LAYER_OPTIONS.PROTECTED_AREAS,

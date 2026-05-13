@@ -219,17 +219,20 @@ function MapLegendComponent(props) {
             let backgroundColor = 'transparent';
             if (color.r === 0 && color.g === 0 && color.b === 0) {
               const symbolColors =
-                layer.id === APURIMAC_LANDCOVER_LAYER
+                layer.id === APURIMAC_LANDCOVER_LAYER ||
+                layer.id === LAYER_OPTIONS.PROTECTED_AREAS
                   ? data.symbol.symbolLayers[1]
                   : data.symbol.symbolLayers[0];
-              const [red, blue, green, alpha] = symbolColors.color
+              const [red, green, blue, alpha] = symbolColors.color
                 ? symbolColors.color
                 : symbolColors.markerGraphics[0].symbol.symbolLayers[1].color;
 
               // const [red, blue, green, alpha] =
               //   data.symbol.symbolLayers[0].markerGraphics[0].symbol
               //     .symbolLayers[1].color;
-              backgroundColor = `rgba(${red}, ${blue}, ${green}, ${alpha})`;
+              backgroundColor = `rgba(${red}, ${green}, ${blue}, ${alpha})`;
+            } else {
+              backgroundColor = `rgba(${color.r}, ${color.g}, ${color.b}, ${color.a})`;
             }
             return (
               <div

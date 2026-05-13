@@ -3,7 +3,7 @@ import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { DASHBOARD } from 'router';
 import MinimizeIcon from 'icons/closes.svg?react';
 import { useLocale, useT } from '@transifex/react';
-import * as webMercatorUtils from "@arcgis/core/geometry/support/webMercatorUtils.js";
+import * as webMercatorUtils from '@arcgis/core/geometry/support/webMercatorUtils.js';
 import { createHashFromGeometry } from 'utils/analyze-areas-utils';
 import {
   GLOBAL_COUNTRY_OUTLINE_ID,
@@ -45,8 +45,8 @@ import SketchTooltip from '../../data-global-sidebar/analyze-areas-sidebar-card/
 import SketchWidget from '../../data-global-sidebar/analyze-areas-sidebar-card/sketch-widget/sketch-widget-component';
 
 import styles from './regions-analysis-styles.module.scss';
-import Polygon from '@arcgis/core/geometry/Polygon'
-import Graphic from '@arcgis/core/Graphic'
+import Polygon from '@arcgis/core/geometry/Polygon';
+import Graphic from '@arcgis/core/Graphic';
 import Select from 'react-select';
 import { DASHBOARD_URLS } from 'constants/layers-urls';
 import useJWTToken from 'hooks/useJWTToken';
@@ -137,7 +137,8 @@ function RegionsAnalysisComponent(props) {
   });
   const [selectedCustomArea, setSelectedCustomArea] = useState(null);
   const [savedCustomAreas, setSavedCustomAreas] = useState([]);
-  const [showDeleteCustomAreaModal, setShowDeleteCustomAreaModal] = useState(false);
+  const [showDeleteCustomAreaModal, setShowDeleteCustomAreaModal] =
+    useState(false);
   const [deleteText, setDeleteText] = useState('');
 
   const regionSelectionOptions = [
@@ -191,7 +192,6 @@ function RegionsAnalysisComponent(props) {
       setSelectedRegion(newGeometry);
       setSelectedRegionOption(REGION_OPTIONS.DRAW);
     }, 1000);
-
   };
 
   const warningMessages = useMemo(
@@ -219,7 +219,7 @@ function RegionsAnalysisComponent(props) {
   });
 
   const handleCancel = () => {
-    if(sketchTool) {
+    if (sketchTool) {
       if (sketchTool.layer) {
         // Remove geometry for 'Esc' press
         sketchTool.layer.remove(sketchTool.layer.graphics.items[0]);
@@ -284,7 +284,7 @@ function RegionsAnalysisComponent(props) {
 
     if (option === REGION_OPTIONS.PROTECTED_AREAS) {
       featureLayer = await EsriFeatureService.addProtectedAreaLayer(
-        null,
+        LAYER_OPTIONS.PROTECTED_AREAS,
         countryISO
       );
 
@@ -414,7 +414,7 @@ function RegionsAnalysisComponent(props) {
       setSelectedRegion(null);
       removeRegionLayers();
 
-      if(option !== REGION_OPTIONS.DRAW){
+      if (option !== REGION_OPTIONS.DRAW) {
         handleCancel();
       }
       setSelectedRegionOption(option);
@@ -453,8 +453,8 @@ function RegionsAnalysisComponent(props) {
       const areas = await fetch(DASHBOARD_URLS.GET_CUSTOM_AREA_URL, {
         headers: {
           ISO3: countryISO,
-          Authorization: `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       const data = await areas.json();
@@ -485,9 +485,9 @@ function RegionsAnalysisComponent(props) {
           headers: {
             ISO3: countryISO,
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`
+            Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({region_id: selectedCustomArea.region_id}),
+          body: JSON.stringify({ region_id: selectedCustomArea.region_id }),
         });
 
         setSelectedCustomArea(null);
@@ -503,7 +503,10 @@ function RegionsAnalysisComponent(props) {
     if (selectedCustomArea) {
       const { geojson } = selectedCustomArea;
       const newGeometry = webMercatorUtils.webMercatorToGeographic(geojson);
-      setSelectedRegion({ customName: selectedCustomArea.region_name, rings: newGeometry.coordinates });
+      setSelectedRegion({
+        customName: selectedCustomArea.region_name,
+        rings: newGeometry.coordinates,
+      });
       setSelectedGeometryRings(newGeometry.coordinates);
       setSelectedRegionOption(REGION_OPTIONS.DRAW);
       setRegionName(t('Custom Area'));
@@ -526,8 +529,10 @@ function RegionsAnalysisComponent(props) {
   useEffect(() => {
     if (uploadedShape) {
       removeRegionLayers();
-      const newGeometry = webMercatorUtils.webMercatorToGeographic(uploadedShape.features[0].geometry);
-      setSelectedRegion({rings: newGeometry.coordinates });
+      const newGeometry = webMercatorUtils.webMercatorToGeographic(
+        uploadedShape.features[0].geometry
+      );
+      setSelectedRegion({ rings: newGeometry.coordinates });
       setRegionName(t('Custom Area'));
       setSelectedIndex(NAVIGATION.EXPLORE_SPECIES);
       setShowUploadPopup(false);
@@ -627,37 +632,40 @@ function RegionsAnalysisComponent(props) {
             />
           </div>
         </div>
-        {countryISO.toUpperCase() === 'GUY' && (<>
-          <span className={styles.selectionSubTitle}>
-            {t('Select a saved custom area')}
-          </span>
-          <div className={styles.customAreaContainer}>
-            <Select
-              className={styles.basicSingle}
-              classNamePrefix="select"
-              name="savedCustomAreas"
-              value={selectedCustomArea}
-              getOptionLabel={(x) => x.region_name}
-              getOptionValue={(x) => x.region_name}
-              options={savedCustomAreas}
-              onChange={handleCustomAreaSelect}
-            />
-            <div className={styles.comingSoon}>
-              <Button
-                type="rectangular"
-                label={t('Load selected area')}
-                handleClick={handleLoadCustomArea}
+        {countryISO.toUpperCase() === 'GUY' && (
+          <>
+            <span className={styles.selectionSubTitle}>
+              {t('Select a saved custom area')}
+            </span>
+            <div className={styles.customAreaContainer}>
+              <Select
+                className={styles.basicSingle}
+                classNamePrefix="select"
+                name="savedCustomAreas"
+                value={selectedCustomArea}
+                getOptionLabel={(x) => x.region_name}
+                getOptionValue={(x) => x.region_name}
+                options={savedCustomAreas}
+                onChange={handleCustomAreaSelect}
               />
+              <div className={styles.comingSoon}>
+                <Button
+                  type="rectangular"
+                  label={t('Load selected area')}
+                  handleClick={handleLoadCustomArea}
+                />
+              </div>
+              {selectedCustomArea && (
+                <div
+                  onClick={displayDeleteCustomAreaModal}
+                  title={t('Delete selected area')}
+                >
+                  <Delete className={styles.deleteIcon} />
+                </div>
+              )}
             </div>
-            {selectedCustomArea && <div
-              onClick={displayDeleteCustomAreaModal}
-              title={t('Delete selected area')}>
-              <Delete
-                className={styles.deleteIcon}
-              />
-            </div>}
-          </div>
-        </>)}
+          </>
+        )}
         {selectedRegionOption === REGION_OPTIONS.DRAW && (
           <div>
             <SketchWidget
@@ -694,36 +702,46 @@ function RegionsAnalysisComponent(props) {
       <Modal
         isOpen={showDeleteCustomAreaModal}
         onRequestClose={() => setShowDeleteCustomAreaModal(false)}
-        theme={styles}>
-          <article className={styles.feedbackContent}>
-            <div className={styles.feedbackHeader}>
-              <span className={styles.feedbackTitle}>{t('Delete custom area')}</span>
-            </div>
-            <div className={styles.feedbackBody}>
-              <span
-              className={styles.feedbackLabel}
-              >{t('You are about to delete this custom area. If you are sure, please type "delete" in the field below.')}</span>
-              <input
-                type="text"
-                className={styles.searchInput}
-                onChange={(e) => setDeleteText(e.target.value)}
-                value={deleteText}
-              />
-
-            </div>
-            <div className={styles.feedbackFooter}>
-              <Button className={styles.cancelButton} label={t('Cancel')} handleClick={() => setShowDeleteCustomAreaModal(false)} />
-              <button
-                type="button"
-                disabled={deleteText.toLowerCase() !== 'delete'}
-                className={cx(styles.submitButton, {
-                  [styles.disabled]: deleteText.toLowerCase() !== 'delete',
-                })}
-                onClick={handleDeleteCustomArea}
-              >{t('Delete')}</button>
-            </div>
-          </article>
-        </Modal>
+        theme={styles}
+      >
+        <article className={styles.feedbackContent}>
+          <div className={styles.feedbackHeader}>
+            <span className={styles.feedbackTitle}>
+              {t('Delete custom area')}
+            </span>
+          </div>
+          <div className={styles.feedbackBody}>
+            <span className={styles.feedbackLabel}>
+              {t(
+                'You are about to delete this custom area. If you are sure, please type "delete" in the field below.'
+              )}
+            </span>
+            <input
+              type="text"
+              className={styles.searchInput}
+              onChange={(e) => setDeleteText(e.target.value)}
+              value={deleteText}
+            />
+          </div>
+          <div className={styles.feedbackFooter}>
+            <Button
+              className={styles.cancelButton}
+              label={t('Cancel')}
+              handleClick={() => setShowDeleteCustomAreaModal(false)}
+            />
+            <button
+              type="button"
+              disabled={deleteText.toLowerCase() !== 'delete'}
+              className={cx(styles.submitButton, {
+                [styles.disabled]: deleteText.toLowerCase() !== 'delete',
+              })}
+              onClick={handleDeleteCustomArea}
+            >
+              {t('Delete')}
+            </button>
+          </div>
+        </article>
+      </Modal>
     </section>
   );
 }
