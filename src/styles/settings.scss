@@ -119,16 +119,15 @@ $socio-economic-gradient: linear-gradient(
 
 $apurimac-gain-gradient: linear-gradient(
   90deg,
-  rgba(0, 226, 136, 0.8) 0%,
-  rgb(236, 255, 26) 100%
+  rgb(194 240 243) 0%,
+  rgb(70 148 229) 50%,
+  rgb(55 19 161) 100%
 );
 
 $apurimac-loss-gradient: linear-gradient(
   90deg,
-  rgba(9, 0, 114, 0.25) 0%,
-  rgba(0, 133, 170, 0.6) 50%,
-  rgba(0, 226, 136, 0.8) 80%,
-  rgb(236, 255, 26) 100%
+  rgb(253 231 231) 0%,
+  rgb(162 15 13) 100%
 );
 $spi-gradient: linear-gradient(
   270deg,
