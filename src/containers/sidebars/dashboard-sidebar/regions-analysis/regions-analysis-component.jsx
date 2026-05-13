@@ -284,7 +284,7 @@ function RegionsAnalysisComponent(props) {
 
     if (option === REGION_OPTIONS.PROTECTED_AREAS) {
       featureLayer = await EsriFeatureService.addProtectedAreaLayer(
-        LAYER_OPTIONS.PROTECTED_AREAS,
+        null,
         countryISO
       );
 
