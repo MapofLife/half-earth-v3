@@ -12,10 +12,11 @@ import FeatureLayer from '@arcgis/core/layers/FeatureLayer';
 import GeoJSONLayer from '@arcgis/core/layers/GeoJSONLayer';
 import TileLayer from '@arcgis/core/layers/TileLayer';
 import VectorTileLayer from '@arcgis/core/layers/VectorTileLayer';
-import WebTileLayer from '@arcgis/core/layers/WebTileLayer';
 import {
     addFeatures, applyEdits, IQueryFeaturesResponse, queryFeatures
 } from '@esri/arcgis-rest-feature-layer';
+
+import ThrottledEarthEngineWebTileLayer from '../utils/ThrottledEarthEngineWebTileLayer';
 
 function getFeatures({
   url,
@@ -189,10 +190,15 @@ async function getXYZLayer(scientificname, id, type, taxa = null) {
     urlTemplate = data.prediction_map.tile_url;
   }
 
-  return new WebTileLayer({
+  return new ThrottledEarthEngineWebTileLayer({
     urlTemplate,
     id,
   });
+
+  // return new WebTileLayer({
+  //   urlTemplate,
+  //   id,
+  // });
 }
 
 async function getXYZLayerByURL(data, id, type) {
@@ -208,10 +214,15 @@ async function getXYZLayerByURL(data, id, type) {
     urlTemplate = data.prediction_map.tile_url;
   }
 
-  return new WebTileLayer({
+  return new ThrottledEarthEngineWebTileLayer({
     urlTemplate,
     id,
   });
+
+  // return new WebTileLayer({
+  //   urlTemplate,
+  //   id,
+  // });
 }
 
 function getMVTSource(scientificname) {
