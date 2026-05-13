@@ -280,6 +280,7 @@ function RegionsAnalysisComponent(props) {
 
     if (sketchTool) {
       handleSketchToolDestroy();
+      layer;
     }
 
     if (option === REGION_OPTIONS.PROTECTED_AREAS) {

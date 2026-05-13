@@ -626,7 +626,10 @@ function LayerLegendComponent(props) {
         if (legendInfo) {
           return {
             ...layer,
-            details: `${legendInfo.description}<br/> ${legendInfo.disclaimer}`,
+            details:
+              countryISO.toUpperCase() === 'PER'
+                ? `${legendInfo.description_es}<br/> ${legendInfo.disclaimer_es}`
+                : `${legendInfo.description}<br/> ${legendInfo.disclaimer}`,
           };
         }
         return layer;
