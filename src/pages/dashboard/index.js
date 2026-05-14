@@ -91,6 +91,7 @@ function DashboardContainer(props) {
   const [hash, setHash] = useState();
   const [flaggedSpecies, setFlaggedSpecies] = useState();
   const [updateFlaggedSpecies, setUpdateFlaggedSpecies] = useState(false);
+  const [flaggedSpeciesDone, setFlaggedSpeciesDone] = useState(false);
 
   const getQueryParams = () => {
     if (queryParams) {
@@ -773,6 +774,7 @@ function DashboardContainer(props) {
 
     const data = await response.json();
     setFlaggedSpecies(data);
+    setFlaggedSpeciesDone(true);
   };
 
   const getIgnoredSpeciesList = async () => {
@@ -1025,8 +1027,13 @@ function DashboardContainer(props) {
   useEffect(() => {
     if (!selectedRegion && !speciesToAvoid) return;
     getFlaggedSpeciesList();
-    getSpeciesList();
   }, [selectedRegion, speciesToAvoid]);
+
+  useEffect(() => {
+    if (flaggedSpeciesDone) {
+      getSpeciesList();
+    }
+  }, [flaggedSpeciesDone]);
 
   useEffect(() => {
     if (!updateFlaggedSpecies) return;
