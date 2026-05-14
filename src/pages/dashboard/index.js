@@ -1026,6 +1026,7 @@ function DashboardContainer(props) {
 
   useEffect(() => {
     if (!selectedRegion && !speciesToAvoid) return;
+    setFlaggedSpeciesDone(false);
     getFlaggedSpeciesList();
   }, [selectedRegion, speciesToAvoid]);
 
@@ -1037,6 +1038,7 @@ function DashboardContainer(props) {
 
   useEffect(() => {
     if (!updateFlaggedSpecies) return;
+    setFlaggedSpeciesDone(false);
     getFlaggedSpeciesList();
   }, [updateFlaggedSpecies]);
 
