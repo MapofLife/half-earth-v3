@@ -388,8 +388,7 @@ function SpeciesRichnessComponent(props) {
       } else if (acceptedZones.includes(activeTrend) && selectedProvince) {
         setTitleText(`${selectedProvince?.name} SHI ${group}`);
       }
-    }
-    if (sii) {
+    } else if (sii) {
       if (siiActiveTrend === NATIONAL_TREND || !selectedProvince) {
         setTitleText(`${t('NATIONAL')} SII ${group}`);
       } else if (siiActiveTrend === PROVINCE_TREND && selectedProvince) {
