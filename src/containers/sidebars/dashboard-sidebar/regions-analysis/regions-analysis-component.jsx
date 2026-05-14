@@ -613,18 +613,20 @@ function RegionsAnalysisComponent(props) {
           {t('Create your own region')}
         </span>
         <div className={styles.customAreaContainer}>
-          {countryISO.toUpperCase() === 'GUY' && (
-            <Button
-              type="rectangular"
-              className={styles.customArea}
-              label={t('Draw a custom area')}
-              handleClick={() =>
-                optionSelected({
-                  currentTarget: { value: REGION_OPTIONS.DRAW },
-                })
-              }
-            />
-          )}
+          <Button
+            type="rectangular"
+            className={styles.customArea}
+            label={
+              countryISO.toUpperCase() === 'PER'
+                ? t('Dibujar un área personalizada')
+                : t('Draw a custom area')
+            }
+            handleClick={() =>
+              optionSelected({
+                currentTarget: { value: REGION_OPTIONS.DRAW },
+              })
+            }
+          />
           <div className={styles.comingSoon}>
             <Button
               type="rectangular"
