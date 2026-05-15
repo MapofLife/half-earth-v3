@@ -310,6 +310,7 @@ function DashboardViewComponent(props) {
           setUploadedShape={setUploadedShape}
           setSnackBar={setSnackBar}
           setShowHover={setShowHover}
+          showHover={showHover}
           {...props}
         />
       </LightModeProvider>

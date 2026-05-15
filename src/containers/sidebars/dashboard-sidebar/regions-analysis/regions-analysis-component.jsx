@@ -127,6 +127,7 @@ function RegionsAnalysisComponent(props) {
     uploadedShape,
     setUploadedShape,
     setShowHover,
+    showHover,
   } = props;
   const { getToken } = useJWTToken(countryISO);
   const { lightMode } = useContext(LightModeContext);
@@ -526,6 +527,17 @@ function RegionsAnalysisComponent(props) {
     setShowHover((prev) => !prev);
   };
 
+  const exploreModeLabel = useMemo(() => {
+    if (!showHover) {
+      return countryISO.toUpperCase() === 'PER'
+        ? t('Salir del modo de exploración')
+        : t('Exit explore mode');
+    }
+    return countryISO.toUpperCase() === 'PER'
+      ? t('Entrar en modo de exploración')
+      : t('enter explore mode');
+  }, [showHover]);
+
   useEffect(() => {
     browsePage({
       type: DASHBOARD,
@@ -585,12 +597,8 @@ function RegionsAnalysisComponent(props) {
         <Button
           type="rectangular"
           className={styles.toggleHoverButton}
-          onClick={toggleHover}
-          label={
-            countryISO.toUpperCase() === 'PER'
-              ? t('alternar al pasar el ratón')
-              : t('Toggle Hover')
-          }
+          handleClick={() => toggleHover()}
+          label={exploreModeLabel}
         ></Button>
       </div>
       <span className={styles.sectionSubtitle}>
