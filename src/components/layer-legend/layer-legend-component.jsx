@@ -635,6 +635,42 @@ function LayerLegendComponent(props) {
         return layer;
       })
     );
+
+    setLandUsePressureLayers((prevLayers) =>
+      prevLayers.map((layer) => {
+        const legendInfo = richnessRarityLegendInfo?.find(
+          (info) => info.layerslug === layer.id
+        );
+        if (legendInfo) {
+          return {
+            ...layer,
+            details:
+              countryISO.toUpperCase() === 'PER'
+                ? `${legendInfo.description_es}<br/> ${legendInfo.disclaimer_es}`
+                : `${legendInfo.description}<br/> ${legendInfo.disclaimer}`,
+          };
+        }
+        return layer;
+      })
+    );
+
+    setMarineUsePressureLayers((prevLayers) =>
+      prevLayers.map((layer) => {
+        const legendInfo = richnessRarityLegendInfo?.find(
+          (info) => info.layerslug === layer.id
+        );
+        if (legendInfo) {
+          return {
+            ...layer,
+            details:
+              countryISO.toUpperCase() === 'PER'
+                ? `${legendInfo.description_es}<br/> ${legendInfo.disclaimer_es}`
+                : `${legendInfo.description}<br/> ${legendInfo.disclaimer}`,
+          };
+        }
+        return layer;
+      })
+    );
   }, [richnessRarityLegendInfo]);
 
   return (
