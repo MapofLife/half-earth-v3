@@ -265,7 +265,8 @@ function RegionsAnalysisComponent(props) {
       `map-${countryISO}`
     );
 
-    setRegionLayers(() => ({
+    setRegionLayers((prev) => ({
+      ...prev,
       [`map-${countryISO}`]: featureLayer,
     }));
     map.add(featureLayer);
@@ -397,6 +398,10 @@ function RegionsAnalysisComponent(props) {
       (layer) => layer.id === LAYER_OPTIONS.RAPID_INVENTORY_32
     );
 
+    const countryLayer = map.layers.items.find(
+      (layer) => layer.id === `map-${countryISO}`
+    );
+
     map.remove(protectedAreaLayer);
     map.remove(provinceLayer);
     map.remove(forestLayer);
@@ -404,6 +409,7 @@ function RegionsAnalysisComponent(props) {
     map.remove(accRegionLayer);
     map.remove(rapidLayer);
     map.remove(customAreaLayer);
+    map.remove(countryLayer);
     setRegionLayers({});
   };
 
