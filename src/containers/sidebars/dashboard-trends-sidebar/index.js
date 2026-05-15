@@ -37,6 +37,7 @@ import Component, {
   ZONE_5,
 } from './dashboard-trends-sidebar-component.jsx';
 import mapStateToProps from './selectors';
+import { tx } from '@transifex/native';
 
 function DashboardTrendsSidebarContainer(props) {
   const {
@@ -460,7 +461,7 @@ function DashboardTrendsSidebarContainer(props) {
     const countryCode = countryISO;
 
     if (countryISO.toLowerCase() !== 'ee') {
-      let whereClause = `iso3=${countryCode}&region_key=${countryCode}`;
+      let whereClause = `iso3=${countryCode}&region_key=${countryCode}&lang=${tx.currentLocale}`;
 
       const zone5Layer = map.layers.items.find(
         (item) => item.id === `${countryISO}-zone5-spi`
@@ -541,7 +542,7 @@ function DashboardTrendsSidebarContainer(props) {
             (tabOption === TABS.SII && siiActiveTrend === PROVINCE_TREND)
           ) {
             // TODO: iso3_regional does not exist in all provinces
-            whereClause = `region_key=${selectedProvince.region_key}`;
+            whereClause = `region_key=${selectedProvince.region_key}&lang=${tx.currentLocale}`;
           }
 
           getHistogramData(

@@ -74,6 +74,7 @@ function DashboardViewComponent(props) {
   const [activeTrend, setActiveTrend] = useState(PROVINCE_TREND);
   const [shiActiveTrend, setShiActiveTrend] = useState(PROVINCE_TREND);
   const [siiActiveTrend, setSiiActiveTrend] = useState(PROVINCE_TREND);
+  const [showHover, setShowHover] = useState(true);
   // const [showTopNav, setShowTopNav] = useState(true);
 
   const [snackBar, setSnackBar] = useState({
@@ -270,6 +271,7 @@ function DashboardViewComponent(props) {
         shiActiveTrend={shiActiveTrend}
         siiActiveTrend={siiActiveTrend}
         handleRegionSelected={handleRegionSelected}
+        showHover={showHover}
         {...props}
       />
       <LightModeProvider>
@@ -307,6 +309,7 @@ function DashboardViewComponent(props) {
           uploadedShape={uploadedShape}
           setUploadedShape={setUploadedShape}
           setSnackBar={setSnackBar}
+          setShowHover={setShowHover}
           {...props}
         />
       </LightModeProvider>

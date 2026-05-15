@@ -126,6 +126,7 @@ function RegionsAnalysisComponent(props) {
     closeUploadModal,
     uploadedShape,
     setUploadedShape,
+    setShowHover,
   } = props;
   const { getToken } = useJWTToken(countryISO);
   const { lightMode } = useContext(LightModeContext);
@@ -521,6 +522,10 @@ function RegionsAnalysisComponent(props) {
     }
   };
 
+  const toggleHover = () => {
+    setShowHover((prev) => !prev);
+  };
+
   useEffect(() => {
     browsePage({
       type: DASHBOARD,
@@ -568,7 +573,26 @@ function RegionsAnalysisComponent(props) {
 
   return (
     <section className={cx(lightMode ? styles.light : '', styles.container)}>
-      <span className={styles.sectionTitle}>{t('Regions Analysis')}</span>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: '8px',
+        }}
+      >
+        <span className={styles.sectionTitle}>{t('Regions Analysis')}</span>
+        <Button
+          type="rectangular"
+          className={styles.toggleHoverButton}
+          onClick={toggleHover}
+          label={
+            countryISO.toUpperCase() === 'PER'
+              ? t('alternar al pasar el ratón')
+              : t('Toggle Hover')
+          }
+        ></Button>
+      </div>
       <span className={styles.sectionSubtitle}>
         {t(
           'Explore high quality biodiversity expectations for any area of interest'
