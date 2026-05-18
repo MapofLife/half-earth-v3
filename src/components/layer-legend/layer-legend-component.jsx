@@ -646,8 +646,12 @@ function LayerLegendComponent(props) {
             ...layer,
             details:
               countryISO.toUpperCase() === 'PER'
-                ? `${legendInfo.description_es}<br/> ${legendInfo.disclaimer_es}`
-                : `${legendInfo.description}<br/> ${legendInfo.disclaimer}`,
+                ? `${legendInfo.description_es}<br/>${
+                    legendInfo.disclaimer_es ? legendInfo.disclaimer_es : ''
+                  }`
+                : `${legendInfo.description}<br/> ${
+                    legendInfo.disclaimer ? legendInfo.disclaimer : ''
+                  }`,
           };
         }
         return layer;
@@ -664,8 +668,12 @@ function LayerLegendComponent(props) {
             ...layer,
             details:
               countryISO.toUpperCase() === 'PER'
-                ? `${legendInfo.description_es}<br/> ${legendInfo.disclaimer_es}`
-                : `${legendInfo.description}<br/> ${legendInfo.disclaimer}`,
+                ? `${legendInfo.description_es}<br/>${
+                    legendInfo.disclaimer_es ? legendInfo.disclaimer_es : ''
+                  }`
+                : `${legendInfo.description}<br/> ${
+                    legendInfo.disclaimer ? legendInfo.disclaimer : ''
+                  }`,
           };
         }
         return layer;
