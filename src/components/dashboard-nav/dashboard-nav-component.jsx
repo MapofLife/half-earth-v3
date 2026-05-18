@@ -160,7 +160,7 @@ function DashboardNavComponent(props) {
         >
           <PlanningIcon />
         </button> */}
-        <button
+        {/* <button
           type="button"
           aria-label={t('Expert Tools')}
           title={t('Expert Tools')}
@@ -169,7 +169,7 @@ function DashboardNavComponent(props) {
           }
         >
           <ExpertIcon />
-        </button>
+        </button> */}
         <button
           type="button"
           aria-label={t('Tutorials')}
