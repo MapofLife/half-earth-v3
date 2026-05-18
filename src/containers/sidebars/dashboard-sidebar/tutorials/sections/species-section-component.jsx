@@ -39,9 +39,7 @@ function SpeciesSectionComponent(props) {
       <p>{t(SECTION_INFO.DATA_LAYER)}</p>
       <ImagePopupComponent {...props}>
         <img
-          src={`dashboard/tutorials/tutorial_species_dataLayers-${
-            locale || 'en'
-          }.png?react`}
+          src={`dashboard/tutorials/tutorial_species_dataLayers-en.png?react`}
           alt="Data Layers"
         />
       </ImagePopupComponent>
@@ -52,17 +50,13 @@ function SpeciesSectionComponent(props) {
       <p>{t(SECTION_INFO.INDICATOR_SCORES)}</p>
       <ImagePopupComponent {...props}>
         <img
-          src={`dashboard/tutorials/tutorial_species_indicatorGraph-${
-            locale || 'en'
-          }.png?react`}
+          src={`dashboard/tutorials/tutorial_species_indicatorGraph-en.png?react`}
           alt="Indicator Scores"
         />
       </ImagePopupComponent>
       <ImagePopupComponent {...props}>
         <img
-          src={`dashboard/tutorials/tutorial_species_indicatorTable-${
-            locale || 'en'
-          }.png?react`}
+          src={`dashboard/tutorials/tutorial_species_indicatorTable-en.png?react`}
           alt="Indicator Scores"
         />
       </ImagePopupComponent>

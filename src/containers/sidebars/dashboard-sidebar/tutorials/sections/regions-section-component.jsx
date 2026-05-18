@@ -30,18 +30,14 @@ function RegionsSectionComponent(props) {
       <p>{t(SECTION_INFO.REGIONS)}</p>
       <ImagePopupComponent {...props}>
         <img
-          src={`dashboard/tutorials/tutorial_regions_landing-${
-            locale || 'en'
-          }.png?react`}
+          src={`dashboard/tutorials/tutorial_regions_landing-en.png?react`}
           alt="Regions"
         />
       </ImagePopupComponent>
       <p>{t(SECTION_INFO.REGIONS_TWO)}</p>
       <ImagePopupComponent {...props}>
         <img
-          src={`dashboard/tutorials/tutorial_regions_speciesList-${
-            locale || 'en'
-          }.png?react`}
+          src={`dashboard/tutorials/tutorial_regions_speciesList-en.png?react`}
           alt="Regions"
         />
       </ImagePopupComponent>

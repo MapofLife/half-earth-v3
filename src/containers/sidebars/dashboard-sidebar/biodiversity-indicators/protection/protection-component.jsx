@@ -53,12 +53,8 @@ function ProtectionComponent(props) {
   const [tableInfo, setTableInfo] = useState();
 
   const updateChartInfo = () => {
-    const speciesIndicatorGraphImg = `dashboard/tutorials/tutorial_species_indicatorGraph-${
-      locale || 'en'
-    }.png?react`;
-    const speciesIndicatorTableImg = `dashboard/tutorials/tutorial_species_indicatorTable-${
-      locale || 'en'
-    }.png?react`;
+    const speciesIndicatorGraphImg = `dashboard/tutorials/tutorial_species_indicatorGraph-en.png?react`;
+    const speciesIndicatorTableImg = `dashboard/tutorials/tutorial_species_indicatorTable-en.png?react`;
 
     setChartInfo({
       title: t('Species Indicators - Graph'),
@@ -145,10 +141,12 @@ function ProtectionComponent(props) {
                   <tr
                     key={row.country}
                     onClick={() => updateCountry({ value: row.country })}
-                    className={
-                      cx(selectedCountry === row.country ? styles.highlighted : '',
-                        countryName === row.country ? styles.highlightedMainCountry : ''
-                      )}
+                    className={cx(
+                      selectedCountry === row.country ? styles.highlighted : '',
+                      countryName === row.country
+                        ? styles.highlightedMainCountry
+                        : ''
+                    )}
                   >
                     <td>{t(row.country)}</td>
                     <td className={styles.textCenter}>
