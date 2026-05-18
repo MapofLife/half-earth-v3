@@ -525,8 +525,8 @@ function DataLayerComponent(props) {
         updatedDataPoints.push({
           label:
             countryISO.toUpperCase() === 'PER'
-              ? t('Mapas de predicción')
-              : t('Prediction maps'),
+              ? t('Modelo de Distribución de Especies (MDE)')
+              : t('Species Distribution Model'),
           items: [],
           id: LAYER_OPTIONS.PREDICTION_MAPS,
           total_no_rows: 1,
