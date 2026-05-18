@@ -634,7 +634,9 @@ function GroupedListComponent(props) {
           {control}
           <span>{item.no_rows}</span>
           <span />
-          <ToggleLayerInfoContainer layer={item} {...props} />
+          {item.hideInfo && (
+            <ToggleLayerInfoContainer layer={item} {...props} />
+          )}
         </li>
       );
     }
@@ -718,7 +720,9 @@ function GroupedListComponent(props) {
                 />
                 <span>{key.total_no_rows}</span>
                 <span />
-                <ToggleLayerInfoContainer layer={key} {...props} />
+                {!key.hideInfo && (
+                  <ToggleLayerInfoContainer layer={key} {...props} />
+                )}
               </div>
               {key.showChildren && (
                 <ul>{key.items.map((item) => getCheckbox(item))}</ul>
@@ -738,7 +742,9 @@ function GroupedListComponent(props) {
               />
               <span>{key.total_no_rows}</span>
               <span />
-              <ToggleLayerInfoContainer layer={key} {...props} />
+              {!key.hideInfo && (
+                <ToggleLayerInfoContainer layer={key} {...props} />
+              )}
             </div>
           )}
         </div>

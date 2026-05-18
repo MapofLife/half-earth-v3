@@ -30,7 +30,9 @@ function ToggleLayerInfoComponent(props) {
     let parent = false;
     let url = `${DASHBOARD_URLS.DATASET_LAYER_INFO}${item.dataset_id}`;
 
-    if (layer.type === 'PRIVATE') {
+    if (item.tooltip) {
+      setLayerInfo({ info: item.tooltip, title: item.label });
+    } else if (layer.type === 'PRIVATE') {
       if (item.id === LAYER_OPTIONS.POINT_OBSERVATIONS) {
         const data = [
           {
@@ -78,7 +80,7 @@ function ToggleLayerInfoComponent(props) {
       if (item.id === LAYER_OPTIONS.HABITAT) {
         data = [
           {
-            label: 'Description',
+            label: t('Description'),
             value:
               'The habitat loss/gain map is developed from the species expert range map, species habitat preference data, and annually-updated environmental and land cover data. These maps use the year 2001 as a baseline to determine a species total suitable habitat area, where suitable habitat is based on the application of habitat preferences and environmental/land cover data to the expert range map, and track what areas of the range have been lost or regained since 2001.',
           },
@@ -149,6 +151,7 @@ function ToggleLayerInfoComponent(props) {
       }
     }
   };
+
   return (
     <button
       type="button"

@@ -91,6 +91,7 @@ function DataLayerComponent(props) {
     countryName,
     map,
     setSnackBar,
+    richnessRarityLegendInfo,
   } = props;
 
   const { getToken } = useJWTToken(countryISO);
@@ -146,6 +147,7 @@ function DataLayerComponent(props) {
           ? t('Capas de cubierta del suelo (2022)')
           : t('Land cover (2022)'),
       url: LAND_COVER_LAYER,
+      hideInfo: true,
     },
   ]);
   const [landUsePressureLayers, setLandUsePressureLayers] = useState([
@@ -673,6 +675,80 @@ function DataLayerComponent(props) {
   };
 
   useEffect(() => {
+    // setRichnessLayers((prevLayers) =>
+    //   prevLayers.map((layer) => {
+    //     const legendInfo = richnessRarityLegendInfo?.find(
+    //       (info) => info.layerslug === layer.id
+    //     );
+    //     if (legendInfo) {
+    //       return {
+    //         ...layer,
+    //         details:
+    //           countryISO.toUpperCase() === 'PER'
+    //             ? `${legendInfo.description_es}<br/> ${legendInfo.disclaimer_es}`
+    //             : `${legendInfo.description}<br/> ${legendInfo.disclaimer}`,
+    //       };
+    //     }
+    //     return layer;
+    //   })
+    // );
+
+    setLandUsePressureLayers((prevLayers) =>
+      prevLayers.map((layer) => {
+        const legendInfo = richnessRarityLegendInfo?.find(
+          (info) => info.layerslug === layer.id
+        );
+        if (legendInfo) {
+          return {
+            ...layer,
+            tooltip: [
+              {
+                label: t('Description'),
+                value:
+                  countryISO.toUpperCase() === 'PER'
+                    ? `${legendInfo.description_es}<br/>${
+                        legendInfo.disclaimer_es ? legendInfo.disclaimer_es : ''
+                      }`
+                    : `${legendInfo.description}<br/> ${
+                        legendInfo.disclaimer ? legendInfo.disclaimer : ''
+                      }`,
+              },
+            ],
+          };
+        }
+        return layer;
+      })
+    );
+
+    setMarineUsePressureLayers((prevLayers) =>
+      prevLayers.map((layer) => {
+        const legendInfo = richnessRarityLegendInfo?.find(
+          (info) => info.layerslug === layer.id
+        );
+        if (legendInfo) {
+          return {
+            ...layer,
+            tooltip: [
+              {
+                label: t('Description'),
+                value:
+                  countryISO.toUpperCase() === 'PER'
+                    ? `${legendInfo.description_es}<br/>${
+                        legendInfo.disclaimer_es ? legendInfo.disclaimer_es : ''
+                      }`
+                    : `${legendInfo.description}<br/> ${
+                        legendInfo.disclaimer ? legendInfo.disclaimer : ''
+                      }`,
+              },
+            ],
+          };
+        }
+        return layer;
+      })
+    );
+  }, [richnessRarityLegendInfo]);
+
+  useEffect(() => {
     if (!speciesInfo) return;
     getHabitatMapData();
   }, [speciesInfo]);
@@ -785,6 +861,7 @@ function DataLayerComponent(props) {
           isActive: false,
           showChildren: false,
           type: DATA_POINT_TYPE.REGIONS_DATA,
+          hideInfo: true,
         },
         {
           id: APURIMAC_LANDCOVER_LAYER,
@@ -797,6 +874,7 @@ function DataLayerComponent(props) {
           isActive: false,
           showChildren: false,
           type: DATA_POINT_TYPE.REGIONS_DATA,
+          hideInfo: true,
         },
       ]);
     }
