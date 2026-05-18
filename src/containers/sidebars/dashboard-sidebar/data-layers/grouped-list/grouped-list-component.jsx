@@ -654,18 +654,18 @@ function GroupedListComponent(props) {
     });
   };
 
-  // useEffect(() => {
-  //   if (!showHabitatLayer) return;
-  //   displaySingleLayer({
-  //     label: t('Habitat Loss/Gain'),
-  //     items: [],
-  //     id: LAYER_OPTIONS.HABITAT,
-  //     total_no_rows: '',
-  //     isActive: false,
-  //     showChildren: false,
-  //     type: DATA_POINT_TYPE.PUBLIC,
-  //   });
-  // }, [showHabitatLayer]);
+  useEffect(() => {
+    if (!showHabitatLayer) return;
+    displaySingleLayer({
+      label: t('Habitat Loss/Gain'),
+      items: [],
+      id: LAYER_OPTIONS.HABITAT,
+      total_no_rows: '',
+      isActive: false,
+      showChildren: false,
+      type: DATA_POINT_TYPE.PUBLIC,
+    });
+  }, [showHabitatLayer]);
 
   // useEffect(() => {
   //   if (!showPredictionMap) return;
