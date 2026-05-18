@@ -522,7 +522,7 @@ function DataLayerComponent(props) {
         prediction_map.tile_url &&
         Array.isArray(prevDataPoints)
       ) {
-        updatedDataPoints.push({
+        updatedDataPoints.splice(1, 0, {
           label:
             countryISO.toUpperCase() === 'PER'
               ? t('Modelo de Distribución de Especies (MDE)')
