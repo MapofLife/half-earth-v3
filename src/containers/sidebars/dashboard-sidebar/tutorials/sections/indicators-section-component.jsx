@@ -48,12 +48,7 @@ function IndicatorsSectionComponent(props) {
         <h3 className={styles.sub}>{t('Province View')}</h3>
       </div>
       <p>{t(SECTION_INFO.SPI_PROVINCE_VIEW)}</p>
-      <ImagePopupComponent {...props}>
-        <img
-          src={`dashboard/tutorials/tutorial_spi_provinces-en.png?react`}
-          alt={t('Species Protection Index - Provinces')}
-        />
-      </ImagePopupComponent>
+
       <div className={styles.subTitle}>
         <h3 className={styles.sub}>{t('Score Distributions')}</h3>
       </div>
@@ -85,12 +80,7 @@ function IndicatorsSectionComponent(props) {
         <h3 className={styles.sub}>{t('Province View')}</h3>
       </div>
       <p>{t(SECTION_INFO.SHI_PROVINCE_VIEW)}</p>
-      <ImagePopupComponent {...props}>
-        <img
-          src={`dashboard/tutorials/tutorial_shi_provinces-en.png?react`}
-          alt={t('Species Habitat Index - Provinces')}
-        />
-      </ImagePopupComponent>
+
       <div className={styles.subTitle}>
         <h3 className={styles.sub}>{t('Score Distributions')}</h3>
       </div>
