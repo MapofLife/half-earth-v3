@@ -231,8 +231,11 @@ function ScoreDistributionsSiiComponent(props) {
   };
 
   const getBucketSpecies = (low, high) => {
+    const regionKey =
+      activeTrend === PROVINCE_TREND ? selectedProvince.region_key : countryISO;
+
     const response = fetch(
-      `${DASHBOARD_URLS.BUCKET_SPECIES_URL}?iso3=${countryISO}&region_key=${selectedProvince?.region_key}&min_value=${low}&max_value=${high}&filter_by=sis_stewardship&lang=${tx.currentLocale}`,
+      `${DASHBOARD_URLS.BUCKET_SPECIES_URL}?iso3=${countryISO}&region_key=${regionKey}&min_value=${low}&max_value=${high}&filter_by=sis_stewardship&lang=${tx.currentLocale}`,
       {
         method: 'GET',
         headers: {

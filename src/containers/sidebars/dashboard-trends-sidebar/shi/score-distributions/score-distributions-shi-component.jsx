@@ -79,7 +79,7 @@ function ScoreDistributionsShiComponent(props) {
 
   const toolTipTitle = (tooltipItems) => {
     const bucket = parseInt(tooltipItems[0].label, 10);
-    if(bucket === 120){
+    if (bucket === 120) {
       return '> 120';
     }
     return `${bucket} - ${bucket + 5}`;
@@ -158,35 +158,50 @@ function ScoreDistributionsShiComponent(props) {
         const value = chartData.datasets[datasetIndex].data[dataIndex];
         console.log(value);
 
-        getBucketSpecies((dataIndex * bucketSize), (dataIndex * bucketSize) + bucketSize);
+        getBucketSpecies(
+          dataIndex * bucketSize,
+          dataIndex * bucketSize + bucketSize
+        );
       }
-    }
+    },
   };
 
   const getBucketSpecies = (low, high) => {
-    const response = fetch(`${DASHBOARD_URLS.BUCKET_SPECIES_URL}?iso3=${countryISO}&region_key=${selectedProvince?.region_key}&min_value=${low}&max_value=${high}&filter_by=shs&lang=${tx.currentLocale}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    }).then((res) => {
-      if(res.ok){
-        res.json().then((data) => {
-          const species = data || [];
-          const formattedSpecies = species.map((s) => ({
-            species: s.species,
-            commonname: s.commonname,
-            species_url: s.species_url,
-            habitat_score: s.shs,
-            taxa: s.taxa,
-          }));
-          setSpsSpecies(formattedSpecies);
-        });
+    const regionKey =
+      activeTrend === PROVINCE_TREND ? selectedProvince.region_key : countryISO;
+
+    const response = fetch(
+      `${DASHBOARD_URLS.BUCKET_SPECIES_URL}?iso3=${countryISO}&region_key=${regionKey}&min_value=${low}&max_value=${high}&filter_by=shs&lang=${tx.currentLocale}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
       }
-    }).catch((error) => {
-      console.error('Error submitting feedback:', error);
-      alert(t('There was an issue submitting your feedback. Please try again later.'));
-    });
+    )
+      .then((res) => {
+        if (res.ok) {
+          res.json().then((data) => {
+            const species = data || [];
+            const formattedSpecies = species.map((s) => ({
+              species: s.species,
+              commonname: s.commonname,
+              species_url: s.species_url,
+              habitat_score: s.shs,
+              taxa: s.taxa,
+            }));
+            setSpsSpecies(formattedSpecies);
+          });
+        }
+      })
+      .catch((error) => {
+        console.error('Error submitting feedback:', error);
+        alert(
+          t(
+            'There was an issue submitting your feedback. Please try again later.'
+          )
+        );
+      });
   };
 
   const displayData = () => {
@@ -402,7 +417,10 @@ function ScoreDistributionsShiComponent(props) {
 
           values.forEach((value) => {
             const val = value;
-            if (!threatStatuses.includes(val.threat_status?.toUpperCase()) && val.species_url) {
+            if (
+              !threatStatuses.includes(val.threat_status?.toUpperCase()) &&
+              val.species_url
+            ) {
               species.push({
                 species: val.species,
                 commonname: val.commonname,
@@ -446,7 +464,7 @@ function ScoreDistributionsShiComponent(props) {
               'https://storage.googleapis.com/mol-assets2/mid/46f5bcb2fce4455aae6964ea69c10342.jpg',
             habitat_score: 85,
             taxa: 'reptiles',
-            commonname: 'Commissaris\'s long-tongued bat',
+            commonname: "Commissaris's long-tongued bat",
           },
           {
             species: 'Boana sibleszi',
@@ -551,26 +569,19 @@ function ScoreDistributionsShiComponent(props) {
         {!isSpeciesLoading && (
           <ul className={styles.spsSpecies}>
             {spsSpecies.map((s) => {
-              if(s){
+              if (s) {
                 return (
                   <li key={s.species}>
                     <button
                       type="button"
-                      onClick={() =>
-                        selectSpecies(s.species)
-                      }
+                      onClick={() => selectSpecies(s.species)}
                     >
                       {s.species_url && (
-                        <img
-                          src={s.species_url}
-                          alt="species"
-                        />
+                        <img src={s.species_url} alt="species" />
                       )}
                       {!s.species_url && <TaxaImageComponent taxa={s?.taxa} />}
                       <div className={styles.spsInfo}>
-                        <span className={styles.name}>
-                          {s.commonname}
-                        </span>
+                        <span className={styles.name}>{s.commonname}</span>
                         <span className={styles.scientificname}>
                           {s.species}
                         </span>

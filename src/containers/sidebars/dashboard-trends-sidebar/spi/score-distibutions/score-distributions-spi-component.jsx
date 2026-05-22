@@ -130,40 +130,48 @@ function ScoreDistributionsSpiComponent(props) {
     },
     onClick: (event, elements) => {
       if (elements.length > 0) {
-
         const datasetIndex = elements[0].datasetIndex;
         const dataIndex = elements[0].index;
         const value = chartData.datasets[datasetIndex].data[dataIndex];
 
-
-        getBucketSpecies((dataIndex * bucketSize), (dataIndex * bucketSize) + bucketSize);
+        getBucketSpecies(
+          dataIndex * bucketSize,
+          dataIndex * bucketSize + bucketSize
+        );
       }
-    }
+    },
   };
 
   const getBucketSpecies = (low, high) => {
-    const response = fetch(`${DASHBOARD_URLS.BUCKET_SPECIES_URL}?iso3=${countryISO}&region_key=${selectedProvince?.region_key}&min_value=${low}&max_value=${high}&filter_by=sps&lang=${tx.currentLocale}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    }).then((res) => {
-      if(res.ok){
-        res.json().then((data) => {
-          const species = data || [];
-          const formattedSpecies = species.map((s) => ({
-            species: s.species,
-            commonname: s.commonname,
-            species_url: s.species_url,
-            species_protection_score_all: s.sps,
-            taxa: s.taxa,
-          }));
-          setSpsSpecies(formattedSpecies);
-        });
+    const regionKey =
+      activeTrend === PROVINCE_TREND ? selectedProvince.region_key : countryISO;
+    const response = fetch(
+      `${DASHBOARD_URLS.BUCKET_SPECIES_URL}?iso3=${countryISO}&region_key=${regionKey}&min_value=${low}&max_value=${high}&filter_by=sps&lang=${tx.currentLocale}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
       }
-    }).catch((error) => {
-      console.error('Error getting species:', error);
-    });
+    )
+      .then((res) => {
+        if (res.ok) {
+          res.json().then((data) => {
+            const species = data || [];
+            const formattedSpecies = species.map((s) => ({
+              species: s.species,
+              commonname: s.commonname,
+              species_url: s.species_url,
+              species_protection_score_all: s.sps,
+              taxa: s.taxa,
+            }));
+            setSpsSpecies(formattedSpecies);
+          });
+        }
+      })
+      .catch((error) => {
+        console.error('Error getting species:', error);
+      });
   };
 
   const getChartData = async () => {
@@ -283,7 +291,10 @@ function ScoreDistributionsSpiComponent(props) {
 
           values.forEach((value) => {
             const val = value;
-            if (!threatStatuses.includes(val.threat_status?.toUpperCase()) && val.species_url) {
+            if (
+              !threatStatuses.includes(val.threat_status?.toUpperCase()) &&
+              val.species_url
+            ) {
               species.push({
                 species: val.species,
                 commonname: val.commonname,
@@ -417,7 +428,7 @@ function ScoreDistributionsSpiComponent(props) {
           <ul className={styles.spsSpecies}>
             {spsSpecies &&
               spsSpecies.map((s) => {
-                if(s){
+                if (s) {
                   return (
                     <li key={`${s.species}`}>
                       <button
@@ -427,18 +438,18 @@ function ScoreDistributionsSpiComponent(props) {
                         {s.species_url && (
                           <img src={s.species_url} alt="species" />
                         )}
-                        {!s?.species_url && <TaxaImageComponent taxa={s?.taxa} />}
+                        {!s?.species_url && (
+                          <TaxaImageComponent taxa={s?.taxa} />
+                        )}
                         <div className={styles.spsInfo}>
                           <span className={styles.name}>{s.commonname}</span>
                           <span className={styles.scientificname}>
                             {s.species}
                           </span>
                         </div>
-                        <span
-                          className={styles.spsScore}
-                        >{s.species_protection_score_all?.toFixed(
-                          1
-                        )}</span>
+                        <span className={styles.spsScore}>
+                          {s.species_protection_score_all?.toFixed(1)}
+                        </span>
                       </button>
                     </li>
                   );
