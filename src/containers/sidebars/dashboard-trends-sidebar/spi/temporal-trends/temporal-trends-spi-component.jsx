@@ -108,8 +108,6 @@ function TemporalTrendsSpiComponent(props) {
     }
   };
 
-
-
   useEffect(() => {
     if (clickedRegion) {
       if (countryISO.toLowerCase() === 'ee') {
@@ -143,8 +141,11 @@ function TemporalTrendsSpiComponent(props) {
               spiInfoBold={
                 <b>{`${countryData[0]?.spi.toFixed(1)} ${t('in')} ${
                   countryData[0]?.year
-                } ${t('to')} ${last(countryData)?.spi.toFixed(1)} ${t('in')} ${
-                  last(countryData)?.year
+                } ${t('to')} ${last(
+                  countryData.filter((item) => item.level === 'country')
+                )?.spi.toFixed(1)} ${t('in')} ${
+                  last(countryData.filter((item) => item.level === 'country'))
+                    ?.year
                 }`}</b>
               }
             />
@@ -295,7 +296,10 @@ function TemporalTrendsSpiComponent(props) {
       {!showTable && countryISO.toLowerCase() !== 'ee' && (
         <>
           {activeTrend === NATIONAL_TREND && (
-            <NationalChartContainer {...props} countryData={filteredCountryData} />
+            <NationalChartContainer
+              {...props}
+              countryData={filteredCountryData}
+            />
           )}
           {activeTrend === PROVINCE_TREND && (
             <ProvinceChartContainer {...props} />
