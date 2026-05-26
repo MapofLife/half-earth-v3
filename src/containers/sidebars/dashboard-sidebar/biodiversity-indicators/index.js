@@ -58,7 +58,7 @@ function BioDiversityContainer(props) {
   const removeRegionLayers = () => {
     const layersToRemove = INITIAL_LAYERS;
 
-    if(countryISO.toLowerCase() === 'guy') {
+    if (countryISO.toLowerCase() === 'guy') {
       layersToRemove.push('GUY-RIVER');
       layersToRemove.push('GUY-RIVER-NAME');
     }
@@ -82,11 +82,14 @@ function BioDiversityContainer(props) {
     }
 
     if (country?.shs[lastCountryYearValue]) {
-      countryAreaScore = country?.shs[lastCountryYearValue].propchange;
-      if (country?.frag[lastCountryYearValue]?.gisfrag) {
+      countryAreaScore = country?.shs[lastCountryYearValue].shs;
+      if (
+        country?.connectivity_score[lastCountryYearValue].connectivity_score
+      ) {
         countryConnectivityScore =
           // eslint-disable-next-line no-unsafe-optional-chaining
-          country?.frag[lastCountryYearValue]?.gisfrag / startYearValue;
+          country?.connectivity_score[lastCountryYearValue].connectivity_score /
+          startYearValue;
       }
 
       return { countryAreaScore, countryConnectivityScore };
@@ -104,8 +107,11 @@ function BioDiversityContainer(props) {
     }
 
     // TODO: handle no frag values
-    const startYearValue = country?.frag[0]?.gisfrag ?? 0;
-    setStartYear(country?.frag[0]?.year ?? country?.shs[0]?.year ?? 2001);
+    const connectivityStartYearValue = country?.connectivity_score.find(
+      (item) => item.year === 2001
+    );
+    const startYearValue = connectivityStartYearValue?.connectivity_score ?? 0;
+    setStartYear(2001);
     // eslint-disable-next-line no-unsafe-optional-chaining
     const lastCountryYearValue = country?.shs.length - 1;
     let globalAreaScore = 0;
@@ -124,23 +130,22 @@ function BioDiversityContainer(props) {
         globalConnectivityScore =
           dataByCountry.Global?.shs[lastCountryYearValue].connectivity_score;
       } else {
-        globalAreaScore =
-          dataByCountry.Global?.shs[lastCountryYearValue].propchange;
+        globalAreaScore = dataByCountry.Global?.shs[lastCountryYearValue].shs;
 
-        if (dataByCountry.Global?.frag[lastCountryYearValue]?.gisfrag) {
+        if (
+          dataByCountry.Global?.connectivity_score[lastCountryYearValue]
+            .connectivity_score?.area_score
+        ) {
           globalConnectivityScore =
             // eslint-disable-next-line no-unsafe-optional-chaining
-            dataByCountry.Global?.frag[lastCountryYearValue].gisfrag /
-            startYearValue;
+            dataByCountry.Global?.connectivity_score[lastCountryYearValue]
+              .connectivity_score / startYearValue;
         }
       }
     }
 
     const scores = {
-      habitat: (
-        ((countryAreaScore + countryConnectivityScore) / 2) *
-        100
-      ).toFixed(1),
+      habitat: country?.shs[lastCountryYearValue - 1].shs.toFixed(1),
       globalHabitat: ((globalAreaScore + globalConnectivityScore) / 2) * 100,
     };
 
@@ -157,7 +162,7 @@ function BioDiversityContainer(props) {
 
         tableData.push({
           country: lastItem.name,
-          stewardship: lastItem.stewardship * 100,
+          stewardship: lastItem.shs_stewardship * 100,
           countryAreaScore: lastItem.area_score,
           countryConnectivityScore: lastItem.connectivity_score,
           shs: lastItem.shs * 100,
@@ -167,37 +172,40 @@ function BioDiversityContainer(props) {
       Object.keys(dataByCountry).forEach((country) => {
         let stewardship = 100;
         const habitatCountry = dataByCountry[country];
+        const lastHabitatItem = habitatCountry?.shs
+          ?.slice()
+          .reverse()
+          .find((item) => item?.shs !== undefined && item?.shs !== null);
+
+        if (!lastHabitatItem) {
+          return;
+        }
 
         // const countrySHS = country?.shs;
-        const startYearValue = habitatCountry?.frag[0]?.gisfrag ?? 0;
+        const startYearValue =
+          habitatCountry?.connectivity_score[0]?.connectivity_score ?? 0;
 
-        // eslint-disable-next-line no-unsafe-optional-chaining
-        const lastCountryYearValue = habitatCountry?.shs.length - 1;
         const countryData = dataByCountry[country];
-        const global2001 = dataByCountry.Global?.shs[0]?.val || 0;
-        const country2001 = roundUpNumber(countryData.shs[0]?.val || 0);
+        const global2001 =
+          dataByCountry.Global?.shs.find((item) => item.year === 2001) || 0;
+        const country2001 = roundUpNumber(
+          countryData.shs.find((item) => item.year === 2001) || 0
+        );
         if (country.toUpperCase() === 'GLOBAL') {
           stewardship = 100;
         } else {
-          stewardship = (country2001 / global2001) * 100;
+          stewardship = country2001 / global2001;
         }
 
-        const { countryAreaScore, countryConnectivityScore } = getCountryScores(
-          countryData,
-          lastCountryYearValue,
-          startYearValue
-        );
-        const shs = ((countryAreaScore + countryConnectivityScore) / 2) * 100;
-
-        if (!Number.isNaN(shs)) {
-          tableData.push({
-            country,
-            stewardship,
-            countryAreaScore,
-            countryConnectivityScore,
-            shs,
-          });
-        }
+        // if (!Number.isNaN(shs)) {
+        tableData.push({
+          country,
+          stewardship: lastHabitatItem.shs_stewardship,
+          countryAreaScore: lastHabitatItem.area_score,
+          countryConnectivityScore: lastHabitatItem.connectivity_score,
+          shs: lastHabitatItem.shs,
+        });
+        // }
       });
     }
 
@@ -209,16 +217,16 @@ function BioDiversityContainer(props) {
 
     Object.keys(dataByCountry).forEach((country) => {
       const currentCountryData = last(
-        spiData.filter((row) => row.country_name === country)
+        spiData.filter((row) => row.country === country)
       );
       // grab stewardship value from habitat table data
-      if (currentCountryData) {
+      if (currentCountryData && currentCountryData.sps_stewardship) {
         tableData.push({
-          country: currentCountryData.country_name,
-          stewardship: currentCountryData.stewardship,
-          rangeProtected: currentCountryData.range_protected.toFixed(1),
-          targetProtected: currentCountryData.target_protected.toFixed(1),
-          sps: currentCountryData.shs_score.toFixed(1),
+          country: currentCountryData.country,
+          stewardship: currentCountryData.sps_stewardship,
+          rangeProtected: currentCountryData.range_protected?.toFixed(1),
+          targetProtected: currentCountryData.target_protected?.toFixed(1),
+          sps: currentCountryData.sps?.toFixed(1),
         });
       }
     });
@@ -324,55 +332,58 @@ function BioDiversityContainer(props) {
       setGlobalHabitatScore(globalHabitat);
 
       getHabitatTableData();
+      const tableData = [];
+      // if (data?.spiScoreData) {
+      //   const tableData = [];
+      //   const { spiScoreData } = data;
 
-      if (data?.spiScoreData) {
-        const tableData = [];
-        const { spiScoreData } = data;
+      //   if (Array.isArray(spiScoreData)) {
+      //     spiScoreData.forEach((item) => {
+      //       const lastItem = item;
+      //       tableData.push({
+      //         country: lastItem.country,
+      //         stewardship: lastItem.sps_stewardship,
+      //         rangeProtected: lastItem.range_protected,
+      //         targetProtected: lastItem.target_protected,
+      //         sps: lastItem.sps,
+      //       });
+      //     });
 
-        if (Array.isArray(spiScoreData)) {
-          spiScoreData.forEach((item) => {
-            const lastItem = item;
-            tableData.push({
-              country: lastItem.country_name,
-              stewardship: lastItem.stewardship * 100,
-              rangeProtected: lastItem.range_protected,
-              targetProtected: lastItem.regional_target,
-              sps: lastItem.sps * 100,
-            });
+      //     const global = spiScoreData.filter(
+      //       (country) => country.country.toUpperCase() === 'GLOBAL'
+      //     );
+      //     const globalValues = last(global).sps;
+      //     setGlobalProtectionScore(globalValues);
+
+      //     setProtectionScore(parseFloat(globalValues.toFixed(1)));
+      //   } else {
+      // Object.keys(spiScoreData).forEach((key) => {
+      Object.keys(dataByCountry).forEach((key) => {
+        const item = dataByCountry[key];
+        const lastItem = last(item.spi);
+
+        if (lastItem.sps) {
+          tableData.push({
+            country: lastItem.country,
+            stewardship: lastItem.sps_stewardship,
+            rangeProtected: lastItem.range_protected,
+            targetProtected: lastItem.target_protected,
+            sps: lastItem.sps,
           });
-
-          const global = spiScoreData.filter(
-            (country) => country.country_name.toUpperCase() === 'GLOBAL'
-          );
-          const globalValues = last(global).sps * 100;
-          setGlobalProtectionScore(globalValues);
-
-          setProtectionScore(parseFloat(globalValues.toFixed(1)));
-        } else {
-          Object.keys(spiScoreData).forEach((key) => {
-            const item = spiScoreData[key];
-            const lastItem = last(item);
-
-            tableData.push({
-              country: lastItem.name,
-              stewardship: lastItem.stewardship * 100,
-              rangeProtected: lastItem.range_protected,
-              targetProtected: lastItem.regional_target,
-              sps: lastItem.sps * 100,
-            });
-          });
-
-          if (spiScoreData.Global) {
-            const globalValues = last(spiScoreData.Global).sps * 100;
-            setGlobalProtectionScore(globalValues);
-            setProtectionScore(parseFloat(globalValues.toFixed(1)));
-          } else {
-            setGlobalProtectionScore(0);
-            setProtectionScore(0);
-          }
         }
-        setProtectionTableData(tableData);
+      });
+
+      if (dataByCountry.Global) {
+        const globalValues = last(dataByCountry.Global.spi).sps;
+        setGlobalProtectionScore(globalValues);
+        setProtectionScore(parseFloat(globalValues.toFixed(1)));
+      } else {
+        setGlobalProtectionScore(0);
+        setProtectionScore(0);
       }
+      // }
+      setProtectionTableData(tableData);
+      // }
     }
   }, [dataByCountry, data]);
 
@@ -380,27 +391,25 @@ function BioDiversityContainer(props) {
   useEffect(() => {
     if (data && habitatTableData && dataByCountry) {
       if (data?.spiScoreData?.length > 0) {
-        getProtectionTableData(data.spiScoreData);
+        // getProtectionTableData(data.spiScoreData);
 
         const globalValues = data.spiScoreData.filter(
-          (country) => country.country_name.toUpperCase() === 'GLOBAL'
+          (country) => country.country.toUpperCase() === 'GLOBAL'
         );
 
         const countryData = data.spiScoreData.filter((country) => {
           if (countryISO.toLowerCase() === 'ee') {
             return (
-              country.country_name.toUpperCase() ===
-              data.spiScoreData[0].country_name.toUpperCase()
+              country.country.toUpperCase() ===
+              data.spiScoreData[0].country.toUpperCase()
             );
           }
-          return (
-            country.country_name.toUpperCase() === countryName.toUpperCase()
-          );
+          return country.country.toUpperCase() === countryName?.toUpperCase();
         });
 
         const scores = {
-          protectionScore: last(countryData).shs_score.toFixed(1),
-          globalProtectionScore: last(globalValues).shs_score.toFixed(1),
+          protectionScore: last(countryData).sps?.toFixed(1) ?? 0,
+          globalProtectionScore: last(globalValues).sps?.toFixed(1) ?? 0,
         };
 
         setProtectionScore(scores.protectionScore);

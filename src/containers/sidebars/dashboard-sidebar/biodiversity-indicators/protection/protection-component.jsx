@@ -150,7 +150,10 @@ function ProtectionComponent(props) {
                   >
                     <td>{t(row.country)}</td>
                     <td className={styles.textCenter}>
-                      {numberToLocaleStringWithOneDecimal(row.stewardship)}%
+                      {row.sps_stewardship &&
+                        `${numberToLocaleStringWithOneDecimal(
+                          row.sps_stewardship
+                        )}%`}
                     </td>
                     <td className={styles.textCenter}>
                       {numberToLocaleStringWithOneDecimal(
@@ -167,7 +170,7 @@ function ProtectionComponent(props) {
                       <sup>2</sup>
                     </td>
                     <td className={styles.textCenter}>
-                      {numberToLocaleStringWithOneDecimal(row.sps)}%
+                      {row.sps && numberToLocaleStringWithOneDecimal(row?.sps)}%
                     </td>
                   </tr>
                 ))}

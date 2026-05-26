@@ -95,48 +95,65 @@ function HabitatContainer(props) {
       if (currentCountry) {
         if (countrySelected !== 'Global') {
           currentCountry.shs?.forEach((row) => {
-            defaultCountryScores.area.push(row.area_score * 100);
+            defaultCountryScores.area.push(row.area_score);
             defaultCountryScores.connectivity.push(
               row.connectivity_score * 100
             );
-            defaultCountryScores.total.push(row.shs * 100);
+            defaultCountryScores.total.push(row.shs);
           });
         }
 
         dataByCountry[countrySelected]?.shs.forEach((row) => {
           dates.push(row.year);
-          selectedCountryScores.area.push(row.area_score * 100);
-          selectedCountryScores.connectivity.push(row.connectivity_score * 100);
-          selectedCountryScores.total.push(row.shs * 100);
+          selectedCountryScores.area.push(row.area_score);
+          selectedCountryScores.connectivity.push(row.connectivity_score);
+          selectedCountryScores.total.push(row.shs);
         });
       }
     } else if (currentCountry) {
       setDefaultCountryName(countryName);
       currentCountry = dataByCountry[countryName];
 
-      currentCountry.shs?.forEach((row) => {
-        defaultCountryScores.area.push(row.propchange * 100);
+      const currentCountryShs = currentCountry.shs?.filter(
+        (item) => item.year >= 2001
+      );
+      const currentCountryConn = currentCountry.connectivity_score?.filter(
+        (item) => item.year >= 2001
+      );
+
+      const selectedCountrySHS = dataByCountry[countrySelected]?.shs?.filter(
+        (item) => item.year >= 2001
+      );
+      const selectedCountryConn = dataByCountry[
+        countrySelected
+      ]?.connectivity_score?.filter((item) => item.year >= 2001);
+
+      currentCountryShs?.forEach((row) => {
+        if (row.shs) {
+          defaultCountryScores.area.push(row.shs);
+        }
       });
 
-      dataByCountry[countrySelected]?.shs.forEach((row) => {
-        dates.push(row.year);
-        selectedCountryScores.area.push(row.propchange * 100);
+      selectedCountrySHS?.forEach((row) => {
+        if (row.shs) {
+          dates.push(row.year);
+          selectedCountryScores.area.push(row.shs);
+        }
       });
 
-      if (currentCountry.frag.length > 0) {
-        const fragYear = currentCountry.frag?.[0].gisfrag;
-        currentCountry?.frag?.forEach((row) => {
-          defaultCountryScores.connectivity.push(
-            (row.gisfrag / fragYear) * 100
-          );
+      if (currentCountryConn.length > 0) {
+        const fragYear = currentCountryConn?.[0];
+        currentCountryConn?.forEach((row) => {
+          if (row.connectivity_score !== null) {
+            defaultCountryScores.connectivity.push(row.connectivity_score);
+          }
         });
 
-        const selectedFragYear =
-          dataByCountry[countrySelected]?.frag?.[0].gisfrag;
-        dataByCountry[countrySelected]?.frag?.forEach((row) => {
-          selectedCountryScores.connectivity.push(
-            (row.gisfrag / selectedFragYear) * 100
-          );
+        const selectedFragYear = selectedCountryConn?.[0];
+        selectedCountryConn?.forEach((row) => {
+          if (row.connectivity_score !== null) {
+            selectedCountryScores.connectivity.push(row.connectivity_score);
+          }
         });
       }
 

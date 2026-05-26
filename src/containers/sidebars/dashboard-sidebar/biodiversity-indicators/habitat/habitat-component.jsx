@@ -160,20 +160,21 @@ function HabitatComponent(props) {
                   >
                     <td>{t(row.country)}</td>
                     <td className={styles.textCenter}>
-                      {numberToLocaleStringWithOneDecimal(row.stewardship)}%
+                      {row.stewardship &&
+                        `${numberToLocaleStringWithOneDecimal(
+                          row.stewardship
+                        )}%`}
                     </td>
                     <td className={styles.textCenter}>
                       {numberToLocaleStringWithOneDecimal(
-                        row.countryConnectivityScore * 100
+                        row.countryConnectivityScore
                       )}
                     </td>
                     <td className={styles.textCenter}>
-                      {numberToLocaleStringWithOneDecimal(
-                        row.countryAreaScore * 100
-                      )}
+                      {numberToLocaleStringWithOneDecimal(row.countryAreaScore)}
                     </td>
                     <td className={styles.textCenter}>
-                      {numberToLocaleStringWithOneDecimal(row.shs)}%
+                      {row.shs && numberToLocaleStringWithOneDecimal(row.shs)}%
                     </td>
                   </tr>
                 ))}

@@ -671,47 +671,50 @@ function DashboardContainer(props) {
     }
   };
 
-  const getSpiDataByCountry = (d) => {
-    const spiCountryData = d.reduce((acc, obj) => {
-      const key = obj.country_name;
-      if (!acc[key]) {
-        acc[key] = { shs: [] };
-      }
-      acc[key].shs.push(obj);
-      return acc;
-    }, {});
+  // const getSpiDataByCountry = (d) => {
+  //   const spiCountryData = d.reduce((acc, obj) => {
+  //     const key = obj.country;
+  //     if (!acc[key]) {
+  //       acc[key] = { spi: [] };
+  //     }
+  //     acc[key].spi.push(obj);
+  //     return acc;
+  //   }, {});
 
-    setSpiDataByCountry(spiCountryData);
-  };
+  //   setSpiDataByCountry(spiCountryData);
+  // };
 
   const getDataByCountry = (d) => {
     let countryData;
 
     // TODO: figure out what to do when no shs is returned
-    if (d.shs) {
-      countryData = d.shs.reduce((acc, obj) => {
+    if (d) {
+      countryData = d.reduce((acc, obj) => {
         const key = obj.country;
         if (!acc[key]) {
-          acc[key] = { shs: [], frag: [] };
+          acc[key] = { shs: [], connectivity_score: [], spi: [] };
         }
         acc[key].shs.push(obj);
+        acc[key].connectivity_score.push(obj);
+        acc[key].spi.push(obj);
         return acc;
       }, {});
     }
 
-    if (d.frag) {
-      countryData = d.frag.reduce((acc, obj) => {
-        const key = obj.country;
-        if (!acc[key]) {
-          acc[key] = { shs: [], frag: [] };
-        }
+    // if (d) {
+    //   countryData = d.reduce((acc, obj) => {
+    //     const key = obj.country;
+    //     if (!acc[key]) {
+    //       acc[key] = { shs: [], connectivity_score: [] };
+    //     }
 
-        acc[key].frag.push(obj);
-        return acc;
-      }, countryData || {});
-    }
+    //     acc[key].connectivity_score.push(obj);
+    //     return acc;
+    //   }, countryData || {});
+    // }
 
     setDataByCountry(countryData);
+    setSpiDataByCountry(countryData);
   };
 
   const getPrioritySpeciesList = async () => {
@@ -914,10 +917,13 @@ function DashboardContainer(props) {
 
       setData({ habitatTrendData: countryData, spiScoreData: spiCountryData });
     } else {
-      const habitatTrendUrl = `https://api.mol.org/2.x/species/indicators/habitat-trends/bycountry?scientificname=${scientificName}`;
-      const spiScoreURL = `https://api.mol.org/2.x/indicators/sps/species_bycountry?scientificname=${scientificName}`;
+      // const habitatTrendUrl = `https://api.mol.org/2.x/species/indicators/habitat-trends/bycountry?scientificname=${scientificName}`;
+      // const spiScoreURL = `https://api.mol.org/2.x/indicators/sps/species_bycountry?scientificname=${scientificName}`;
 
-      const apiCalls = [habitatTrendUrl, spiScoreURL];
+      const speciesScoreURL = `https://api.mol.org/2.x/nbis/species-scores?species=${scientificName}`;
+
+      const apiCalls = [speciesScoreURL];
+      // const apiCalls = [speciesScoreURL];
 
       const apiResponses = await Promise.all(
         apiCalls.map(async (url) => {
@@ -927,10 +933,18 @@ function DashboardContainer(props) {
         })
       );
 
-      const [habitatTrendData, spiScoreData] = apiResponses;
-      getDataByCountry(habitatTrendData);
-      getSpiDataByCountry(spiScoreData);
-      setData({ habitatTrendData, spiScoreData });
+      const [speciesScoreData] = apiResponses;
+      // getDataByCountry(habitatTrendData);
+      // getSpiDataByCountry(spiScoreData);
+      // setData({ habitatTrendData, spiScoreData });
+      // const [speciesScoreData] = apiResponses;
+
+      getDataByCountry(speciesScoreData);
+      // getSpiDataByCountry(speciesScoreData);
+      setData({
+        habitatTrendData: speciesScoreData,
+        spiScoreData: speciesScoreData,
+      });
     }
   };
 
