@@ -8,6 +8,7 @@ import {
   INDIGENOUS_LANDS_FEATURE_ID,
   REGION_OCCURENCE_ID,
   EEWWF_COUNTRY_LINES_FEATURE_ID,
+  APURIMAC_LANDCOVER_FEATURE_ID,
   PERU_CROPS_FEATURE_ID,
 } from 'utils/dashboard-utils';
 
@@ -31,7 +32,11 @@ import ArrowIcon from 'icons/arrow_right.svg?react';
 
 import styles from './grouped-list-styles.module.scss';
 import VectorTileLayer from '@arcgis/core/layers/VectorTileLayer';
-import { LAND_COVER_LAYER, PERU_CROPS_LAYER } from 'constants/layers-slugs';
+import {
+  LAND_COVER_LAYER,
+  PERU_CROPS_LAYER,
+  APURIMAC_LANDCOVER_LAYER,
+} from 'constants/layers-slugs';
 import TileLayer from '@arcgis/core/layers/TileLayer';
 
 function GroupedListComponent(props) {
@@ -249,6 +254,13 @@ function GroupedListComponent(props) {
         countryISO,
         id,
         'PER_LAYER'
+      );
+    } else if (id === APURIMAC_LANDCOVER_LAYER) {
+      layer = await EsriFeatureService.getFeatureLayer(
+        APURIMAC_LANDCOVER_FEATURE_ID,
+        countryISO,
+        id,
+        'APURIMAC_LANDCOVER_LAYER'
       );
     } else {
       layer = new TileLayer({
@@ -622,7 +634,9 @@ function GroupedListComponent(props) {
           {control}
           <span>{item.no_rows}</span>
           <span />
-          <ToggleLayerInfoContainer layer={item} {...props} />
+          {item.hideInfo && (
+            <ToggleLayerInfoContainer layer={item} {...props} />
+          )}
         </li>
       );
     }
@@ -642,23 +656,26 @@ function GroupedListComponent(props) {
     });
   };
 
-  useEffect(() => {
-    if (!showHabitatLayer) return;
-    displaySingleLayer({
-      label: t('Habitat Loss/Gain'),
-      items: [],
-      id: LAYER_OPTIONS.HABITAT,
-      total_no_rows: '',
-      isActive: false,
-      showChildren: false,
-      type: DATA_POINT_TYPE.PUBLIC,
-    });
-  }, [showHabitatLayer]);
+  // useEffect(() => {
+  //   if (!showHabitatLayer) return;
+  //   displaySingleLayer({
+  //     label: t('Habitat Loss/Gain'),
+  //     items: [],
+  //     id: LAYER_OPTIONS.HABITAT,
+  //     total_no_rows: '',
+  //     isActive: false,
+  //     showChildren: false,
+  //     type: DATA_POINT_TYPE.PUBLIC,
+  //   });
+  // }, [showHabitatLayer]);
 
   useEffect(() => {
     if (!showPredictionMap) return;
     displaySingleLayer({
-      label: t('Prediction Map'),
+      label:
+        countryISO.toUpperCase() === 'PER'
+          ? t('Modelo de Distribución de Especies (MDE)')
+          : t('Species Distribution Model'),
       items: [],
       id: LAYER_OPTIONS.PREDICTION_MAPS,
       total_no_rows: '',
@@ -703,7 +720,9 @@ function GroupedListComponent(props) {
                 />
                 <span>{key.total_no_rows}</span>
                 <span />
-                <ToggleLayerInfoContainer layer={key} {...props} />
+                {!key.hideInfo && (
+                  <ToggleLayerInfoContainer layer={key} {...props} />
+                )}
               </div>
               {key.showChildren && (
                 <ul>{key.items.map((item) => getCheckbox(item))}</ul>
@@ -723,7 +742,9 @@ function GroupedListComponent(props) {
               />
               <span>{key.total_no_rows}</span>
               <span />
-              <ToggleLayerInfoContainer layer={key} {...props} />
+              {!key.hideInfo && (
+                <ToggleLayerInfoContainer layer={key} {...props} />
+              )}
             </div>
           )}
         </div>

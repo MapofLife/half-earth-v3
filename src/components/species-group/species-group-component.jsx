@@ -34,7 +34,7 @@ function SpeciesGroupComponent(props) {
   } = props;
   const { getToken } = useJWTToken(countryISO);
   // eslint-disable-next-line camelcase
-  const { asset_url, common, scientificname } = species;
+  const { asset_url, common, scientificname, flagged } = species;
   const { lightMode } = useContext(LightModeContext);
 
   const selectSpecies = (selectedSpecies) => {
@@ -106,22 +106,14 @@ function SpeciesGroupComponent(props) {
     <div style={{ display: 'flex', alignItems: 'flex-start' }}>
       {validateSpeciesList && (
         <button
-          className={cx(
-            species.flagged ? styles.selected : '',
-            styles.flagSpecies
-          )}
+          className={cx(flagged ? styles.selected : '', styles.flagSpecies)}
           onClick={() => flagSpecies(species)}
         >
-          {species.flagged ? <FlagSharp /> : <FlagOutlined />}
+          {flagged ? <FlagSharp /> : <FlagOutlined />}
         </button>
       )}
-      {!validateSpeciesList && species.flagged && (
-        <div
-          className={cx(
-            species.flagged ? styles.selected : '',
-            styles.flagSpecies
-          )}
-        >
+      {!validateSpeciesList && flagged && (
+        <div className={cx(flagged ? styles.selected : '', styles.flagSpecies)}>
           <FlagSharp />
         </div>
       )}

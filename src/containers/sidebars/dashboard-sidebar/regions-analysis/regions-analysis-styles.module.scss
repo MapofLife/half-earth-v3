@@ -132,7 +132,7 @@
       gap: 8px;
       align-items: center;
 
-      .basicSingle{
+      .basicSingle {
         color: #000;
         width: 50%;
       }
@@ -173,7 +173,7 @@
         }
       }
 
-      .deleteIcon{
+      .deleteIcon {
         cursor: pointer;
       }
     }
@@ -214,5 +214,18 @@
   svg {
     height: 20px;
     width: 20px;
+  }
+}
+
+.toggleHoverButton {
+  background-color: transparent;
+  border: 1px solid var(--lime-green);
+  color: var(--lime-green);
+  padding: 10px 24px;
+  width: max-content;
+
+  &:hover {
+    background-color: var(--lime-green);
+    color: var(--save-button-text);
   }
 }

@@ -40,9 +40,7 @@ function IndicatorsSectionComponent(props) {
       <p>{t(SECTION_INFO.SPI_TEMPORAL_TREND)}</p>
       <ImagePopupComponent {...props}>
         <img
-          src={`dashboard/tutorials/tutorial_spi_temporalTrends-${
-            locale || 'en'
-          }.png?react`}
+          src={`dashboard/tutorials/tutorial_spi_temporalTrends-en.png?react`}
           alt={t('Species Protection Index - Trends')}
         />
       </ImagePopupComponent>
@@ -50,23 +48,14 @@ function IndicatorsSectionComponent(props) {
         <h3 className={styles.sub}>{t('Province View')}</h3>
       </div>
       <p>{t(SECTION_INFO.SPI_PROVINCE_VIEW)}</p>
-      <ImagePopupComponent {...props}>
-        <img
-          src={`dashboard/tutorials/tutorial_spi_provinces-${
-            locale || 'en'
-          }.png?react`}
-          alt={t('Species Protection Index - Provinces')}
-        />
-      </ImagePopupComponent>
+
       <div className={styles.subTitle}>
         <h3 className={styles.sub}>{t('Score Distributions')}</h3>
       </div>
       <p>{t(SECTION_INFO.SPI_SCORE_DISTRIBUTIONS)}</p>
       <ImagePopupComponent {...props}>
         <img
-          src={`dashboard/tutorials/tutorial_spi_scoreDist-${
-            locale || 'en'
-          }.png?react`}
+          src={`dashboard/tutorials/tutorial_spi_scoreDist-en.png?react`}
           alt={t('Species Protection Index - Score Distributions')}
         />
       </ImagePopupComponent>
@@ -83,9 +72,7 @@ function IndicatorsSectionComponent(props) {
       <p>{t(SECTION_INFO.SHI_TEMPORAL_TREND)}</p>
       <ImagePopupComponent {...props}>
         <img
-          src={`dashboard/tutorials/tutorial_shi_temporalTrends-${
-            locale || 'en'
-          }.png?react`}
+          src={`dashboard/tutorials/tutorial_shi_temporalTrends-en.png?react`}
           alt={t('Species Habitat Index - Trends')}
         />
       </ImagePopupComponent>
@@ -93,23 +80,14 @@ function IndicatorsSectionComponent(props) {
         <h3 className={styles.sub}>{t('Province View')}</h3>
       </div>
       <p>{t(SECTION_INFO.SHI_PROVINCE_VIEW)}</p>
-      <ImagePopupComponent {...props}>
-        <img
-          src={`dashboard/tutorials/tutorial_shi_provinces-${
-            locale || 'en'
-          }.png?react`}
-          alt={t('Species Habitat Index - Provinces')}
-        />
-      </ImagePopupComponent>
+
       <div className={styles.subTitle}>
         <h3 className={styles.sub}>{t('Score Distributions')}</h3>
       </div>
       <p>{t(SECTION_INFO.SHI_SCORE_DISTRIBUTIONS)}</p>
       <ImagePopupComponent {...props}>
         <img
-          src={`dashboard/tutorials/tutorial_shi_scoreDist-${
-            locale || 'en'
-          }.png?react`}
+          src={`dashboard/tutorials/tutorial_shi_scoreDist-en.png?react`}
           alt={t('Species Habitat Index - Score Distributions')}
         />
       </ImagePopupComponent>
@@ -126,9 +104,7 @@ function IndicatorsSectionComponent(props) {
       <p>{t(SECTION_INFO.SII_TEMPORAL_TREND)}</p>
       <ImagePopupComponent {...props}>
         <img
-          src={`dashboard/tutorials/tutorial_sii_temporalTrends-${
-            locale || 'en'
-          }.png?react`}
+          src={`dashboard/tutorials/tutorial_sii_temporalTrends-en.png?react`}
           alt={t('Species Information Index - Trends')}
         />
       </ImagePopupComponent>

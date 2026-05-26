@@ -70,6 +70,16 @@ function ViewContainer(props) {
           },
           { duration: 1000 }
         );
+      } else if (countryISO.toLowerCase() === 'per') {
+        flatView.goTo(
+          {
+            target: zoomGeometry,
+            center: [zoomGeometry.longitude - 15, zoomGeometry.latitude + 5],
+            zoom: 5.5,
+            extent: feature.geometry.clone(),
+          },
+          { duration: 1000 }
+        );
       } else {
         flatView.goTo(
           {

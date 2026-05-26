@@ -12,7 +12,10 @@ import DistributionsChartComponent from 'components/charts/distribution-chart/di
 import shiScoreDistImg from 'images/dashboard/tutorials/tutorial_shi_scoreDist-en.png?react';
 import shiScoreDistFRImg from 'images/dashboard/tutorials/tutorial_shi_scoreDist-fr.png?react';
 import styles from '../../dashboard-trends-sidebar-styles.module.scss';
-
+import {
+  NAVIGATION,
+  SPECIES_SELECTED_COOKIE,
+} from 'constants/dashboard-constants.js';
 import compStyles from './score-distributions-sii-styles.module.scss';
 import ChartInfoComponent from 'components/chart-info-popup/chart-info-component';
 import TaxaImageComponent from 'components/taxa-image';
@@ -24,6 +27,11 @@ function ScoreDistributionsSiiComponent(props) {
   const {
     siiScoresData,
     siiSelectSpeciesData,
+    setMapLegendLayers,
+    setFromTrends,
+    setSelectedIndex,
+    setScientificName,
+    setSpsSpecies,
     lang,
     selectedProvince,
     countryISO,
@@ -210,11 +218,9 @@ function ScoreDistributionsSiiComponent(props) {
     },
     onClick: (event, elements) => {
       if (elements.length > 0) {
-        console.log(elements);
         const datasetIndex = elements[0].datasetIndex;
         const dataIndex = elements[0].index;
         const value = chartData.datasets[datasetIndex].data[dataIndex];
-        console.log(value);
 
         getBucketSpecies(
           dataIndex * bucketSize,
@@ -225,8 +231,13 @@ function ScoreDistributionsSiiComponent(props) {
   };
 
   const getBucketSpecies = (low, high) => {
+    const regionKey =
+      siiActiveTrend === PROVINCE_TREND
+        ? selectedProvince.region_key
+        : countryISO;
+
     const response = fetch(
-      `${DASHBOARD_URLS.BUCKET_SPECIES_URL}?iso3=${countryISO}&region_key=${selectedProvince?.region_key}&min_value=${low}&max_value=${high}&filter_by=sis_stewardship&lang=${tx.currentLocale}`,
+      `${DASHBOARD_URLS.BUCKET_SPECIES_URL}?iso3=${countryISO}&region_key=${regionKey}&min_value=${low}&max_value=${high}&filter_by=sis_stewardship&lang=${tx.currentLocale}`,
       {
         method: 'GET',
         headers: {
@@ -257,6 +268,14 @@ function ScoreDistributionsSiiComponent(props) {
           )
         );
       });
+  };
+
+  const selectSpecies = (scientificname) => {
+    setMapLegendLayers([]);
+    setFromTrends(true);
+    setSelectedIndex(NAVIGATION.DATA_LAYER);
+    setScientificName(scientificname);
+    localStorage.setItem(SPECIES_SELECTED_COOKIE, scientificname);
   };
 
   const loadSpecies = () => {

@@ -3,7 +3,7 @@
 @import 'styles/typography-extends';
 @import 'styles/common-animations.module';
 
-.explore{
+.explore {
   position: relative;
   display: flex;
   justify-content: center;
@@ -11,39 +11,39 @@
   gap: 2rem;
   margin-bottom: 20px;
 
-  .search{
+  .search {
     border: 1px solid var(--border-color);
     padding: 5px;
     border-radius: 8px;
     flex-grow: 1;
     background: #{$white};
 
-    input[type="text"]{
+    input[type='text'] {
       color: var(--border-color);
       width: 100%;
     }
 
-    ::placeholder{
+    ::placeholder {
       color: var(--border-color);
     }
 
-    svg{
+    svg {
       fill: var(--border-color);
       color: var(--border-color);
 
-      path{
+      path {
         fill: var(--border-color);
         color: var(--border-color);
       }
     }
 
-    &.showResults{
+    &.showResults {
       border-bottom-left-radius: 0;
       border-bottom-right-radius: 0;
     }
   }
 
-  .searchResults{
+  .searchResults {
     position: absolute;
     top: 100%;
     left: 5px;
@@ -55,28 +55,28 @@
     margin: -2px 0 0 -1px;
     list-style: none;
 
-    li{
-      button{
+    li {
+      button {
         cursor: pointer;
         padding: 5px;
         color: #{$white};
-        text-align: left;;
+        text-align: left;
 
-        span{
+        span {
           font-size: $font-size-sm;
           font-style: italic;
         }
 
-        &:hover{
-          background-color:#{$white};
+        &:hover {
+          background-color: #{$white};
           color: var(--border-color);
         }
       }
     }
   }
 
-  button{
-    width:auto;
+  button {
+    width: auto;
     color: var(--save-button-text);
     background-color: var(--border-color);
     &:hover {

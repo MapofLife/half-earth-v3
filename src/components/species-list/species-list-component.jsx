@@ -20,7 +20,14 @@ import styles from './species-list-component-styles.module.scss';
 
 function SpeciesListComponent(props) {
   const t = useT();
-  const { selectedTaxa, setSelectedTaxa, filteredTaxaList, isLoading } = props;
+  const {
+    selectedTaxa,
+    setSelectedTaxa,
+    filteredTaxaList,
+    isLoading,
+    setUpdateFlaggedSpecies,
+    countryISO,
+  } = props;
 
   const exceptedSources = [
     TAXA_NAMES.AMPHIBIANS,
@@ -198,8 +205,21 @@ function SpeciesListComponent(props) {
     setSelectedTaxaObj({ ...selectedTaxaObj, species: updatedSpecies });
   };
 
+  const validateList = () => {
+    setValidateSpeciesList((prev) => {
+      if (prev) {
+        setUpdateFlaggedSpecies(true);
+      }
+      return !prev;
+    });
+  };
+
   const getLabel = validateSpeciesList
-    ? t('Validate complete')
+    ? countryISO.toUpperCase() === 'PER'
+      ? t('Validar completa')
+      : t('Validate complete')
+    : countryISO.toUpperCase() === 'PER'
+    ? t('Validar lista')
     : t('Validate list');
 
   useEffect(() => {
@@ -294,7 +314,7 @@ function SpeciesListComponent(props) {
             </div>
             <Button
               className={styles.close}
-              handleClick={() => setValidateSpeciesList((vsl) => !vsl)}
+              handleClick={validateList}
               label={getLabel}
             />
           </div>

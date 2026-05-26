@@ -375,37 +375,33 @@ function SpeciesRichnessComponent(props) {
   };
 
   const getData = () => {
+    const group =
+      countryISO.toUpperCase() === 'PER'
+        ? 'POR GRUPO TAXONÓMICO'
+        : 'BY TAXONOMIC GROUP';
+
     if (shi) {
       if (shiActiveTrend === NATIONAL_TREND || !selectedProvince) {
-        setTitleText(`${t('NATIONAL SHI BY TAXONOMIC GROUP')}`);
+        setTitleText(`${t('NATIONAL')} SHI ${group}`);
       } else if (shiActiveTrend === PROVINCE_TREND && selectedProvince) {
-        setTitleText(
-          `${selectedProvince?.name} SHI ${t('BY TAXONOMIC GROUP')}`
-        );
+        setTitleText(`${selectedProvince?.name} SHI ${group}`);
       } else if (acceptedZones.includes(activeTrend) && selectedProvince) {
-        setTitleText(
-          `${selectedProvince?.name} SHI ${t('BY TAXONOMIC GROUP')}`
-        );
+        setTitleText(`${selectedProvince?.name} SHI ${group}`);
       }
-    }
-    if (sii) {
+    } else if (sii) {
       if (siiActiveTrend === NATIONAL_TREND || !selectedProvince) {
-        setTitleText(`${t('NATIONAL SII BY TAXONOMIC GROUP')}`);
+        setTitleText(`${t('NATIONAL')} SII ${group}`);
       } else if (siiActiveTrend === PROVINCE_TREND && selectedProvince) {
-        setTitleText(
-          `${selectedProvince?.name} SII ${t('BY TAXONOMIC GROUP')}`
-        );
+        setTitleText(`${selectedProvince?.name} SII ${group}`);
       } else if (acceptedZones.includes(activeTrend) && selectedProvince) {
-        setTitleText(
-          `${selectedProvince?.name} SII ${t('BY TAXONOMIC GROUP')}`
-        );
+        setTitleText(`${selectedProvince?.name} SII ${group}`);
       }
     } else if (activeTrend === NATIONAL_TREND || !selectedProvince) {
-      setTitleText(`${t('NATIONAL SPI BY TAXONOMIC GROUP')}`);
+      setTitleText(`${t('NATIONAL')} SPI ${group}`);
     } else if (activeTrend === PROVINCE_TREND && selectedProvince) {
-      setTitleText(`${selectedProvince?.name} SPI ${t('BY TAXONOMIC GROUP')}`);
+      setTitleText(`${selectedProvince?.name} SPI ${group}`);
     } else if (acceptedZones.includes(activeTrend) && selectedProvince) {
-      setTitleText(`${selectedProvince?.name} SPI ${t('BY TAXONOMIC GROUP')}`);
+      setTitleText(`${selectedProvince?.name} SPI ${group}`);
     }
     getScores();
   };

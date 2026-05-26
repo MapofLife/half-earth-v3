@@ -12,10 +12,11 @@ import FeatureLayer from '@arcgis/core/layers/FeatureLayer';
 import GeoJSONLayer from '@arcgis/core/layers/GeoJSONLayer';
 import TileLayer from '@arcgis/core/layers/TileLayer';
 import VectorTileLayer from '@arcgis/core/layers/VectorTileLayer';
-import WebTileLayer from '@arcgis/core/layers/WebTileLayer';
 import {
     addFeatures, applyEdits, IQueryFeaturesResponse, queryFeatures
 } from '@esri/arcgis-rest-feature-layer';
+
+import ThrottledEarthEngineWebTileLayer from '../utils/ThrottledEarthEngineWebTileLayer';
 
 function getFeatures({
   url,
@@ -93,7 +94,7 @@ async function getFeatureLayer(portalItemId, countryISO, id, classType = null) {
     definitionExpression = `pais = 'Guyana'`;
   }
 
-  if(classType === 'PER_LAYER') {
+  if(classType === 'PER_LAYER' || classType === 'APURIMAC_LANDCOVER_LAYER') {
     definitionExpression = ``;
   }
 
@@ -189,10 +190,15 @@ async function getXYZLayer(scientificname, id, type, taxa = null) {
     urlTemplate = data.prediction_map.tile_url;
   }
 
-  return new WebTileLayer({
+  return new ThrottledEarthEngineWebTileLayer({
     urlTemplate,
     id,
   });
+
+  // return new WebTileLayer({
+  //   urlTemplate,
+  //   id,
+  // });
 }
 
 async function getXYZLayerByURL(data, id, type) {
@@ -208,10 +214,15 @@ async function getXYZLayerByURL(data, id, type) {
     urlTemplate = data.prediction_map.tile_url;
   }
 
-  return new WebTileLayer({
+  return new ThrottledEarthEngineWebTileLayer({
     urlTemplate,
     id,
   });
+
+  // return new WebTileLayer({
+  //   urlTemplate,
+  //   id,
+  // });
 }
 
 function getMVTSource(scientificname) {
@@ -303,9 +314,10 @@ async function addProtectedAreaLayer(id, countryISO = 'COD') {
   }
 
   const featureLayer = new FeatureLayer({
-    portalItem: {
-      id: featurePortalId,
-    },
+    // portalItem: {
+    //   id: featurePortalId,
+    // },
+    url: featurePortalId,
     outFields: ['*'],
     definitionExpression,
     id: id ?? LAYER_OPTIONS.PROTECTED_AREAS,

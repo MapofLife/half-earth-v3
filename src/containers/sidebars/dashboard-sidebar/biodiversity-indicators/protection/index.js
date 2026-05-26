@@ -79,19 +79,17 @@ function ProtectionContainer(props) {
       currentCountry = spiDataByCountry[countryName];
 
       if (currentCountry) {
-        currentCountry.shs?.forEach((row) => {
-          defaultCountryScores.values.push(row.shs_score);
+        currentCountry.spi?.forEach((row) => {
+          defaultCountryScores.values.push(row.sps);
         });
 
-        spiDataByCountry[countrySelected]?.shs.forEach((row) => {
+        spiDataByCountry[countrySelected]?.spi.forEach((row) => {
           dates.push(row.year);
-          selectedCountryScores.values.push(row.shs_score);
+          selectedCountryScores.values.push(row.sps);
         });
 
-        if (globalCountry?.shs.length) {
-          setGlobalScore(
-            globalCountry.shs[globalCountry.shs.length - 1].val - 100
-          );
+        if (globalCountry?.spi.length) {
+          setGlobalScore(globalCountry.spi[globalCountry.spi.length - 1].sps);
         }
       }
 

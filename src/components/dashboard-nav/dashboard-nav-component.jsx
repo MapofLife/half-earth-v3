@@ -149,7 +149,7 @@ function DashboardNavComponent(props) {
         >
           <TimeLineIcon />
         </button>
-        <button
+        {/* <button
           type="button"
           aria-label={t('Planning')}
           title={t('Planning')}
@@ -159,15 +159,17 @@ function DashboardNavComponent(props) {
           onClick={() => updateHistory(NAVIGATION.PLANNING, titles.PLANNING)}
         >
           <PlanningIcon />
-        </button>
-        <button
+        </button> */}
+        {/* <button
           type="button"
           aria-label={t('Expert Tools')}
           title={t('Expert Tools')}
-          onClick={() => window.location.href = 'https://mol.org/dashboard/expert'}
+          onClick={() =>
+            (window.location.href = 'https://mol.org/dashboard/expert')
+          }
         >
           <ExpertIcon />
-        </button>
+        </button> */}
         <button
           type="button"
           aria-label={t('Tutorials')}

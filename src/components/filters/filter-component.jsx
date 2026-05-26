@@ -139,10 +139,14 @@ function FilterComponent(props) {
     approvedSpecies.forEach(async (species) => {
       const flaggedSpeciesData = {
         scientificname: species.scientificname,
-        region_field: selectedRegion ? Object.keys(selectedRegion)?.[0] : 'iso3',
-        region_code: selectedRegion ? Object.values(selectedRegion)?.[0] : countryISO,
+        region_field: selectedRegion
+          ? Object.keys(selectedRegion)?.[0]
+          : 'iso3',
+        region_code: selectedRegion
+          ? Object.values(selectedRegion)?.[0]
+          : countryISO,
         iso3: countryISO,
-      }
+      };
 
       const response = fetch(DASHBOARD_URLS.APPROVE_FLAGGED_SPECIES_URL, {
         method: 'POST',
@@ -153,13 +157,13 @@ function FilterComponent(props) {
         },
         body: JSON.stringify(flaggedSpeciesData),
       }).then((res) => {
-        if(res.ok){
+        if (res.ok) {
           setShowFlaggedSpecies(false);
-          setUpdateFlaggedSpecies(prev => !prev);
+          setUpdateFlaggedSpecies((prev) => !prev);
         }
       });
     });
-  }
+  };
 
   const rejectFlaggedSpecies = async (rejectedSpecies) => {
     // make api call to reject species
@@ -168,11 +172,15 @@ function FilterComponent(props) {
     rejectedSpecies.forEach(async (species) => {
       const flaggedSpeciesData = {
         scientificname: species.scientificname,
-        region_field: selectedRegion ? Object.keys(selectedRegion)?.[0] : 'iso3',
-        region_code: selectedRegion ? Object.values(selectedRegion)?.[0] : countryISO,
+        region_field: selectedRegion
+          ? Object.keys(selectedRegion)?.[0]
+          : 'iso3',
+        region_code: selectedRegion
+          ? Object.values(selectedRegion)?.[0]
+          : countryISO,
         iso3: countryISO,
         flag: false,
-      }
+      };
 
       const response = fetch(DASHBOARD_URLS.FLAG_SPECIES_URL, {
         method: 'POST',
@@ -183,23 +191,23 @@ function FilterComponent(props) {
         },
         body: JSON.stringify(flaggedSpeciesData),
       }).then((res) => {
-        if(res.ok){
+        if (res.ok) {
           setShowFlaggedSpecies(false);
-          setUpdateFlaggedSpecies(prev => !prev);
+          setUpdateFlaggedSpecies((prev) => !prev);
         }
       });
     });
-  }
+  };
 
-  const handleApproveFlaggedSpecies =  () => {
-    const approvedSpecies = flaggedSpeciesToReview.filter(s => s.checked);
+  const handleApproveFlaggedSpecies = () => {
+    const approvedSpecies = flaggedSpeciesToReview.filter((s) => s.checked);
     approveFlaggedSpecies(approvedSpecies);
   };
 
   const handleRejectFlaggedSpecies = () => {
-    const rejectedSpecies = flaggedSpeciesToReview.filter(s => s.checked);
+    const rejectedSpecies = flaggedSpeciesToReview.filter((s) => s.checked);
     rejectFlaggedSpecies(rejectedSpecies);
-  }
+  };
 
   const clearFilters = () => {
     filters.forEach((f) =>
@@ -211,15 +219,21 @@ function FilterComponent(props) {
   };
 
   const updateSpecies = (scientificName) => {
-    setFlaggedSpeciesToReview(prev => prev.map(s => s.scientificname === scientificName ? { ...s, checked: !s.checked } : s));
+    setFlaggedSpeciesToReview((prev) =>
+      prev.map((s) =>
+        s.scientificname === scientificName ? { ...s, checked: !s.checked } : s
+      )
+    );
   };
 
   useEffect(() => {
     if (flaggedSpecies) {
-      setFlaggedSpeciesToReview(flaggedSpecies?.map((species) => ({
-        ...species,
+      setFlaggedSpeciesToReview(
+        flaggedSpecies?.map((species) => ({
+          ...species,
           checked: false,
-      })));
+        }))
+      );
     }
   }, [flaggedSpecies]);
 
@@ -256,13 +270,15 @@ function FilterComponent(props) {
               <div className={styles.filterbox}>
                 {filterGroup.filters.map((filter) => {
                   return (
-                    filter.count > 0 && <Chip
-                      key={filter.name}
-                      icon={filter.active ? <DoneIcon /> : <span />}
-                      color={filter.active ? 'success' : 'primary'}
-                      label={`${t(filter.name)}: ${filter.count}`}
-                      onClick={() => activateFilter(filter)}
-                    />
+                    filter.count > 0 && (
+                      <Chip
+                        key={filter.name}
+                        icon={filter.active ? <DoneIcon /> : <span />}
+                        color={filter.active ? 'success' : 'primary'}
+                        label={`${t(filter.name)}: ${filter.count}`}
+                        onClick={() => activateFilter(filter)}
+                      />
+                    )
                   );
                 })}
               </div>
@@ -273,56 +289,70 @@ function FilterComponent(props) {
         <Button
           className={styles.viewFlaggedButton}
           type="rectangular"
-          label={t('View flagged species')}
-          handleClick={() => {setUpdateFlaggedSpecies(prev => !prev); setShowFlaggedSpecies(true);}}
+          label={
+            countryISO.toUpperCase() === 'PER'
+              ? t('Ver especies marcadas')
+              : t('View flagged species')
+          }
+          handleClick={() => {
+            setUpdateFlaggedSpecies((prev) => !prev);
+            setShowFlaggedSpecies(true);
+          }}
         />
       )}
       <Modal
         isOpen={showFlaggedSpecies}
         onRequestClose={() => setShowFlaggedSpecies(false)}
-        theme={styles}>
-          <article className={styles.feedbackContent}>
-            <div className={styles.feedbackHeader}>
-              <span className={styles.feedbackTitle}>{t('Flagged Species')}</span>
-              <span className={styles.feedbackSubtitle}>{t('These are the species that have been flagged for review.')}</span>
+        theme={styles}
+      >
+        <article className={styles.feedbackContent}>
+          <div className={styles.feedbackHeader}>
+            <span className={styles.feedbackTitle}>{t('Flagged Species')}</span>
+            <span className={styles.feedbackSubtitle}>
+              {t('These are the species that have been flagged for review.')}
+            </span>
+          </div>
+          <div className={styles.feedbackBody}>
+            <div className={styles.flaggedSpeciesList}>
+              <span>{t('Species')}</span>
+              <span>{t('Flagged by')}</span>
+              {flaggedSpeciesToReview?.map((species) => (
+                <React.Fragment key={`flagged-${species.scientificname}`}>
+                  <FormControlLabel
+                    label={t(species.scientificname)}
+                    control={
+                      <Checkbox
+                        checked={species.checked}
+                        onChange={() => updateSpecies(species.scientificname)}
+                      />
+                    }
+                  />
+                  <span>{species.user_name}</span>
+                </React.Fragment>
+              ))}
             </div>
-            <div className={styles.feedbackBody}>
-              <div className={styles.flaggedSpeciesList}>
-                <span>{t('Species')}</span>
-                <span>{t('Flagged by')}</span>
-                {flaggedSpeciesToReview?.map((species) => (
-                  <React.Fragment key={`flagged-${species.scientificname}`}>
-                    <FormControlLabel
-                      label={t(species.scientificname)}
-                      control={
-                        <Checkbox
-                          checked={species.checked}
-                          onChange={() => updateSpecies(species.scientificname)}
-                        />
-                      }
-                    />
-                    <span>{species.user_name}</span>
-                  </React.Fragment>
-                ))}
-              </div>
-            </div>
-            <div className={styles.feedbackFooter}>
-              <Button className={styles.cancelButton} label={t('Cancel')} handleClick={() => setShowFlaggedSpecies(false)} />
+          </div>
+          <div className={styles.feedbackFooter}>
+            <Button
+              className={styles.cancelButton}
+              label={t('Cancel')}
+              handleClick={() => setShowFlaggedSpecies(false)}
+            />
 
-              <Button
-                className={styles.rejectButton}
-                type="rectangular"
-                label={t('Unflag selected species')}
-                handleClick={handleRejectFlaggedSpecies}
-              />
-              <Button
-                className={styles.submitButton}
-                type="rectangular"
-                label={t('Approve selected species')}
-                handleClick={handleApproveFlaggedSpecies}
-              />
-            </div>
-          </article>
+            <Button
+              className={styles.rejectButton}
+              type="rectangular"
+              label={t('Unflag selected species')}
+              handleClick={handleRejectFlaggedSpecies}
+            />
+            <Button
+              className={styles.submitButton}
+              type="rectangular"
+              label={t('Approve selected species')}
+              handleClick={handleApproveFlaggedSpecies}
+            />
+          </div>
+        </article>
       </Modal>
     </div>
   );

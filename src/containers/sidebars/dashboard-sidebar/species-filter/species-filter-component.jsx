@@ -31,9 +31,9 @@ import {
 import styles from '../dashboard-sidebar-styles.module.scss';
 import filterStyles from './species-filter-styles.module.scss';
 
-import GraphicsLayer from '@arcgis/core/layers/GraphicsLayer'
-import Graphic from '@arcgis/core/Graphic'
-import { FormControlLabel, Input } from '@mui/material'
+import GraphicsLayer from '@arcgis/core/layers/GraphicsLayer';
+import Graphic from '@arcgis/core/Graphic';
+import { FormControlLabel, Input } from '@mui/material';
 import { DASHBOARD_URLS } from 'constants/layers-urls';
 import useJWTToken from 'hooks/useJWTToken';
 
@@ -74,10 +74,9 @@ function SpeciesFilterComponent(props) {
           name: t('Expert Range Map'),
           active: false,
           test: (species) => {
-            const {datasetList} = species;
-            if(!datasetList || datasetList.length === 0) return false;
-            return datasetList.map((d) => d.product_type).indexOf('range') >
-              -1;
+            const { datasetList } = species;
+            if (!datasetList || datasetList.length === 0) return false;
+            return datasetList.map((d) => d.product_type).indexOf('range') > -1;
           },
           count: 0,
           type: 'and',
@@ -101,13 +100,14 @@ function SpeciesFilterComponent(props) {
           name: t('Occurrence'),
           active: false,
           test: (species) => {
-            const {datasetList} = species;
+            const { datasetList } = species;
             // if (selectedRegionOption === REGION_OPTIONS.RAPID_INVENTORY_32) {
             //   return species?.source.indexOf('Rapid') > -1;
             // }
-            if(!datasetList || datasetList.length === 0) return false;
-            return datasetList.map((d) => d.product_type).indexOf('points') >
-              -1;
+            if (!datasetList || datasetList.length === 0) return false;
+            return (
+              datasetList.map((d) => d.product_type).indexOf('points') > -1
+            );
           },
           count: 0,
           result: false,
@@ -117,10 +117,9 @@ function SpeciesFilterComponent(props) {
           name: t('Private Occurrence'),
           active: false,
           test: (species) => {
-            const {product_type} = species;
+            const { product_type } = species;
             if (!product_type) return false;
-            return product_type.indexOf('private') >
-              -1;
+            return product_type.indexOf('private') > -1;
           },
           count: 0,
           result: false,
@@ -130,10 +129,13 @@ function SpeciesFilterComponent(props) {
           name: t('Rapid Inventory Assessment'),
           active: false,
           test: (species) => {
-            const {datasetList} = species;
-            if(!datasetList || datasetList.length === 0) return false;
-            return datasetList.map((d) => d.product_type).indexOf('rapid_inventory') >
-              -1;
+            const { datasetList } = species;
+            if (!datasetList || datasetList.length === 0) return false;
+            return (
+              datasetList
+                .map((d) => d.product_type)
+                .indexOf('rapid_inventory') > -1
+            );
           },
           count: 0,
           result: false,
@@ -160,7 +162,7 @@ function SpeciesFilterComponent(props) {
           active: false,
           test: (species) =>
             species?.traits?.threat_status_code?.toUpperCase() === 'CR',
-            // IUCNStatusTypes.CR.toUpperCase(),
+          // IUCNStatusTypes.CR.toUpperCase(),
           count: 0,
           result: false,
           type: 'or',
@@ -171,7 +173,7 @@ function SpeciesFilterComponent(props) {
           active: false,
           test: (species) =>
             species?.traits?.threat_status_code?.toUpperCase() === 'EN',
-            // IUCNStatusTypes.EN.toUpperCase(),
+          // IUCNStatusTypes.EN.toUpperCase(),
           count: 0,
           type: 'or',
         },
@@ -180,7 +182,7 @@ function SpeciesFilterComponent(props) {
           active: false,
           test: (species) =>
             species?.traits?.threat_status_code?.toUpperCase() === 'VU',
-            // IUCNStatusTypes.VU.toUpperCase(),
+          // IUCNStatusTypes.VU.toUpperCase(),
           count: 0,
           type: 'or',
           result: false,
@@ -190,7 +192,7 @@ function SpeciesFilterComponent(props) {
           active: false,
           test: (species) =>
             species?.traits?.threat_status_code?.toUpperCase() === 'NT',
-            // IUCNStatusTypes.NT.toUpperCase(),
+          // IUCNStatusTypes.NT.toUpperCase(),
           count: 0,
           type: 'or',
           result: false,
@@ -200,7 +202,7 @@ function SpeciesFilterComponent(props) {
           active: false,
           test: (species) =>
             species?.traits?.threat_status_code?.toUpperCase() === 'LC',
-            // IUCNStatusTypes.LC.toUpperCase(),
+          // IUCNStatusTypes.LC.toUpperCase(),
           count: 0,
           type: 'or',
           result: false,
@@ -210,7 +212,7 @@ function SpeciesFilterComponent(props) {
           active: false,
           test: (species) =>
             species?.traits?.threat_status_code?.toUpperCase() === 'DD',
-            // IUCNStatusTypes.DD.toUpperCase(),
+          // IUCNStatusTypes.DD.toUpperCase(),
           count: 0,
           type: 'or',
           result: false,
@@ -220,11 +222,10 @@ function SpeciesFilterComponent(props) {
           active: false,
           result: false,
           test: (species) =>
-            species?.traits?.threat_status_code?.toUpperCase() === 'NE'
-              // IUCNStatusTypes.NE.toUpperCase()
-              ||
+            species?.traits?.threat_status_code?.toUpperCase() === 'NE' ||
+            // IUCNStatusTypes.NE.toUpperCase()
             species?.traits?.threat_status_code?.toUpperCase() === 'UN',
-              // IUCNStatusTypes.UN.toUpperCase(),
+          // IUCNStatusTypes.UN.toUpperCase(),
           count: 0,
           type: 'or',
         },
@@ -375,10 +376,10 @@ function SpeciesFilterComponent(props) {
     // You can use the CREATE_CUSTOM_AREA_URL from your layers-urls.js for the API endpoint
     const token = await getToken();
 
-    const customAreaData ={
+    const customAreaData = {
       region_name: customAreaName,
       region_description: customAreaDescription,
-      geojson: customAreaPolygon
+      geojson: customAreaPolygon,
     };
 
     const response = fetch(DASHBOARD_URLS.CREATE_CUSTOM_AREA_URL, {
@@ -390,13 +391,13 @@ function SpeciesFilterComponent(props) {
       },
       body: JSON.stringify(customAreaData),
     }).then((res) => {
-      if(res.ok){
+      if (res.ok) {
       }
     });
 
     // After saving, you might want to refresh the list of regions or provide feedback to the user
     setShowCustomAreaModal(false);
-  }
+  };
 
   useEffect(() => {
     if (!selectedRegion) return;
@@ -425,53 +426,55 @@ function SpeciesFilterComponent(props) {
         break;
     }
 
-    if(selectedRegion.rings){
-      if(selectedRegion.customName){
+    if (selectedRegion.rings) {
+      if (selectedRegion.customName) {
         setRegionName(selectedRegion.customName);
       }
       const polygon = {
-        type: "polygon",
-        rings: [...selectedRegion.rings]
+        type: 'polygon',
+        rings: [...selectedRegion.rings],
       };
 
       setCustomAreaPolygon({
         type: 'polygon',
-        coordinates: polygon.rings
+        coordinates: polygon.rings,
       });
 
       const fillSymbol = {
-        type: "simple-fill",
-        color: [255,255,255, 0.2], // White, 80% opacity
-        outline: { color: [255, 255, 255], width: 2 }
+        type: 'simple-fill',
+        color: [255, 255, 255, 0.2], // White, 80% opacity
+        outline: { color: [255, 255, 255], width: 2 },
       };
 
       const polygonGraphic = new Graphic({
         geometry: polygon,
-        symbol: fillSymbol
+        symbol: fillSymbol,
       });
 
       const graphicsLayer = new GraphicsLayer({
-        id: 'custom-area'
+        id: 'custom-area',
       });
       graphicsLayer.add(polygonGraphic);
       setRegionLayers((rl) => ({
-          ...rl,
-          'custom-area': graphicsLayer,
-        }));
+        ...rl,
+        'custom-area': graphicsLayer,
+      }));
       map.add(graphicsLayer);
 
-      view.goTo(graphicsLayer.graphics).then(() => view.goTo({ zoom: view.zoom - 1 }, { duration: 500 }));
+      view
+        .goTo(graphicsLayer.graphics)
+        .then(() => view.goTo({ zoom: view.zoom - 1 }, { duration: 500 }));
     }
   }, [selectedRegionOption, selectedRegion]);
 
   useEffect(() => {
-    if(geometry && selectedRegionOption === REGION_OPTIONS.DRAW) {
+    if (geometry && selectedRegionOption === REGION_OPTIONS.DRAW) {
       const graphic = new Graphic({
         geometry: geometry,
         symbol: {
-          type: "simple-fill",
+          type: 'simple-fill',
           color: [0, 255, 255, 0.5],
-          style: "solid",
+          style: 'solid',
           outline: {
             color: [0, 255, 255, 0.5],
             width: 2,
@@ -480,13 +483,13 @@ function SpeciesFilterComponent(props) {
       });
 
       const graphicsLayer = new GraphicsLayer({
-        id: 'custom-area'
+        id: 'custom-area',
       });
       graphicsLayer.add(graphic);
       setRegionLayers((rl) => ({
-          ...rl,
-          'custom-area': graphicsLayer,
-        }));
+        ...rl,
+        'custom-area': graphicsLayer,
+      }));
       map.add(graphicsLayer);
     }
   }, [geometry]);
@@ -509,13 +512,19 @@ function SpeciesFilterComponent(props) {
               <h2>{regionName}</h2>
               <span>{regionLabel}</span>
             </div>
-            {selectedRegionOption === REGION_OPTIONS.DRAW && !selectedRegion?.customName && (
-              <Button
-                className={styles.customAreaButton}
-                type="rectangular"
-                label={t('Save this custom area')}
-                handleClick={() => setShowCustomAreaModal(true)} />
-            )}
+            {selectedRegionOption === REGION_OPTIONS.DRAW &&
+              !selectedRegion?.customName && (
+                <Button
+                  className={styles.customAreaButton}
+                  type="rectangular"
+                  label={
+                    countryISO.toUpperCase() === 'PER'
+                      ? t('Guardar esta área personalizada')
+                      : t('Save this custom area')
+                  }
+                  handleClick={() => setShowCustomAreaModal(true)}
+                />
+              )}
             <Button
               className={styles.back}
               handleClick={handleBack}
@@ -537,40 +546,54 @@ function SpeciesFilterComponent(props) {
       <Modal
         isOpen={showCustomAreaModal}
         onRequestClose={() => setShowCustomAreaModal(false)}
-        theme={filterStyles}>
-          <article className={styles.feedbackContent}>
-            <div className={styles.feedbackHeader}>
-              <span className={styles.feedbackTitle}>{t('Save custom area')}</span>
-            </div>
-            <div className={styles.feedbackBody}>
-              <span
-              className={styles.feedbackLabel}
-              >{t('Name of custom area to be used in the future')}</span>
-              <input
-                type="text"
-                className={styles.searchInput}
-                onChange={(e) => setCustomAreaName(e.target.value)}
-                value={customAreaName}
-              />
-              <span
-              className={styles.feedbackLabel}
-              >{t('Description')}</span>
-              <textarea
-                className={styles.additionalComments}
-                value={customAreaDescription}
-                onChange={(e) => setCustomAreaDescription(e.target.value)}
-                placeholder={t('Describe this custom area...')}
-              ></textarea>
-            </div>
-            <div className={styles.feedbackFooter}>
-              <Button className={styles.cancelButton} label={t('Cancel')} handleClick={() => setShowCustomAreaModal(false)} />
-              <Button
-                className={styles.submitButton}
-                type="rectangular"
-                label={t('Save')} handleClick={handleSaveCustomArea} />
-
-            </div>
-          </article>
+        theme={filterStyles}
+      >
+        <article className={styles.feedbackContent}>
+          <div className={styles.feedbackHeader}>
+            <span className={styles.feedbackTitle}>
+              {countryISO.toUpperCase() === 'PER'
+                ? t('Guardar área personalizada')
+                : t('Save custom area')}
+            </span>
+          </div>
+          <div className={styles.feedbackBody}>
+            <span className={styles.feedbackLabel}>
+              {countryISO.toUpperCase() === 'PER'
+                ? t('Nombre del área personalizada para ser usada en el futuro')
+                : t('Name of custom area to be used in the future')}
+            </span>
+            <input
+              type="text"
+              className={styles.searchInput}
+              onChange={(e) => setCustomAreaName(e.target.value)}
+              value={customAreaName}
+            />
+            <span className={styles.feedbackLabel}>{t('Description')}</span>
+            <textarea
+              className={styles.additionalComments}
+              value={customAreaDescription}
+              onChange={(e) => setCustomAreaDescription(e.target.value)}
+              placeholder={
+                countryISO.toUpperCase() === 'PER'
+                  ? t('Describe esta área personalizada...')
+                  : t('Describe this custom area...')
+              }
+            ></textarea>
+          </div>
+          <div className={styles.feedbackFooter}>
+            <Button
+              className={styles.cancelButton}
+              label={t('Cancel')}
+              handleClick={() => setShowCustomAreaModal(false)}
+            />
+            <Button
+              className={styles.submitButton}
+              type="rectangular"
+              label={t('Save')}
+              handleClick={handleSaveCustomArea}
+            />
+          </div>
+        </article>
       </Modal>
     </section>
   );

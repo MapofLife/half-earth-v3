@@ -13,6 +13,7 @@ import codLogo from 'logos/iccn_logo_clean.png';
 import codWhiteLogo from 'logos/iccn_logo_clean_whiteText.png';
 import ginLogo from 'logos/ogpnrf_logo.jpeg';
 import sleLogo from 'logos/sierra-leone.png';
+import pcmLogo from 'logos/PCM-Ambiente.png';
 
 import DashboardTrendsSidebarContainer from 'containers/sidebars/dashboard-trends-sidebar';
 
@@ -41,13 +42,12 @@ function DashboardSidebar(props) {
     setRegionLayers,
     setRegionName,
     setHash,
-    setSelectedRegionOption
+    setSelectedRegionOption,
   } = props;
 
   const { lightMode, toggleLightMode } = useContext(LightModeContext);
   const [speciesDataLoading, setSpeciesDataLoading] = useState(true);
   const [logo, setLogo] = useState();
-
 
   useEffect(() => {
     if (
@@ -71,25 +71,10 @@ function DashboardSidebar(props) {
       setLogo(<div />);
     } else if (countryISO.toUpperCase() === 'GUY') {
       setLogo(<img className={styles.logo} src={guyLogo} alt="Logo" />);
-    } else {
-      setLogo(<img className={styles.logo} src={codLogo} alt="Logo" />);
+    } else if (countryISO.toUpperCase() === 'PER') {
+      setLogo(<img className={styles.logo} src={pcmLogo} alt="Logo" />);
     }
   }, []);
-
-  useEffect(() => {
-    if (
-      countryISO.toUpperCase() !== 'SLE' &&
-      countryISO.toUpperCase() !== 'GIN' &&
-      countryISO.toUpperCase() !== 'GUY' &&
-      countryISO.toUpperCase() !== 'GUY-FM'
-    ) {
-      if (lightMode) {
-        setLogo(<img className={styles.logo} src={codLogo} alt="Logo" />);
-      } else {
-        setLogo(<img className={styles.logo} src={codWhiteLogo} alt="Logo" />);
-      }
-    }
-  }, [lightMode]);
 
   return (
     <div

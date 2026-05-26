@@ -54,12 +54,8 @@ function HabitatComponent(props) {
   const [tableInfo, setTableInfo] = useState();
 
   const updateChartInfo = () => {
-    const speciesIndicatorGraphImg = `dashboard/tutorials/tutorial_species_indicatorGraph-${
-      locale || 'en'
-    }.png?react`;
-    const speciesIndicatorTableImg = `dashboard/tutorials/tutorial_species_indicatorTable-${
-      locale || 'en'
-    }.png?react`;
+    const speciesIndicatorGraphImg = `dashboard/tutorials/tutorial_species_indicatorGraph-en.png?react`;
+    const speciesIndicatorTableImg = `dashboard/tutorials/tutorial_species_indicatorTable-en.png?react`;
 
     setChartInfo({
       title: t('Species Indicators - Graph'),
@@ -155,27 +151,30 @@ function HabitatComponent(props) {
                   <tr
                     key={row.country}
                     onClick={() => updateCountry({ value: row.country })}
-                    className={
-                      cx(selectedCountry === row.country ? styles.highlighted : '',
-                        countryName === row.country ? styles.highlightedMainCountry : ''
-                      )}
+                    className={cx(
+                      selectedCountry === row.country ? styles.highlighted : '',
+                      countryName === row.country
+                        ? styles.highlightedMainCountry
+                        : ''
+                    )}
                   >
                     <td>{t(row.country)}</td>
                     <td className={styles.textCenter}>
-                      {numberToLocaleStringWithOneDecimal(row.stewardship)}%
+                      {row.stewardship &&
+                        `${numberToLocaleStringWithOneDecimal(
+                          row.stewardship
+                        )}%`}
                     </td>
                     <td className={styles.textCenter}>
                       {numberToLocaleStringWithOneDecimal(
-                        row.countryConnectivityScore * 100
+                        row.countryConnectivityScore
                       )}
                     </td>
                     <td className={styles.textCenter}>
-                      {numberToLocaleStringWithOneDecimal(
-                        row.countryAreaScore * 100
-                      )}
+                      {numberToLocaleStringWithOneDecimal(row.countryAreaScore)}
                     </td>
                     <td className={styles.textCenter}>
-                      {numberToLocaleStringWithOneDecimal(row.shs)}%
+                      {row.shs && numberToLocaleStringWithOneDecimal(row.shs)}%
                     </td>
                   </tr>
                 ))}

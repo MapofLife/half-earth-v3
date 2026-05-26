@@ -61,7 +61,14 @@ import ArrowIcon from 'icons/arrow_right.svg?react';
 import styles from './layer-legend-styles.module.scss';
 
 function LayerLegendComponent(props) {
-  const { map, countryISO, setRegionLayers, richnessRarityLegendInfo } = props;
+  const {
+    map,
+    view,
+    countryISO,
+    setRegionLayers,
+    richnessRarityLegendInfo,
+    setMapLegendLayers,
+  } = props;
   const t = useT();
   const layerIndex = 2;
 
@@ -69,7 +76,10 @@ function LayerLegendComponent(props) {
     {
       type: 'landCover',
       id: PERU_CROPS_LAYER,
-      label: t('Peru Crops'),
+      label:
+        countryISO.toUpperCase() === 'PER'
+          ? t('Cultivos de Perú')
+          : t('Peru Crops'),
       heatMapImage: '',
       details: ``,
       showDetails: false,
@@ -80,7 +90,10 @@ function LayerLegendComponent(props) {
     {
       type: 'landCover',
       id: APURIMAC_LANDCOVER_LAYER,
-      label: t('Apurimac Landcover change'),
+      label:
+        countryISO.toUpperCase() === 'PER'
+          ? t('Cambio en la cubierta del suelo de Apurímac')
+          : t('Apurimac Landcover change'),
       heatMapImage: '',
       details: ``,
       showDetails: false,
@@ -91,7 +104,10 @@ function LayerLegendComponent(props) {
     {
       type: 'landCover',
       id: APURIMAC_SPECIES_LOSS_HABITY_SUITABILITY_LAYER,
-      label: t('Apurímac species with a loss in habitat suitability'),
+      label:
+        countryISO.toUpperCase() === 'PER'
+          ? t('Especies de Apurímac con pérdida en la adecuación del hábitat')
+          : t('Apurímac species with a loss in habitat suitability'),
       heatMapImage: '',
       details: ``,
       showDetails: false,
@@ -102,7 +118,10 @@ function LayerLegendComponent(props) {
     {
       type: 'landCover',
       id: APURIMAC_SPECIES_GAIN_HABITY_SUITABILITY_LAYER,
-      label: t('Apurímac species with a gain in habitat suitability'),
+      label:
+        countryISO.toUpperCase() === 'PER'
+          ? t('Especies de Apurímac con ganancia en la adecuación del hábitat')
+          : t('Apurímac species with a gain in habitat suitability'),
       heatMapImage: '',
       details: ``,
       showDetails: false,
@@ -372,7 +391,10 @@ function LayerLegendComponent(props) {
     {
       type: 'socioEconomic',
       id: POVERTY_AND_DEPRIVATION_LAYER,
-      label: t('Poverty and Deprivation'),
+      label:
+        countryISO.toUpperCase() === 'PER'
+          ? t('Pobreza y privación')
+          : t('Poverty and Deprivation'),
       heatMapImage: '',
       details: ``,
       showDetails: false,
@@ -386,7 +408,10 @@ function LayerLegendComponent(props) {
     {
       type: 'landCover',
       id: LAND_COVER_LAYER,
-      label: t('Land cover (2022)'),
+      label:
+        countryISO.toUpperCase() === 'PER'
+          ? t('Capas de cubierta del suelo (2022)')
+          : t('Land cover (2022)'),
       heatMapImage: '',
       details: ``,
       showDetails: false,
@@ -410,7 +435,19 @@ function LayerLegendComponent(props) {
           ...rl,
           [layer.id]: featureLayer,
         }));
+
         map.add(featureLayer, map.layers.length - layerIndex);
+
+        view.whenLayerView(featureLayer).then(() => {
+          const { renderer } = featureLayer;
+          const { uniqueValueGroups } = renderer;
+          const layerInfo = {
+            ...layer,
+            classes: uniqueValueGroups[0].classes,
+          };
+
+          setMapLegendLayers((ml) => [layerInfo, ...ml]);
+        });
       } else if (layer.url) {
         const mapLayers = LAYERS_URLS[layer.url];
         let promises;
@@ -440,13 +477,23 @@ function LayerLegendComponent(props) {
             ...rl,
             [layer.id]: newLayer,
           }));
+
           map.add(newLayer, map.layers.length - layerIndex);
         });
+
+        setMapLegendLayers((ml) => [layer, ...ml]);
       }
     } else {
       const layerToRemove = map.layers.items.filter(
         (mapLayer) => mapLayer.id === layer.id
       );
+
+      setMapLegendLayers((ml) => {
+        const filtered = ml.filter(
+          (l) => l.id !== layer.id || l.parentId !== layer.parentId
+        );
+        return filtered;
+      });
 
       setRegionLayers((rl) => {
         const { [layer.id]: name, ...rest } = rl;
@@ -579,7 +626,54 @@ function LayerLegendComponent(props) {
         if (legendInfo) {
           return {
             ...layer,
-            details: `${legendInfo.description}<br/> ${legendInfo.disclaimer}`,
+            details:
+              countryISO.toUpperCase() === 'PER'
+                ? `${legendInfo.description_es}<br/> ${legendInfo.disclaimer_es}`
+                : `${legendInfo.description}<br/> ${legendInfo.disclaimer}`,
+          };
+        }
+        return layer;
+      })
+    );
+
+    setLandUsePressureLayers((prevLayers) =>
+      prevLayers.map((layer) => {
+        const legendInfo = richnessRarityLegendInfo?.find(
+          (info) => info.layerslug === layer.id
+        );
+        if (legendInfo) {
+          return {
+            ...layer,
+            details:
+              countryISO.toUpperCase() === 'PER'
+                ? `${legendInfo.description_es}<br/>${
+                    legendInfo.disclaimer_es ? legendInfo.disclaimer_es : ''
+                  }`
+                : `${legendInfo.description}<br/> ${
+                    legendInfo.disclaimer ? legendInfo.disclaimer : ''
+                  }`,
+          };
+        }
+        return layer;
+      })
+    );
+
+    setMarineUsePressureLayers((prevLayers) =>
+      prevLayers.map((layer) => {
+        const legendInfo = richnessRarityLegendInfo?.find(
+          (info) => info.layerslug === layer.id
+        );
+        if (legendInfo) {
+          return {
+            ...layer,
+            details:
+              countryISO.toUpperCase() === 'PER'
+                ? `${legendInfo.description_es}<br/>${
+                    legendInfo.disclaimer_es ? legendInfo.disclaimer_es : ''
+                  }`
+                : `${legendInfo.description}<br/> ${
+                    legendInfo.disclaimer ? legendInfo.disclaimer : ''
+                  }`,
           };
         }
         return layer;
@@ -612,7 +706,11 @@ function LayerLegendComponent(props) {
             <div className={styles.layer}>
               <div className={styles.title}>
                 <span className={styles.label}>
-                  <b>{t('Biodiversity Layers')}</b>
+                  {countryISO.toUpperCase() === 'PER' ? (
+                    <b>{t('Capas de biodiversidad')}</b>
+                  ) : (
+                    <b>{t('Biodiversity Layers')}</b>
+                  )}
                 </span>
               </div>
             </div>
@@ -659,7 +757,11 @@ function LayerLegendComponent(props) {
             <div className={styles.layer}>
               <div className={styles.title}>
                 <span className={styles.label}>
-                  <b>{t('Land Use Pressure Layers')}</b>
+                  {countryISO.toUpperCase() === 'PER' ? (
+                    <b>{t('Capas de presión por uso del suelo')}</b>
+                  ) : (
+                    <b>{t('Land Use Pressure Layers')}</b>
+                  )}
                 </span>
               </div>
             </div>
@@ -706,7 +808,11 @@ function LayerLegendComponent(props) {
             <div className={styles.layer}>
               <div className={styles.title}>
                 <span className={styles.label}>
-                  <b>{t('Marine Use Pressure Layers')}</b>
+                  {countryISO.toUpperCase() === 'PER' ? (
+                    <b>{t('Capas de presión para uso marino')}</b>
+                  ) : (
+                    <b>{t('Marine Use Pressure Layers')}</b>
+                  )}
                 </span>
               </div>
             </div>
@@ -753,7 +859,11 @@ function LayerLegendComponent(props) {
             <div className={styles.layer}>
               <div className={styles.title}>
                 <span className={styles.label}>
-                  <b>{t('Land Cover/Use')}</b>
+                  {countryISO.toUpperCase() === 'PER' ? (
+                    <b>{t('Capas de cubierta/uso del suelo')}</b>
+                  ) : (
+                    <b>{t('Land Cover/Use Layers')}</b>
+                  )}
                 </span>
               </div>
             </div>
