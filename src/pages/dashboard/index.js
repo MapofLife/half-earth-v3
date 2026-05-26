@@ -701,18 +701,6 @@ function DashboardContainer(props) {
       }, {});
     }
 
-    // if (d) {
-    //   countryData = d.reduce((acc, obj) => {
-    //     const key = obj.country;
-    //     if (!acc[key]) {
-    //       acc[key] = { shs: [], connectivity_score: [] };
-    //     }
-
-    //     acc[key].connectivity_score.push(obj);
-    //     return acc;
-    //   }, countryData || {});
-    // }
-
     setDataByCountry(countryData);
     setSpiDataByCountry(countryData);
   };

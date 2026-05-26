@@ -326,14 +326,14 @@ function BioDiversityContainer(props) {
 
   // get habitat score information
   useEffect(() => {
-    if (dataByCountry && data) {
+    if (dataByCountry) {
       const { habitat, globalHabitat } = getHabitatScore();
       setHabitatScore(habitat);
       setGlobalHabitatScore(globalHabitat);
 
       getHabitatTableData();
       const tableData = [];
-      // if (data?.spiScoreData) {
+
       //   const tableData = [];
       //   const { spiScoreData } = data;
 
@@ -385,38 +385,38 @@ function BioDiversityContainer(props) {
       setProtectionTableData(tableData);
       // }
     }
-  }, [dataByCountry, data]);
+  }, [dataByCountry]);
 
   // get protection score information
   useEffect(() => {
-    if (data && habitatTableData && dataByCountry) {
-      if (data?.spiScoreData?.length > 0) {
-        // getProtectionTableData(data.spiScoreData);
+    if (dataByCountry && countryName) {
+      console.log(dataByCountry);
+      console.log('countryName', countryName);
+      const globalValues = dataByCountry.Global?.spi || [];
+      const countryData = dataByCountry[countryName]?.spi || [];
+      const lastCountryItem = dataByCountry[countryName]?.spi
+        ?.slice()
+        .reverse()
+        .find((item) => item?.sps !== undefined && item?.sps !== null);
 
-        const globalValues = data.spiScoreData.filter(
-          (country) => country.country.toUpperCase() === 'GLOBAL'
-        );
+      const scores = {
+        protectionScore: 0,
+        globalProtectionScore: last(globalValues).sps?.toFixed(1) ?? 0,
+      };
+      console.log('lastCountryItem', lastCountryItem);
 
-        const countryData = data.spiScoreData.filter((country) => {
-          if (countryISO.toLowerCase() === 'ee') {
-            return (
-              country.country.toUpperCase() ===
-              data.spiScoreData[0].country.toUpperCase()
-            );
-          }
-          return country.country.toUpperCase() === countryName?.toUpperCase();
-        });
-
-        const scores = {
-          protectionScore: last(countryData).sps?.toFixed(1) ?? 0,
-          globalProtectionScore: last(globalValues).sps?.toFixed(1) ?? 0,
-        };
-
-        setProtectionScore(scores.protectionScore);
-        setGlobalProtectionScore(scores.globalProtectionScore);
+      if (lastCountryItem && lastCountryItem?.sps) {
+        scores.protectionScore = lastCountryItem.sps?.toFixed(1);
       }
+
+      if (globalValues && last(globalValues)?.sps) {
+        scores.globalProtectionScore = last(globalValues).sps?.toFixed(1);
+      }
+
+      setProtectionScore(scores.protectionScore);
+      setGlobalProtectionScore(scores.globalProtectionScore);
     }
-  }, [data, habitatTableData]);
+  }, [dataByCountry, countryName]);
 
   useEffect(() => {
     if (!speciesInfo) return;
