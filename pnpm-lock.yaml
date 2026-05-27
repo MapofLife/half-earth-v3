@@ -85,13 +85,13 @@ importers:
         version: 6.5.1(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
       he-components:
         specifier: github:vizzuality/half-earth-components#0.2.1
-        version: https://codeload.github.com/vizzuality/half-earth-components/tar.gz/26d0aa41403fc33fed5167352a698eef7b225652(classnames@2.5.1)(lodash@4.17.21)(prop-types@15.8.1)(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
+        version: https://codeload.github.com/vizzuality/half-earth-components/tar.gz/26d0aa41403fc33fed5167352a698eef7b225652(classnames@2.5.1)(lodash@4.18.1)(prop-types@15.8.1)(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
       localforage:
         specifier: ^1.10.0
         version: 1.10.0
       lodash:
-        specifier: 4.17.21
-        version: 4.17.21
+        specifier: 4.18.1
+        version: 4.18.1
       prop-types:
         specifier: ^15.7.2
         version: 15.8.1
@@ -4127,8 +4127,8 @@ packages:
   lodash.templatesettings@4.2.0:
     resolution: {integrity: sha512-stgLz+i3Aa9mZgnjr/O+v9ruKZsPsndy7qPZOchbqk2cnTU1ZaldKK+v7m54WoKIyxiuMZTKT2H81F8BeAc3ZQ==}
 
-  lodash@4.17.21:
-    resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
+  lodash@4.18.1:
+    resolution: {integrity: sha512-dMInicTPVE8d1e5otfwmmjlxkZoUpiVLwyeTdUsi/Caj/gfzzblBcCE5sRHV/AsjuCmxWrte2TNGSYuCeCq+0Q==}
 
   log-symbols@1.0.2:
     resolution: {integrity: sha512-mmPrW0Fh2fxOzdBbFv4g1m6pR72haFLPJ2G5SJEELf1y+iaQrDG6cWCPjy54RHYbZAt7X+ls690Kw62AdWXBzQ==}
@@ -6758,7 +6758,7 @@ snapshots:
       '@oclif/errors': 1.3.6
       chalk: 4.1.2
       indent-string: 4.0.0
-      lodash: 4.17.21
+      lodash: 4.18.1
       string-width: 4.2.3
       strip-ansi: 6.0.1
       widest-line: 3.1.0
@@ -7046,7 +7046,7 @@ snapshots:
       chalk: 3.0.0
       css.escape: 1.5.1
       dom-accessibility-api: 0.6.3
-      lodash: 4.17.21
+      lodash: 4.18.1
       redent: 3.0.0
 
   '@testing-library/react@12.1.5(@types/react@18.3.24)(react-dom@17.0.2(react@17.0.2))(react@17.0.2)':
@@ -7082,7 +7082,7 @@ snapshots:
       cli-ux: 6.0.9
       ejs: 3.1.10
       glob: 8.1.0
-      lodash: 4.17.21
+      lodash: 4.18.1
       pug: 3.0.3
       shelljs: 0.8.5
       vue-template-compiler: 2.7.16
@@ -7961,7 +7961,7 @@ snapshots:
       convert-source-map: 1.9.0
       debug: 2.6.9(supports-color@7.2.0)
       json5: 0.5.1
-      lodash: 4.17.21
+      lodash: 4.18.1
       minimatch: 3.1.2
       path-is-absolute: 1.0.1
       private: 0.1.8
@@ -7981,7 +7981,7 @@ snapshots:
       babel-types: 6.26.0
       detect-indent: 4.0.0
       jsesc: 1.3.0
-      lodash: 4.17.21
+      lodash: 4.18.1
       source-map: 0.5.7
       trim-right: 1.0.1
 
@@ -8015,7 +8015,7 @@ snapshots:
       babel-helper-function-name: 6.24.1
       babel-runtime: 6.26.0
       babel-types: 6.26.0
-      lodash: 4.17.21
+      lodash: 4.18.1
     transitivePeerDependencies:
       - supports-color
 
@@ -8065,7 +8065,7 @@ snapshots:
     dependencies:
       babel-runtime: 6.26.0
       babel-types: 6.26.0
-      lodash: 4.17.21
+      lodash: 4.18.1
 
   babel-helper-remap-async-to-generator@6.24.1:
     dependencies:
@@ -8195,7 +8195,7 @@ snapshots:
       babel-template: 6.26.0
       babel-traverse: 6.26.0
       babel-types: 6.26.0
-      lodash: 4.17.21
+      lodash: 4.18.1
     transitivePeerDependencies:
       - supports-color
 
@@ -8427,7 +8427,7 @@ snapshots:
       babel-runtime: 6.26.0
       core-js: 2.6.12
       home-or-tmp: 2.0.0
-      lodash: 4.17.21
+      lodash: 4.18.1
       mkdirp: 0.5.6
       source-map-support: 0.4.18
     transitivePeerDependencies:
@@ -8444,7 +8444,7 @@ snapshots:
       babel-traverse: 6.26.0
       babel-types: 6.26.0
       babylon: 6.18.0
-      lodash: 4.17.21
+      lodash: 4.18.1
     transitivePeerDependencies:
       - supports-color
 
@@ -8458,7 +8458,7 @@ snapshots:
       debug: 2.6.9(supports-color@7.2.0)
       globals: 9.18.0
       invariant: 2.2.4
-      lodash: 4.17.21
+      lodash: 4.18.1
     transitivePeerDependencies:
       - supports-color
 
@@ -8466,7 +8466,7 @@ snapshots:
     dependencies:
       babel-runtime: 6.26.0
       esutils: 2.0.3
-      lodash: 4.17.21
+      lodash: 4.18.1
       to-fast-properties: 1.0.3
 
   babel-walk@3.0.0-canary-5:
@@ -8654,7 +8654,7 @@ snapshots:
       indent-string: 4.0.0
       is-wsl: 2.2.0
       js-yaml: 3.14.1
-      lodash: 4.17.21
+      lodash: 4.18.1
       natural-orderby: 2.0.3
       object-treeify: 1.1.33
       password-prompt: 1.1.3
@@ -8853,7 +8853,7 @@ snapshots:
       is-installed-globally: 0.3.2
       lazy-ass: 1.6.0
       listr: 0.14.3
-      lodash: 4.17.21
+      lodash: 4.18.1
       log-symbols: 4.1.0
       minimist: 1.2.8
       moment: 2.30.1
@@ -10017,11 +10017,11 @@ snapshots:
 
   hast-util-whitespace@2.0.1: {}
 
-  he-components@https://codeload.github.com/vizzuality/half-earth-components/tar.gz/26d0aa41403fc33fed5167352a698eef7b225652(classnames@2.5.1)(lodash@4.17.21)(prop-types@15.8.1)(react-dom@17.0.2(react@17.0.2))(react@17.0.2):
+  he-components@https://codeload.github.com/vizzuality/half-earth-components/tar.gz/26d0aa41403fc33fed5167352a698eef7b225652(classnames@2.5.1)(lodash@4.18.1)(prop-types@15.8.1)(react-dom@17.0.2(react@17.0.2))(react@17.0.2):
     dependencies:
       classnames: 2.5.1
       dotenv: 6.0.0
-      lodash: 4.17.21
+      lodash: 4.18.1
       prop-types: 15.8.1
       react: 17.0.2
       react-dom: 17.0.2(react@17.0.2)
@@ -10649,7 +10649,7 @@ snapshots:
     dependencies:
       lodash._reinterpolate: 3.0.0
 
-  lodash@4.17.21: {}
+  lodash@4.18.1: {}
 
   log-symbols@1.0.2:
     dependencies:
@@ -11582,7 +11582,7 @@ snapshots:
     dependencies:
       clsx: 2.1.1
       eventemitter3: 4.0.7
-      lodash: 4.17.21
+      lodash: 4.18.1
       react: 17.0.2
       react-dom: 17.0.2(react@17.0.2)
       react-is: 16.13.1
