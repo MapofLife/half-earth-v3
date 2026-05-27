@@ -687,12 +687,9 @@ function GroupedListComponent(props) {
   }, [showPredictionMap]);
 
   useEffect(() => {
-    if (!mapData || dataPoints.length === 0) return;
-    if (!defaultLoaded) {
-      setDefaultLoaded(true);
-      activateDefault();
-    }
-  }, [map, mapData, dataPoints]);
+    if (!mapData) return;
+    activateDefault();
+  }, [map, mapData]);
 
   return (
     <div className={cx(lightMode ? styles.light : '', styles.container)}>
