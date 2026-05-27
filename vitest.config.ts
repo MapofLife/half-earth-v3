@@ -52,7 +52,7 @@ function moduleScssResolver() {
   };
 }
 
-export default defineConfig({
+const config: any = {
   plugins: [
     {
       name: 'treat-js-files-as-jsx',
@@ -118,4 +118,6 @@ export default defineConfig({
       hooks: path.resolve(__dirname, 'src/hooks'),
     },
   },
-});
+};
+
+export default defineConfig(config);
