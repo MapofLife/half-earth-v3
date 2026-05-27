@@ -4,10 +4,13 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { LightModeContext } from 'context/light-mode';
 import ProvinceChartComponent from './province-chart-component';
 
-vi.mock('@transifex/react', () => ({
-  useT: () => (value) => value,
-  useLocale: () => 'en',
-}));
+vi.mock('@transifex/react', () => {
+  const t = (value) => value;
+  return {
+    useT: () => t,
+    useLocale: () => 'en',
+  };
+});
 
 vi.mock('utils/css-utils', () => ({
   getCSSVariable: (value) => value,
