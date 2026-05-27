@@ -236,7 +236,7 @@ function DataLayerComponent(props) {
     },
     {
       id: ARTISANAL_FISHING_HUMAN_PRESSURES_TILE_LAYER,
-      label: t('Artisnal fishing'),
+      label: t('Artisanal fishing'),
       url: ARTISANAL_FISHING_HUMAN_PRESSURES_TILE_LAYER,
       items: [],
       total_no_rows: '',
@@ -1007,8 +1007,8 @@ function DataLayerComponent(props) {
         type="rectangular"
         label={
           countryISO.toUpperCase() === 'PER'
-            ? t('Cultivos de Perú')
-            : t('Enviar comentarios sobre los datos')
+            ? t('Enviar comentarios sobre los datos')
+            : t('Send Feedback')
         }
         handleClick={showProvideFeedbackModal}
       />
@@ -1021,8 +1021,8 @@ function DataLayerComponent(props) {
           <div className={styles.feedbackHeader}>
             <span className={styles.feedbackTitle}>
               {countryISO.toUpperCase() === 'PER'
-                ? t('Cultivos de Perú')
-                : t('Enviar comentarios sobre los datos')}
+                ? t('Enviar comentarios sobre los datos')
+                : t('Send Feedback')}
             </span>
             <span className={styles.feedbackSubtitle}>
               {countryISO.toUpperCase() === 'PER'

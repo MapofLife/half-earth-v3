@@ -106,7 +106,7 @@
         }
 
         .box {
-          width: 50px;
+          width: 150px;
           height: 15px;
           border: 1px solid rgba(255, 255, 255, 0.6);
         }
@@ -145,11 +145,13 @@
       width: 100%;
       height: 15px;
     }
+  }
 
-    .legendValues {
-      color: white;
-      display: flex;
-      justify-content: space-between;
-    }
+  .legendValues {
+    color: white;
+    width: 150px;
+    display: flex;
+    gap: 5px;
+    justify-content: space-between;
   }
 }
