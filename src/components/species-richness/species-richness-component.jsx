@@ -277,7 +277,7 @@ function SpeciesRichnessComponent(props) {
         }
 
         if (
-          countryISO.toLowerCase() !== 'ee' ||
+          countryISO.toLowerCase() !== 'ee' &&
           countryISO.toLowerCase() !== 'guy-fm'
         ) {
           if (formattedData) {
