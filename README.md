@@ -1,5 +1,7 @@
 # Half Earth
 
+[![codecov](https://codecov.io/github/MapofLife/half-earth-v3/graph/badge.svg?token=JU3LX62WM9)](https://codecov.io/github/MapofLife/half-earth-v3)
+
 This project is using [Vite](https://vitejs.dev/) as the build tool and [React](https://reactjs.org/) as the main library. The map is built using [Arcgis JS](https://developers.arcgis.com/javascript/) with the [@arcgis/core](https://www.npmjs.com/package/@arcgis/core) package.
 
 Clone the repo and run `yarn install` to install the needed dependencies.
@@ -36,7 +38,6 @@ The build is minified and the filenames include the hashes.<br>
 Your app is ready to be deployed!
 
 See the section about [build](https://vitejs.dev/guide/build) for more information.
-
 
 ### `pnpm start`
 

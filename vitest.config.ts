@@ -74,9 +74,15 @@ export default defineConfig({
     setupFiles: './vitest.setup.js',
     css: false,
     include: ['src/**/*.test.{js,jsx}'],
+    maxWorkers: 2,
+    minWorkers: 1,
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html'],
+      clean: true,
+      cleanOnRerun: true,
+      reportOnFailure: true,
+      processingConcurrency: 1,
       include: [
         'src/containers/sidebars/dashboard-sidebar/**/*component.jsx'
       ],

@@ -196,4 +196,154 @@ describe('ToggleLayerInfo', () => {
       });
     });
   });
+
+  it('loads private study metadata from COD service when country is not GIN', async () => {
+    const setLayerInfo = vi.fn();
+    getFeaturesSpy.mockResolvedValue([
+      {
+        attributes: {
+          species_group: 'Mammals',
+        },
+      },
+    ]);
+
+    renderComponent({
+      layer: {
+        id: 'private-study-cod',
+        label: 'COD Study',
+        type: 'PRIVATE',
+      },
+      setLayerInfo,
+      countryISO: 'COD',
+    });
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Toggle info visibility' })
+    );
+
+    await waitFor(() => {
+      expect(getFeaturesSpy).toHaveBeenCalledWith({
+        url: DASHBOARD_URLS.PRIVATE_COD_OCCURENCE_METADATA_LAYER,
+        whereClause: "study_name = 'COD Study'",
+        outFields: ['description, region, taxa'],
+        returnGeometr: false,
+      });
+      expect(setLayerInfo).toHaveBeenCalledWith({
+        info: [{ label: 'species group', value: 'Mammals' }],
+        title: 'COD Study',
+      });
+    });
+  });
+
+  it('uses custom habitat description content', () => {
+    const setLayerInfo = vi.fn();
+
+    renderComponent({
+      layer: {
+        id: LAYER_OPTIONS.HABITAT,
+        label: 'Habitat',
+      },
+      setLayerInfo,
+      countryISO: 'PER',
+    });
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Toggle info visibility' })
+    );
+
+    expect(setLayerInfo).toHaveBeenCalledWith({
+      info: [
+        expect.objectContaining({
+          label: 'Description',
+        }),
+      ],
+      title: 'Habitat',
+    });
+  });
+
+  it('uses custom protected areas content', () => {
+    const setLayerInfo = vi.fn();
+
+    renderComponent({
+      layer: {
+        id: LAYER_OPTIONS.PROTECTED_AREAS,
+        label: 'Protected areas',
+      },
+      setLayerInfo,
+      countryISO: 'PER',
+    });
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Toggle info visibility' })
+    );
+
+    expect(setLayerInfo).toHaveBeenCalledWith({
+      info: [
+        expect.objectContaining({
+          label: 'Description',
+          id: LAYER_OPTIONS.PROTECTED_AREAS,
+        }),
+      ],
+      title: 'Protected areas',
+    });
+  });
+
+  it('uses custom administrative layers content', () => {
+    const setLayerInfo = vi.fn();
+
+    renderComponent({
+      layer: {
+        id: LAYER_OPTIONS.ADMINISTRATIVE_LAYERS,
+        label: 'Administrative layers',
+      },
+      setLayerInfo,
+      countryISO: 'PER',
+    });
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Toggle info visibility' })
+    );
+
+    expect(setLayerInfo).toHaveBeenCalledWith({
+      info: [
+        expect.objectContaining({
+          label: 'Description',
+          id: LAYER_OPTIONS.ADMINISTRATIVE_LAYERS,
+        }),
+      ],
+      title: 'Administrative layers',
+    });
+  });
+
+  it('fetches parent layer group metadata for point observations', async () => {
+    const setLayerInfo = vi.fn();
+    global.fetch.mockResolvedValue({
+      json: vi
+        .fn()
+        .mockResolvedValue([{ label: 'Description', value: 'Points info' }]),
+    });
+
+    renderComponent({
+      layer: {
+        id: LAYER_OPTIONS.POINT_OBSERVATIONS,
+        label: 'Point observations',
+      },
+      setLayerInfo,
+      countryISO: 'PER',
+    });
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Toggle info visibility' })
+    );
+
+    await waitFor(() => {
+      expect(global.fetch).toHaveBeenCalledWith(
+        `${DASHBOARD_URLS.DATASET_LAYER_GROUP_INFO}?id=points`
+      );
+      expect(setLayerInfo).toHaveBeenCalledWith({
+        info: [{ label: 'Description', value: 'Points info' }],
+        title: 'Point observations',
+      });
+    });
+  });
 });
