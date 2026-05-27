@@ -81,7 +81,7 @@ const config: any = {
     minWorkers: 1,
     coverage: {
       provider: 'v8',
-      reporter: ['text', 'html'],
+      reporter: ['text-summary', 'html', 'lcov', 'json-summary'],
       clean: true,
       cleanOnRerun: true,
       reportOnFailure: true,
