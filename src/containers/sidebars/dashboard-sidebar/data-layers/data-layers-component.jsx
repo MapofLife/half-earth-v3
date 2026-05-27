@@ -749,12 +749,7 @@ function DataLayerComponent(props) {
   }, [richnessRarityLegendInfo]);
 
   useEffect(() => {
-    if (!speciesInfo) return;
-    getHabitatMapData();
-  }, [speciesInfo]);
-
-  useEffect(() => {
-    if (!dataLayerData) return;
+    if (!dataLayerData || !speciesInfo) return;
     const publicData = [...groupByTypeTitle(dataLayerData)];
 
     if (speciesInfo.scientificname.toUpperCase() === 'ATELES PANISCUS') {
@@ -771,6 +766,8 @@ function DataLayerComponent(props) {
 
     setDataPoints(publicData);
 
+    getHabitatMapData();
+
     if (countryISO.toUpperCase() === 'EE') {
       const regions = [
         ...regionsData,
@@ -786,7 +783,7 @@ function DataLayerComponent(props) {
       ];
       setRegionsData(regions);
     }
-  }, [dataLayerData]);
+  }, [dataLayerData, speciesInfo]);
 
   useEffect(() => {
     if (privateOccurrenceData.length > 0) {

@@ -60,6 +60,7 @@ function GroupedListComponent(props) {
   } = props;
   const t = useT();
   const { lightMode } = useContext(LightModeContext);
+  const [defaultLoaded, setDefaultLoaded] = React.useState(false);
 
   let loadingCount = 0;
 
@@ -273,7 +274,28 @@ function GroupedListComponent(props) {
     // check if item is active to add/remove from Map Legend
     if (!item.isActive) {
       getLayerIcon(layer, item);
-      map.add(layer);
+
+      if (id === LAYER_OPTIONS.PREDICTION_MAPS) {
+        const ebirdIndex = map.layers.items.findIndex((item) =>
+          item.id.match(/ebird/gi)
+        );
+        const gbifIndex = map.layers.items.findIndex((item) =>
+          item.id.match(/gbif/gi)
+        );
+
+        if (ebirdIndex > -1 && gbifIndex > -1) {
+          const predictionMapIndex = Math.min(ebirdIndex, gbifIndex);
+          map.add(layer, predictionMapIndex);
+        } else if (ebirdIndex > -1) {
+          map.add(layer, ebirdIndex);
+        } else if (gbifIndex > -1) {
+          map.add(layer, gbifIndex);
+        } else {
+          map.add(layer);
+        }
+      } else {
+        map.add(layer);
+      }
 
       view.whenLayerView(layer).then(() => {
         setRegionLayers((rl) => ({
