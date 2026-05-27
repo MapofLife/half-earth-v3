@@ -1,8 +1,9 @@
+/// <reference types="vitest/config" />
+
 import path from 'path';
-import { transformWithEsbuild } from 'vite';
+import { defineConfig, transformWithEsbuild } from 'vite';
 import svgr from 'vite-plugin-svgr';
 import viteTsconfigPaths from 'vite-tsconfig-paths';
-import { defineConfig } from 'vitest/config';
 
 import react from '@vitejs/plugin-react';
 
