@@ -109,7 +109,7 @@ describe('TemporalTrendsShiComponent', () => {
     expect(screen.getByTestId('shi-national-chart')).toBeInTheDocument();
     expect(screen.getByTestId('download-shi')).toBeInTheDocument();
 
-    fireEvent.click(screen.getByText('Province'));
+    fireEvent.click(screen.getByText('Departamento'));
 
     expect(props.setClickedRegion).toHaveBeenCalledWith(null);
     expect(props.handleRegionSelected).toHaveBeenCalledWith(null);
