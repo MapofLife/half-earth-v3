@@ -159,7 +159,11 @@ function TemporalTrendsSpiComponent(props) {
                 className={cx(styles.saveButton, {
                   [styles.notActive]: activeTrend !== PROVINCE_TREND,
                 })}
-                label={t('Province')}
+                label={
+                  countryISO.toUpperCase() === 'PER'
+                    ? t('Departamento')
+                    : t('Province')
+                }
                 handleClick={() => handleActionChange(PROVINCE_TREND)}
               />
               <Button

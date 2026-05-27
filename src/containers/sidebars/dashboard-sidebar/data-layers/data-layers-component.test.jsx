@@ -245,14 +245,10 @@ describe('DataLayerComponent', () => {
     const { props } = renderComponent();
 
     await waitFor(() => {
-      expect(
-        screen.getByText('Enviar comentarios sobre los datos')
-      ).toBeInTheDocument();
+      expect(screen.getByText('Send Feedback')).toBeInTheDocument();
     });
 
-    fireEvent.click(
-      screen.getAllByText('Enviar comentarios sobre los datos')[0]
-    );
+    fireEvent.click(screen.getAllByText('Send Feedback')[0]);
     fireEvent.click(
       screen.getByLabelText('There is an issue with expert range map')
     );
@@ -260,7 +256,7 @@ describe('DataLayerComponent', () => {
       screen.getByPlaceholderText('Add additional comments for data issues...'),
       { target: { value: 'Problem details' } }
     );
-    fireEvent.click(screen.getByText('Send Feedback'));
+    fireEvent.click(screen.getAllByText('Send Feedback').at(-1));
 
     await waitFor(() => {
       expect(mockGetToken).toHaveBeenCalled();
@@ -301,15 +297,11 @@ describe('DataLayerComponent', () => {
     const { props } = renderComponent();
 
     await waitFor(() => {
-      expect(
-        screen.getByText('Enviar comentarios sobre los datos')
-      ).toBeInTheDocument();
+      expect(screen.getByText('Send Feedback')).toBeInTheDocument();
     });
 
-    fireEvent.click(
-      screen.getAllByText('Enviar comentarios sobre los datos')[0]
-    );
-    fireEvent.click(screen.getByText('Send Feedback'));
+    fireEvent.click(screen.getAllByText('Send Feedback')[0]);
+    fireEvent.click(screen.getAllByText('Send Feedback').at(-1));
 
     await waitFor(() => {
       expect(props.setSnackBar).toHaveBeenCalledWith({
@@ -378,10 +370,14 @@ describe('DataLayerComponent', () => {
     renderComponent({ countryISO: 'PER', countryName: 'Peru' });
 
     await waitFor(() => {
-      expect(screen.getByText('Cultivos de Perú')).toBeInTheDocument();
+      expect(
+        screen.getByText('Enviar comentarios sobre los datos')
+      ).toBeInTheDocument();
     });
 
-    fireEvent.click(screen.getAllByText('Cultivos de Perú')[0]);
+    fireEvent.click(
+      screen.getAllByText('Enviar comentarios sobre los datos')[0]
+    );
 
     expect(screen.getByText('Problemas con los datos')).toBeInTheDocument();
     fireEvent.click(screen.getByText('Cancel'));

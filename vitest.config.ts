@@ -95,6 +95,7 @@ const config: any = {
         functions: 80,
         branches: 80,
       },
+      reportsDirectory: './dist/coverage',
     },
   },
   resolve: {
