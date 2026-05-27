@@ -60,6 +60,7 @@ function GroupedListComponent(props) {
   } = props;
   const t = useT();
   const { lightMode } = useContext(LightModeContext);
+  const [defaultLoaded, setDefaultLoaded] = React.useState(false);
 
   let loadingCount = 0;
 
@@ -686,9 +687,12 @@ function GroupedListComponent(props) {
   }, [showPredictionMap]);
 
   useEffect(() => {
-    if (!mapData) return;
-    activateDefault();
-  }, [map, mapData]);
+    if (!mapData || dataPoints.length === 0) return;
+    if (!defaultLoaded) {
+      setDefaultLoaded(true);
+      activateDefault();
+    }
+  }, [map, mapData, dataPoints]);
 
   return (
     <div className={cx(lightMode ? styles.light : '', styles.container)}>
