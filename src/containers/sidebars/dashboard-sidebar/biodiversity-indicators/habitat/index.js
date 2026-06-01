@@ -117,59 +117,27 @@ function HabitatContainer(props) {
       const currentCountryShs = currentCountry.shs?.filter(
         (item) => item.year >= 2001
       );
-      const currentCountryConn = currentCountry.connectivity_score?.filter(
-        (item) => item.year >= 2001
-      );
 
       const selectedCountrySHS = dataByCountry[countrySelected]?.shs?.filter(
         (item) => item.year >= 2001
       );
-      const selectedCountryConn = dataByCountry[
-        countrySelected
-      ]?.connectivity_score?.filter((item) => item.year >= 2001);
 
       currentCountryShs?.forEach((row) => {
         if (row.shs) {
-          defaultCountryScores.area.push(row.shs);
+          defaultCountryScores.area.push(row.area_score);
+          defaultCountryScores.connectivity.push(row.connectivity_score);
+          defaultCountryScores.total.push(row.shs);
         }
       });
 
       selectedCountrySHS?.forEach((row) => {
         if (row.shs) {
           dates.push(row.year);
-          selectedCountryScores.area.push(row.shs);
+          selectedCountryScores.area.push(row.area_score);
+          selectedCountryScores.connectivity.push(row.connectivity_score);
+          selectedCountryScores.total.push(row.shs);
         }
       });
-
-      if (currentCountryConn.length > 0) {
-        const fragYear = currentCountryConn?.[0];
-        currentCountryConn?.forEach((row) => {
-          if (row.connectivity_score !== null) {
-            defaultCountryScores.connectivity.push(row.connectivity_score);
-          }
-        });
-
-        const selectedFragYear = selectedCountryConn?.[0];
-        selectedCountryConn?.forEach((row) => {
-          if (row.connectivity_score !== null) {
-            selectedCountryScores.connectivity.push(row.connectivity_score);
-          }
-        });
-      }
-
-      for (let index = 0; index < dates.length; index += 1) {
-        const dcTotal =
-          (defaultCountryScores.area[index] +
-            defaultCountryScores.connectivity[index]) /
-          2;
-        defaultCountryScores.total.push(dcTotal);
-
-        const scTotal =
-          (selectedCountryScores.area[index] +
-            selectedCountryScores.connectivity[index]) /
-          2;
-        selectedCountryScores.total.push(scTotal);
-      }
     }
 
     setChartData({

@@ -106,7 +106,11 @@ function TemporalTrendsSiiComponent(props) {
                   className={cx(styles.saveButton, {
                     [styles.notActive]: siiActiveTrend !== PROVINCE_TREND,
                   })}
-                  label={t('Province')}
+                  label={
+                    countryISO.toUpperCase() === 'PER'
+                      ? t('Departamento')
+                      : t('Province')
+                  }
                   handleClick={() => handleActionChange(PROVINCE_TREND)}
                 />
                 <Button

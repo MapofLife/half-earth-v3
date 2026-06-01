@@ -129,7 +129,11 @@ function TemporalTrendsShiComponent(props) {
                   className={cx(styles.saveButton, {
                     [styles.notActive]: shiActiveTrend !== PROVINCE_TREND,
                   })}
-                  label={t('Province')}
+                  label={
+                    countryISO.toUpperCase() === 'PER'
+                      ? t('Departamento')
+                      : t('Province')
+                  }
                   handleClick={() => handleActionChange(PROVINCE_TREND)}
                 />
               )}

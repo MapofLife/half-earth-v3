@@ -377,7 +377,7 @@ function LayerLegendComponent(props) {
     {
       type: 'marineUsePressure',
       id: ARTISANAL_FISHING_HUMAN_PRESSURES_TILE_LAYER,
-      label: t('Artisnal fishing'),
+      label: t('Artisanal fishing'),
       heatMapImage: '',
       details: `<p>Source: (1) <a href="https://www.nature.com/articles/ncomms8615" target="_blank" rel="noopener noreferrer">Halpern, Benjamin S., et al., 2015</a> (2) <a href="https://onlinelibrary.wiley.com/doi/abs/10.1111/gcb.14549" target="_blank" rel="noopener noreferrer">Kennedy, Christina M., et al., 2019</a></p>`,
       showDetails: false,

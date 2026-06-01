@@ -99,6 +99,14 @@ function MapLegendComponent(props) {
   const siiLow = 0;
   const siiHigh = 50;
 
+  const lowText = countryISO.toUpperCase() === 'PER' ? t('Baja') : t('Low');
+  const highText = countryISO.toUpperCase() === 'PER' ? t('Alto') : t('High');
+  const lossText =
+    countryISO.toUpperCase() === 'PER' ? t('Pérdida') : t('Loss');
+  const stableText =
+    countryISO.toUpperCase() === 'PER' ? t('Estable') : t('Stable');
+  const gainText = countryISO.toUpperCase() === 'PER' ? t('Ganar') : t('Gain');
+
   const getLayerIcon = (layer) => {
     if (layer.parentId === LAYER_OPTIONS.EXPERT_RANGE_MAPS) {
       return (
@@ -167,8 +175,20 @@ function MapLegendComponent(props) {
 
     if (layer.id === LAYER_OPTIONS.PREDICTION_MAPS) {
       return (
-        <div style={{ display: 'flex', gap: '5px', marginTop: '5px' }}>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '5px',
+            marginTop: '5px',
+          }}
+        >
           <div className={cx(styles.box, styles.predictionGradient)} />
+          <span>Likelihood</span>
+          <div className={styles.legendValues}>
+            <span>{lowText}</span>
+            <span>{highText}</span>
+          </div>
         </div>
       );
     }
@@ -310,6 +330,40 @@ function MapLegendComponent(props) {
     return '❓'; // Default icon for unknown layer types
   };
 
+  const getLayerLegend = (layer) => {
+    if (layer.id === LAYER_OPTIONS.HABITAT) {
+      return (
+        <div
+          style={{
+            display: 'flex',
+            gap: '5px',
+            justifyContent: 'space-between',
+            width: '100%',
+          }}
+          className={styles.legendValues}
+        >
+          <span>{lossText}</span>
+          <span>{stableText}</span>
+          <span>{gainText}</span>
+        </div>
+      );
+    }
+
+    if (
+      socioEconomicLayers.includes(layer.id) ||
+      richnessLayers.includes(layer.id) ||
+      landPressureLayers.includes(layer.id) ||
+      marinePressureLayers.includes(layer.id)
+    ) {
+      return (
+        <div className={styles.legendValues}>
+          <span>{lowText}</span>
+          <span>{highText}</span>
+        </div>
+      );
+    }
+  };
+
   const moveItem = (arr, fromIndex, toIndex) => {
     const removedItem = arr.splice(fromIndex, 1)[0];
     arr.splice(toIndex, 0, removedItem);
@@ -444,6 +498,7 @@ function MapLegendComponent(props) {
               <b>{t(layer.label?.toUpperCase())}</b>
               {layer.parent && <span>{t(layer.parent)}</span>}
               {getLayerIcon(layer)}
+              {getLayerLegend(layer)}
             </div>
             <ToggleOpacityContainer layer={layer} {...props} />
             {!hideArrows(layer) && (

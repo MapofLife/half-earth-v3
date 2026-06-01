@@ -314,10 +314,10 @@ async function addProtectedAreaLayer(id, countryISO = 'COD') {
   }
 
   const featureLayer = new FeatureLayer({
-    // portalItem: {
-    //   id: featurePortalId,
-    // },
-    url: featurePortalId,
+    portalItem: {
+      id: featurePortalId,
+    },
+    // url: featurePortalId,
     outFields: ['*'],
     definitionExpression,
     id: id ?? LAYER_OPTIONS.PROTECTED_AREAS,
