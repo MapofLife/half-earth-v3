@@ -38,8 +38,8 @@ export const PROVINCE_FEATURE_GLOBAL_OUTLINE_ID =
 export const GLOBAL_COUNTRY_OUTLINE_ID = 'dda66f1c1e9c4e62abcd043206c19e81';
 
 // DRC LAYERS
-export const PROTECTED_AREA_FEATURE_URL =
-  'https://services1.arcgis.com/7uJv7I3kgh2y7Pe0/arcgis/rest/services/protected_areas_WDPA_WDOECM_all_Jan2026/FeatureServer'; //'c20d4cbbed23410e9bfc48b5d1c1b483'; //'175c41cfa552401c83d07201732c303f';
+export const PROTECTED_AREA_FEATURE_URL = 'c20d4cbbed23410e9bfc48b5d1c1b483';
+//'https://services1.arcgis.com/7uJv7I3kgh2y7Pe0/arcgis/rest/services/protected_areas_WDPA_WDOECM_all_Jan2026/FeatureServer'; //'c20d4cbbed23410e9bfc48b5d1c1b483'; //'175c41cfa552401c83d07201732c303f';
 // Yale AGOL - 36370bcf99884301bca92ea8eb91f78f
 // DRC SPI LAYER = '41981d576d6042aea14595de0fb924f2';
 export const SHI_LAYER_ID = '6f02cce2565b4d089565aaed6adb6ca2';
