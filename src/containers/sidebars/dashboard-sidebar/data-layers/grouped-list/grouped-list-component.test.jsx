@@ -524,4 +524,112 @@ describe('GroupedListComponent', () => {
       );
     });
   });
+
+  it('adds and removes administrative layers for single-layer rows', async () => {
+    const { rerender, props, map } = renderComponent({
+      dataPoints: [
+        {
+          label: 'Administrative Layers',
+          items: [],
+          id: LAYER_OPTIONS.ADMINISTRATIVE_LAYERS,
+          total_no_rows: 1,
+          isActive: false,
+          showChildren: false,
+          type: DATA_POINT_TYPE.PUBLIC,
+        },
+      ],
+    });
+
+    fireEvent.click(screen.getByLabelText('checkbox'));
+
+    await waitFor(() => {
+      expect(mockGetFeatureLayer).toHaveBeenCalledWith(
+        expect.anything(),
+        'GUY',
+        LAYER_OPTIONS.ADMINISTRATIVE_LAYERS
+      );
+      expect(map.add).toHaveBeenCalled();
+      expect(props.setRegionLayers).toHaveBeenCalled();
+    });
+
+    rerender(
+      <LightModeContext.Provider value={{ lightMode: false }}>
+        <GroupedListComponent
+          {...props}
+          map={map}
+          dataPoints={[
+            {
+              label: 'Administrative Layers',
+              items: [],
+              id: LAYER_OPTIONS.ADMINISTRATIVE_LAYERS,
+              total_no_rows: 1,
+              isActive: true,
+              showChildren: false,
+              type: DATA_POINT_TYPE.PUBLIC,
+            },
+          ]}
+          regionLayers={{
+            [LAYER_OPTIONS.ADMINISTRATIVE_LAYERS]: buildLayer('admin-layer'),
+          }}
+        />
+      </LightModeContext.Provider>
+    );
+
+    fireEvent.click(screen.getByLabelText('checkbox'));
+
+    await waitFor(() => {
+      expect(map.remove).toHaveBeenCalled();
+    });
+  });
+
+  it('loads the EEWWF country lines feature layer', async () => {
+    renderComponent({
+      dataPoints: [
+        {
+          label: 'EEWWF country lines',
+          items: [],
+          id: LAYER_OPTIONS.EEWWF_COUNTRY_LINES,
+          total_no_rows: 1,
+          isActive: false,
+          showChildren: false,
+          type: DATA_POINT_TYPE.PUBLIC,
+        },
+      ],
+    });
+
+    fireEvent.click(screen.getByLabelText('checkbox'));
+
+    await waitFor(() => {
+      expect(mockGetFeatureLayer).toHaveBeenCalledWith(
+        expect.anything(),
+        'GUY',
+        LAYER_OPTIONS.EEWWF_COUNTRY_LINES
+      );
+    });
+  });
+
+  it('loads SDM tile layer when SDM row is toggled', async () => {
+    renderComponent({
+      dataPoints: [
+        {
+          label: 'SDM layer',
+          items: [],
+          id: LAYER_OPTIONS.SDM,
+          total_no_rows: 1,
+          isActive: false,
+          showChildren: false,
+          type: DATA_POINT_TYPE.PUBLIC,
+        },
+      ],
+    });
+
+    fireEvent.click(screen.getByLabelText('checkbox'));
+
+    await waitFor(() => {
+      expect(mockGetTileLayer).toHaveBeenCalledWith(
+        expect.any(String),
+        LAYER_OPTIONS.SDM
+      );
+    });
+  });
 });

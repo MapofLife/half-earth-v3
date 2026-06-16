@@ -27,6 +27,8 @@ import {
   PROVINCE_TREND,
   ZONE_3,
   ZONE_5,
+  TERRISTRIAL,
+  MARINE,
 } from '../../dashboard-trends-sidebar-component';
 import styles from '../../dashboard-trends-sidebar-styles.module.scss';
 
@@ -55,6 +57,8 @@ function TemporalTrendsSpiComponent(props) {
   const [areaProtected, setAreaProtected] = useState(0);
   const [startYear, setStartYear] = useState('1980');
   const [filteredCountryData, setFilteredCountryData] = useState([]);
+
+  const [spiActiveTrend, setSpiActiveTrend] = useState(TERRISTRIAL);
 
   const eewwfRegions = ['MEX', 'PER', 'BRA', 'MDG', 'VNM', 'LND', 'INT'];
 
@@ -124,6 +128,26 @@ function TemporalTrendsSpiComponent(props) {
   return (
     <div className={cx(lightMode ? styles.light : '', styles.trends)}>
       <div className={styles.info}>
+        <div className={styles.options}>
+          <div className={styles.btnGroup}>
+            <Button
+              type="rectangular"
+              className={cx(styles.saveButton, {
+                [styles.notActive]: activeTrend !== PROVINCE_TREND,
+              })}
+              label={t(TERRISTRIAL)}
+              handleClick={() => handleActionChange(PROVINCE_TREND)}
+            />
+            <Button
+              type="rectangular"
+              className={cx(styles.saveButton, {
+                [styles.notActive]: activeTrend !== NATIONAL_TREND,
+              })}
+              label={t(MARINE)}
+              handleClick={() => handleActionChange(NATIONAL_TREND)}
+            />
+          </div>
+        </div>
         <span className={styles.title}>{t('Temporal Trends')}</span>
         {countryISO.toLowerCase() !== 'ee' && (
           <p className={styles.description}>

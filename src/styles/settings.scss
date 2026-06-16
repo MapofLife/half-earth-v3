@@ -59,12 +59,13 @@ $_temporary-light-text: #747474;
 $logos-text: $oslo-gray;
 $light-text: $white;
 
-$mammals-color: $medium-purple;
-$mar-mammals-color: $picton-blue;
-$amphibians-color: $shamrock;
-$birds-color: $saffron-mango;
-$fishes-color: #38e5db;
-$reptiles-color: $conifer;
+$mammals-color: #f24b51;
+$mar-mammals-color: #9973bf;
+$amphibians-color: #ffe355;
+$birds-color: #47a603;
+$fishes-color: #2b69d9;
+$reptiles-color: #fc7205;
+$indicator-area-protected: #ffb246;
 
 // mol colors
 $mol-blue: #243474;
@@ -405,6 +406,7 @@ $vietnam-landscape: #db5a40;
   --habitat: #{$habitat};
   --area: #{$area};
   --area-protected: #{$area-protected};
+  --indicator-area-protected: #{$indicator-area-protected};
   --habitat-country: #{$habitat-country};
   --habitat-country-compare: #{$habitat-country-compare};
 
