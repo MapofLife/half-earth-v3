@@ -5,6 +5,8 @@ import { LightModeContext } from 'context/light-mode';
 import { NAVIGATION } from 'constants/dashboard-constants';
 import ScoreDistributionsSpiComponent from './score-distributions-spi-component';
 
+let chartProps;
+
 vi.mock('@transifex/react', () => ({
   useT: () => (value) => value,
   useLocale: () => 'en',
@@ -30,7 +32,30 @@ vi.mock('components/chart-info-popup/chart-info-component', () => ({
 vi.mock(
   'components/charts/distribution-chart/distribution-chart-component',
   () => ({
-    default: () => <div data-testid="distribution-chart" />,
+    default: (props) => {
+      chartProps = props;
+      return (
+        <button
+          type="button"
+          data-testid="distribution-chart"
+          onClick={() =>
+            props.options?.onClick?.(
+              null,
+              [
+                {
+                  datasetIndex: 0,
+                  index: 0,
+                  label: '0',
+                },
+              ],
+              {}
+            )
+          }
+        >
+          chart
+        </button>
+      );
+    },
   })
 );
 
@@ -66,6 +91,18 @@ vi.mock(
 );
 
 describe('ScoreDistributionsSpiComponent', () => {
+  beforeEach(() => {
+    chartProps = undefined;
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: vi.fn().mockResolvedValue([]),
+    });
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it('renders SPI score distributions and allows selecting a highlighted species', async () => {
     const setSelectedIndex = vi.fn();
     const setScientificName = vi.fn();
@@ -215,5 +252,44 @@ describe('ScoreDistributionsSpiComponent', () => {
     expect(setFromTrends).toHaveBeenCalledWith(true);
     expect(setSelectedIndex).toHaveBeenCalledWith(NAVIGATION.DATA_LAYER);
     expect(setScientificName).toHaveBeenCalledWith('Zoneus testi');
+  });
+
+  it('requests bucket species when chart bars are clicked', async () => {
+    render(
+      <LightModeContext.Provider value={{ lightMode: false }}>
+        <ScoreDistributionsSpiComponent
+          activeTrend="NATIONAL"
+          selectedProvince={{ region_name: 'Loreto', region_key: 'loreto' }}
+          setSelectedIndex={vi.fn()}
+          setScientificName={vi.fn()}
+          setMapLegendLayers={vi.fn()}
+          spiScoresData={[
+            {
+              bin: '0, five',
+              birds: 2,
+              mammals: 1,
+              reptiles: 0,
+              amphibians: 3,
+            },
+          ]}
+          spiSelectSpeciesData={[]}
+          setFromTrends={vi.fn()}
+          lang="en"
+          countryISO="PER"
+          zoneHistrogramData={[]}
+        />
+      </LightModeContext.Provider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('distribution-chart')).toBeInTheDocument();
+      expect(chartProps).toBeDefined();
+    });
+
+    fireEvent.click(screen.getByTestId('distribution-chart'));
+
+    await waitFor(() => {
+      expect(global.fetch).toHaveBeenCalled();
+    });
   });
 });

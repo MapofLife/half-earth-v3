@@ -131,4 +131,65 @@ describe('Spi ProvinceChartComponent', () => {
     expect(handleRegionSelected).toHaveBeenCalled();
     expect(setSelectedProvince).toHaveBeenCalled();
   });
+
+  it('renders bubble chart branch for EE countries', async () => {
+    const setSelectedProvince = vi.fn();
+    const handleRegionSelected = vi.fn();
+
+    render(
+      <LightModeContext.Provider value={{ lightMode: false }}>
+        <ProvinceChartComponent
+          setSelectedProvince={setSelectedProvince}
+          selectedProvince={{
+            name: 'Madagascar',
+            region_name: 'Madagascar',
+            region_key: 'mdg',
+            iso3_regional: 'MDG',
+            level: 'states',
+          }}
+          clickedRegion={{ NAME_1: 'Madagascar' }}
+          setClickedRegion={vi.fn()}
+          provinces={[
+            {
+              name: 'Madagascar',
+              iso3: 'EE',
+              region_key: 'mdg',
+              region_name: 'Madagascar',
+              level: 'states',
+              year: 2024,
+              spi: 31.4,
+              SPI: 31.4,
+              area_km2: 100,
+              area_protected: 36,
+              AreaProtected: 36,
+              spi_rank: 5,
+              size_rank: 2,
+              richness_vert_spi_rank: 3,
+            },
+          ]}
+          provinceName="Madagascar"
+          setProvinceName={vi.fn()}
+          handleRegionSelected={handleRegionSelected}
+          layerView={{
+            queryFeatures: vi.fn().mockResolvedValue({
+              features: [{ attributes: { region_nam: 'Madagascar' } }],
+            }),
+          }}
+          countryISO="EE"
+          lang="en"
+          view={{ map: { allLayers: [{ id: 'PROVINCES', visible: true }] } }}
+          regionLayers={[{ id: 'region-layer' }]}
+        />
+      </LightModeContext.Provider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('bubble-chart')).toBeInTheDocument();
+    });
+
+    expect(screen.getByTestId('arc-chart')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(setSelectedProvince).toHaveBeenCalled();
+    });
+  });
 });

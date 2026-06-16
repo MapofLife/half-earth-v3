@@ -5,6 +5,8 @@ import { LightModeContext } from 'context/light-mode';
 import { NAVIGATION } from 'constants/dashboard-constants';
 import ScoreDistributionsShiComponent from './score-distributions-shi-component';
 
+let chartProps;
+
 vi.mock('@transifex/react', () => ({
   useT: () => (value) => value,
   useLocale: () => 'en',
@@ -38,7 +40,30 @@ vi.mock('components/chart-info-popup/chart-info-component', () => ({
 vi.mock(
   'components/charts/distribution-chart/distribution-chart-component',
   () => ({
-    default: () => <div data-testid="distribution-chart" />,
+    default: (props) => {
+      chartProps = props;
+      return (
+        <button
+          type="button"
+          data-testid="distribution-chart"
+          onClick={() =>
+            props.options?.onClick?.(
+              null,
+              [
+                {
+                  datasetIndex: 0,
+                  index: 0,
+                  label: '0',
+                },
+              ],
+              {}
+            )
+          }
+        >
+          chart
+        </button>
+      );
+    },
   })
 );
 
@@ -80,6 +105,18 @@ vi.mock(
 );
 
 describe('ScoreDistributionsShiComponent', () => {
+  beforeEach(() => {
+    chartProps = undefined;
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: vi.fn().mockResolvedValue([]),
+    });
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it('renders score distributions and allows selecting a highlighted species', async () => {
     const setScientificName = vi.fn();
     const setSelectedIndex = vi.fn();
@@ -240,5 +277,44 @@ describe('ScoreDistributionsShiComponent', () => {
     expect(setFromTrends).toHaveBeenCalledWith(true);
     expect(setSelectedIndex).toHaveBeenCalledWith(NAVIGATION.DATA_LAYER);
     expect(setScientificName).toHaveBeenCalledWith('Testus zonus');
+  });
+
+  it('requests bucket species when chart bars are clicked', async () => {
+    render(
+      <LightModeContext.Provider value={{ lightMode: false }}>
+        <ScoreDistributionsShiComponent
+          setScientificName={vi.fn()}
+          setSelectedIndex={vi.fn()}
+          shiScoresData={[
+            {
+              bin: '0, habitat',
+              amphibians: 1,
+              birds: 2,
+              mammals: 3,
+              reptiles: 4,
+            },
+          ]}
+          shiSelectSpeciesData={[]}
+          shiActiveTrend="NATIONAL"
+          setMapLegendLayers={vi.fn()}
+          selectedProvince={{ region_name: 'Cusco', region_key: 'cusco' }}
+          setFromTrends={vi.fn()}
+          lang="en"
+          countryISO="PER"
+          zoneHistrogramData={[]}
+        />
+      </LightModeContext.Provider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('distribution-chart')).toBeInTheDocument();
+      expect(chartProps).toBeDefined();
+    });
+
+    fireEvent.click(screen.getByTestId('distribution-chart'));
+
+    await waitFor(() => {
+      expect(global.fetch).toHaveBeenCalled();
+    });
   });
 });

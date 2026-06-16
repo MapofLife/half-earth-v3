@@ -149,6 +149,14 @@ describe('TemporalTrendsShiComponent', () => {
       );
     });
 
+    fireEvent.click(screen.getByText('Peru'));
+    fireEvent.click(screen.getByText('Brazil'));
+    fireEvent.click(screen.getByText('Madagascar'));
+    fireEvent.click(screen.getByText('Vietnam'));
+    await waitFor(() => {
+      expect(getFeaturesMock).toHaveBeenCalledTimes(5);
+    });
+
     fireEvent.click(screen.getByText('Landscape'));
     expect(props.setShiActiveTrend).toHaveBeenCalledWith(LND);
 
