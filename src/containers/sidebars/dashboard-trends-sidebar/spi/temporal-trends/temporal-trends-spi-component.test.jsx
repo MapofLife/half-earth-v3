@@ -21,6 +21,8 @@ vi.mock('../../dashboard-trends-sidebar-component', () => ({
   INT: 'INT',
   NATIONAL_TREND: 'NATIONAL',
   PROVINCE_TREND: 'PROVINCE',
+  TERRISTRIAL: 'TERRESTRIAL',
+  MARINE: 'MARINE',
   ZONE_3: 'ZONE_3',
   ZONE_5: 'ZONE_5',
 }));
