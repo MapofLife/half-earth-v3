@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 
 import { LightModeContext } from 'context/light-mode';
 import ProvinceChartComponent from './province-chart-component';
@@ -138,5 +138,89 @@ describe('Shi ProvinceChartComponent', () => {
     expect(screen.getByText('44.5')).toBeInTheDocument();
     expect(handleRegionSelected).toHaveBeenCalled();
     expect(setSelectedProvince).toHaveBeenCalled();
+  });
+
+  it('renders bubble chart controls for EE and updates score mode buttons', async () => {
+    const handleRegionSelected = vi.fn();
+
+    render(
+      <LightModeContext.Provider value={{ lightMode: false }}>
+        <ProvinceChartComponent
+          setSelectedProvince={vi.fn()}
+          selectedProvince={{
+            name: 'Madagascar',
+            region_name: 'Madagascar',
+            region_key: 'mdg',
+            iso3_regional: 'MDG',
+          }}
+          clickedRegion={{ NAME_1: 'Madagascar' }}
+          provinces={[
+            {
+              name: 'Mexico',
+              iso3: 'EE',
+              region_key: 'mex',
+              region_name: 'Mexico',
+              iso3_regional: 'MEX',
+            },
+            {
+              name: 'Madagascar',
+              iso3: 'EE',
+              region_key: 'mdg',
+              region_name: 'Madagascar',
+              iso3_regional: 'MDG',
+            },
+          ]}
+          setClickedRegion={vi.fn()}
+          shiProvinceTrendData={[
+            {
+              name: 'Mexico',
+              year: 2023,
+              area_score: 22.1,
+              connectivity_score: 33.4,
+              habitat_index: 44.5,
+              shi_rank: 7,
+              region_name: 'Mexico',
+              area_km2: 100,
+              connectivity: 0.34,
+            },
+            {
+              name: 'Madagascar',
+              year: 2023,
+              area_score: 25.1,
+              connectivity_score: 28.2,
+              habitat_index: 51.2,
+              shi_rank: 8,
+              region_name: 'Madagascar',
+              area_km2: 120,
+              connectivity: 0.28,
+            },
+          ]}
+          provinceName=""
+          setProvinceName={vi.fn()}
+          handleRegionSelected={handleRegionSelected}
+          layerView={{
+            queryFeatures: vi.fn().mockResolvedValue({
+              features: [{ attributes: { region_nam: 'Madagascar' } }],
+            }),
+          }}
+          lang="en"
+          countryISO="EE"
+          view={{ map: { allLayers: [{ id: 'EE-shi', visible: true }] } }}
+          regionLayers={[{ id: 'region-layer' }]}
+        />
+      </LightModeContext.Provider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('bubble-chart')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: 'Area Component' }));
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Connectivity Component' })
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Habitat Index' }));
+
+    expect(handleRegionSelected).toHaveBeenCalled();
   });
 });

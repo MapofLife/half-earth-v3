@@ -13,6 +13,10 @@ import shiScoreDistImg from 'images/dashboard/tutorials/tutorial_shi_scoreDist-e
 import shiScoreDistFRImg from 'images/dashboard/tutorials/tutorial_shi_scoreDist-fr.png?react';
 import styles from '../../dashboard-trends-sidebar-styles.module.scss';
 import {
+  NATIONAL_TREND,
+  PROVINCE_TREND,
+} from '../../dashboard-trends-sidebar-component';
+import {
   NAVIGATION,
   SPECIES_SELECTED_COOKIE,
 } from 'constants/dashboard-constants.js';

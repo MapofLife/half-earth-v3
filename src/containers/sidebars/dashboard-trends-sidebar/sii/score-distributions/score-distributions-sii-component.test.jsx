@@ -49,6 +49,11 @@ vi.mock('../../../dashboard-sidebar/tutorials/sections/sections-info', () => ({
   SECTION_INFO: { SHI_SCORE_DISTRIBUTIONS: 'sii info' },
 }));
 
+vi.mock('../../dashboard-trends-sidebar-component', () => ({
+  NATIONAL_TREND: 'NATIONAL',
+  PROVINCE_TREND: 'PROVINCE',
+}));
+
 describe('ScoreDistributionsSiiComponent', () => {
   beforeEach(() => {
     global.fetch = vi.fn().mockResolvedValue({
@@ -110,5 +115,39 @@ describe('ScoreDistributionsSiiComponent', () => {
     expect(setFromTrends).toHaveBeenCalledWith(true);
     expect(setSelectedIndex).toHaveBeenCalledWith(NAVIGATION.DATA_LAYER);
     expect(setScientificName).toHaveBeenCalledWith('Amazona ochrocephala');
+  });
+
+  it('uses curated GUY species highlights for national trend', async () => {
+    const setSpsSpecies = vi.fn();
+
+    render(
+      <LightModeContext.Provider value={{ lightMode: false }}>
+        <ScoreDistributionsSiiComponent
+          siiScoresData={[
+            {
+              bin: '0, low',
+              birds: 2,
+              mammals: 1,
+              reptiles: 0,
+              amphibians: 3,
+            },
+          ]}
+          siiSelectSpeciesData={[{ species_sii: [] }]}
+          setMapLegendLayers={vi.fn()}
+          setFromTrends={vi.fn()}
+          setSelectedIndex={vi.fn()}
+          setScientificName={vi.fn()}
+          setSpsSpecies={setSpsSpecies}
+          lang="en"
+          selectedProvince={{ region_key: 'guy' }}
+          countryISO="GUY"
+          siiActiveTrend="NATIONAL"
+        />
+      </LightModeContext.Provider>
+    );
+
+    await waitFor(() => {
+      expect(setSpsSpecies).toHaveBeenCalled();
+    });
   });
 });

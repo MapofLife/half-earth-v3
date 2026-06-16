@@ -143,4 +143,102 @@ describe('ScoreDistributionsShiComponent', () => {
       'Pipra aureola'
     );
   });
+
+  it('uses curated GUY species highlights for national trend', async () => {
+    render(
+      <LightModeContext.Provider value={{ lightMode: false }}>
+        <ScoreDistributionsShiComponent
+          setScientificName={vi.fn()}
+          setSelectedIndex={vi.fn()}
+          shiScoresData={[
+            {
+              bin: '0, habitat',
+              amphibians: 1,
+              birds: 2,
+              mammals: 3,
+              reptiles: 4,
+            },
+          ]}
+          shiSelectSpeciesData={[{ species_shs: [] }]}
+          shiActiveTrend="NATIONAL"
+          setMapLegendLayers={vi.fn()}
+          selectedProvince={{ region_name: 'Region', region_key: 'region' }}
+          setFromTrends={vi.fn()}
+          lang="en"
+          countryISO="GUY"
+          zoneHistrogramData={[]}
+        />
+      </LightModeContext.Provider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Crimson-hooded Manakin')).toBeInTheDocument();
+    });
+  });
+
+  it('loads species from zone histogram data and allows selecting a zone species', async () => {
+    const setScientificName = vi.fn();
+    const setSelectedIndex = vi.fn();
+    const setMapLegendLayers = vi.fn();
+    const setFromTrends = vi.fn();
+
+    render(
+      <LightModeContext.Provider value={{ lightMode: false }}>
+        <ScoreDistributionsShiComponent
+          setScientificName={setScientificName}
+          setSelectedIndex={setSelectedIndex}
+          shiScoresData={[
+            {
+              bin: '0, habitat',
+              amphibians: 1,
+              birds: 2,
+              mammals: 3,
+              reptiles: 4,
+            },
+          ]}
+          shiSelectSpeciesData={[]}
+          shiActiveTrend="ZONE_3"
+          setMapLegendLayers={setMapLegendLayers}
+          selectedProvince={{ region_name: 'Cusco', region_key: 'ACC_3_CUSCO' }}
+          setFromTrends={setFromTrends}
+          lang="en"
+          countryISO="PER"
+          zoneHistrogramData={[
+            {
+              region_key: 'ACC_3_CUSCO',
+              project: 'per',
+              bin: '0, habitat',
+              amphibians: 1,
+              birds: 2,
+              mammals: 3,
+              reptiles: 4,
+              species_shs: [
+                {
+                  '': {
+                    species: 'Testus zonus',
+                    commonname: 'Zone Species',
+                    species_url: 'zone-image',
+                    shs_score: 12.3,
+                    stewardship: 0.3,
+                    taxa: 'birds',
+                    threat_status: 'Least Concern',
+                  },
+                },
+              ],
+            },
+          ]}
+        />
+      </LightModeContext.Provider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Zone Species')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByText('Zone Species'));
+    expect(setMapLegendLayers).toHaveBeenCalledWith([]);
+    expect(setFromTrends).toHaveBeenCalledWith(true);
+    expect(setSelectedIndex).toHaveBeenCalledWith(NAVIGATION.DATA_LAYER);
+    expect(setScientificName).toHaveBeenCalledWith('Testus zonus');
+  });
 });

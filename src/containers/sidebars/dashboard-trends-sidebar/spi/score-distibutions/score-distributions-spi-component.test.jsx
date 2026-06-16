@@ -120,4 +120,100 @@ describe('ScoreDistributionsSpiComponent', () => {
     expect(setSelectedIndex).toHaveBeenCalledWith(NAVIGATION.DATA_LAYER);
     expect(setScientificName).toHaveBeenCalledWith('Pyrrhura egregia');
   });
+
+  it('uses curated GUY species highlights for national trend', async () => {
+    render(
+      <LightModeContext.Provider value={{ lightMode: false }}>
+        <ScoreDistributionsSpiComponent
+          activeTrend="NATIONAL"
+          selectedProvince={{ region_name: 'Region', region_key: 'region' }}
+          setSelectedIndex={vi.fn()}
+          setScientificName={vi.fn()}
+          setMapLegendLayers={vi.fn()}
+          spiScoresData={[
+            {
+              bin: '0, five',
+              birds: 2,
+              mammals: 1,
+              reptiles: 0,
+              amphibians: 3,
+            },
+          ]}
+          spiSelectSpeciesData={[{ species_sps: [] }]}
+          setFromTrends={vi.fn()}
+          lang="en"
+          countryISO="GUY"
+          zoneHistrogramData={[]}
+        />
+      </LightModeContext.Provider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Fiery-shouldered Parakeet')).toBeInTheDocument();
+    });
+  });
+
+  it('loads species from zone histogram data for accepted EE zone trend', async () => {
+    const setSelectedIndex = vi.fn();
+    const setScientificName = vi.fn();
+    const setMapLegendLayers = vi.fn();
+    const setFromTrends = vi.fn();
+
+    render(
+      <LightModeContext.Provider value={{ lightMode: false }}>
+        <ScoreDistributionsSpiComponent
+          activeTrend="MEX"
+          selectedProvince={{ region_name: 'Mexico', region_key: 'MEX' }}
+          setSelectedIndex={setSelectedIndex}
+          setScientificName={setScientificName}
+          setMapLegendLayers={setMapLegendLayers}
+          spiScoresData={[
+            {
+              bin: '0, five',
+              birds: 2,
+              mammals: 1,
+              reptiles: 0,
+              amphibians: 3,
+            },
+          ]}
+          spiSelectSpeciesData={[]}
+          setFromTrends={setFromTrends}
+          lang="en"
+          countryISO="EE"
+          zoneHistrogramData={[
+            {
+              project: 'eewwf',
+              region_key: 'MEX',
+              bin: '0, five',
+              birds_spi_count: 2,
+              mammals_spi_count: 1,
+              reptiles_spi_count: 0,
+              amphibians_spi_count: 3,
+              species_sps: [
+                {
+                  species: 'Zoneus testi',
+                  commonname: 'EE Zone Species',
+                  species_url: 'zone-image',
+                  spi_score: 8.4,
+                  stewardship: 0.2,
+                  taxa: 'birds',
+                  threat_status: 'Least Concern',
+                },
+              ],
+            },
+          ]}
+        />
+      </LightModeContext.Provider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('EE Zone Species')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByText('EE Zone Species'));
+    expect(setMapLegendLayers).toHaveBeenCalledWith([]);
+    expect(setFromTrends).toHaveBeenCalledWith(true);
+    expect(setSelectedIndex).toHaveBeenCalledWith(NAVIGATION.DATA_LAYER);
+    expect(setScientificName).toHaveBeenCalledWith('Zoneus testi');
+  });
 });
