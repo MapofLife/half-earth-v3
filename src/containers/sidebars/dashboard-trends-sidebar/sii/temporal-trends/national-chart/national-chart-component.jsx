@@ -137,7 +137,7 @@ function NationalChartComponent(props) {
           {
             label: t('SII'),
             data: nationalChartData.map((item) => item.sii),
-            borderColor: getCSSVariable('bubble'),
+            borderColor: getCSSVariable('habitat-country'),
           },
         ],
       });
@@ -146,13 +146,13 @@ function NationalChartComponent(props) {
 
       const siiVal = lastValue.sii;
       const sii = {
-        labels: [t('Global SPI'), t('Remaining')],
+        labels: [t('Global SII'), t('Remaining')],
         datasets: [
           {
             label: '',
             data: [siiVal, 100 - siiVal],
-            backgroundColor: [getCSSVariable('bubble'), emptyArcColor],
-            borderColor: [getCSSVariable('bubble'), emptyArcColor],
+            backgroundColor: [getCSSVariable('habitat-country'), emptyArcColor],
+            borderColor: [getCSSVariable('habitat-country'), emptyArcColor],
             borderWidth: 1,
           },
         ],

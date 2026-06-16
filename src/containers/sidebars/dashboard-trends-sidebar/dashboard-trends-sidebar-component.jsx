@@ -11,6 +11,8 @@ import ShiContainer from './shi';
 import SiiContainer from './sii';
 import SpiContainer from './spi';
 
+export const TERRISTRIAL = 'TERRESTRIAL';
+export const MARINE = 'MARINE';
 export const NATIONAL_TREND = 'NATIONAL';
 export const PROVINCE_TREND = 'PROVINCE';
 export const ZONE_3 = 'ZONE_3';
@@ -205,38 +207,34 @@ function DashboardTrendsSidebar(props) {
   };
 
   useEffect(() => {
-    const guyRiver = map.layers.items.find(
-      (item) => item.id === `GUY-RIVER`
-    );
+    const guyRiver = map.layers.items.find((item) => item.id === `GUY-RIVER`);
 
     const guyRiverName = map.layers.items.find(
       (item) => item.id === `GUY-RIVER-NAME`
     );
 
-    if(guyRiver){
+    if (guyRiver) {
       guyRiver.visible = false;
     }
 
-    if(guyRiverName){
+    if (guyRiverName) {
       guyRiverName.visible = false;
     }
 
     return () => {
-      const guyRiver = map.layers.items.find(
-        (item) => item.id === `GUY-RIVER`
-      );
+      const guyRiver = map.layers.items.find((item) => item.id === `GUY-RIVER`);
 
       const guyRiverName = map.layers.items.find(
-      (item) => item.id === `GUY-RIVER-NAME`
-    );
+        (item) => item.id === `GUY-RIVER-NAME`
+      );
 
-      if(guyRiver){
+      if (guyRiver) {
         guyRiver.visible = true;
       }
-      if(guyRiverName){
+      if (guyRiverName) {
         guyRiverName.visible = true;
       }
-    }
+    };
   });
 
   return (

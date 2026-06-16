@@ -51,8 +51,8 @@ function TemporalTrendsSpiNationalChartComponent(props) {
       {
         label: '',
         data: [0, 0],
-        backgroundColor: [getCSSVariable('bubbles'), emptyArcColor],
-        borderColor: [getCSSVariable('bubbles'), emptyArcColor],
+        backgroundColor: [getCSSVariable('habitat-country'), emptyArcColor],
+        borderColor: [getCSSVariable('habitat-country'), emptyArcColor],
         borderWidth: 1,
       },
     ],
@@ -150,8 +150,8 @@ function TemporalTrendsSpiNationalChartComponent(props) {
         {
           label: '',
           data: [spi, 100 - spi],
-          backgroundColor: [getCSSVariable('bubble'), emptyArcColor],
-          borderColor: [getCSSVariable('bubble'), emptyArcColor],
+          backgroundColor: [getCSSVariable('habitat-country'), emptyArcColor],
+          borderColor: [getCSSVariable('habitat-country'), emptyArcColor],
           borderWidth: 1,
         },
       ],
@@ -163,8 +163,14 @@ function TemporalTrendsSpiNationalChartComponent(props) {
         {
           label: '',
           data: [PercentAreaProtected, 100 - PercentAreaProtected],
-          backgroundColor: [getCSSVariable('area-protected'), emptyArcColor],
-          borderColor: [getCSSVariable('area-protected'), emptyArcColor],
+          backgroundColor: [
+            getCSSVariable('indicator-area-protected'),
+            emptyArcColor,
+          ],
+          borderColor: [
+            getCSSVariable('indicator-area-protected'),
+            emptyArcColor,
+          ],
           borderWidth: 1,
         },
       ],
@@ -176,14 +182,14 @@ function TemporalTrendsSpiNationalChartComponent(props) {
         {
           label: 'SPI',
           data: countryData.map((item) => item.spi),
-          borderColor: getCSSVariable('bubble'),
+          borderColor: getCSSVariable('habitat-country'),
         },
         {
           label: t('Area protected'),
           data: countryData.map(
             (item) => (item.area_protected / item.area_km2) * 100
           ),
-          borderColor: getCSSVariable('area-protected'),
+          borderColor: getCSSVariable('indicator-area-protected'),
         },
       ],
     });

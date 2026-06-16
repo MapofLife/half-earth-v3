@@ -2,7 +2,7 @@ import IdentityManager from '@arcgis/core/identity/IdentityManager';
 import OAuthInfo from '@arcgis/core/identity/OAuthInfo';
 
 export const getOAuthInfo = (countryISO) => {
-  if(countryISO === 'GUY'){
+  if (countryISO === 'GUY') {
     return new OAuthInfo({
       appId: '2g74U2WEt7zh0Kpx',
       popup: false,
@@ -10,7 +10,7 @@ export const getOAuthInfo = (countryISO) => {
     });
   }
 
-  if(countryISO === 'COD'){
+  if (countryISO === 'COD') {
     return new OAuthInfo({
       appId: 'qLC0Ks0swCJPymuu',
       popup: false,
@@ -18,7 +18,7 @@ export const getOAuthInfo = (countryISO) => {
     });
   }
 
-  if(countryISO === 'GIN'){
+  if (countryISO === 'GIN') {
     return new OAuthInfo({
       appId: 'lxtJIxf04Acx574x',
       popup: false,
@@ -26,9 +26,17 @@ export const getOAuthInfo = (countryISO) => {
     });
   }
 
-  if(countryISO === 'PER'){
+  if (countryISO === 'PER') {
     return new OAuthInfo({
       appId: 'H0lqwISTHVGxKWeG',
+      popup: false,
+      portalUrl: 'https://mols.maps.arcgis.com/',
+    });
+  }
+
+  if (countryISO === 'PAN') {
+    return new OAuthInfo({
+      appId: 'W2cbIw9B4roDChhZ',
       popup: false,
       portalUrl: 'https://mols.maps.arcgis.com/',
     });

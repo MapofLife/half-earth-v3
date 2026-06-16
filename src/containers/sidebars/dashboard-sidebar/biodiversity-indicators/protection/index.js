@@ -19,7 +19,7 @@ function ProtectionContainer(props) {
   const [shiCountries, setShiCountries] = useState([]);
   const [globalScore, setGlobalScore] = useState(0);
   const [chartData, setChartData] = useState();
-  const [defaultCountryName, setDefaultCountryName] = useState('Global');
+  const [defaultCountryName, setDefaultCountryName] = useState();
 
   const getChartData = (countrySelected) => {
     let currentCountry;
@@ -97,7 +97,7 @@ function ProtectionContainer(props) {
         labels: dates,
         datasets: [
           {
-            label: `${defaultCountryName}`,
+            label: `${countryName}`,
             fill: false,
             backgroundColor: getCSSVariable('habitat-country'),
             borderColor: getCSSVariable('habitat-country'),
@@ -194,7 +194,7 @@ function ProtectionContainer(props) {
   };
 
   useEffect(() => {
-    if (protectionTableData.length) {
+    if (protectionTableData.length && countryName) {
       const countries = protectionTableData.map((item) => item.country);
 
       const sortedCountries = countries.sort((a, b) => {
@@ -215,7 +215,7 @@ function ProtectionContainer(props) {
       setShiCountries(sortedCountries);
       getChartData('Global');
     }
-  }, [protectionTableData]);
+  }, [protectionTableData, countryName]);
 
   return (
     <ProtectionComponent

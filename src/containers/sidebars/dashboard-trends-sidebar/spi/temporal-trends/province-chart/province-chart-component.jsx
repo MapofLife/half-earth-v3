@@ -23,7 +23,10 @@ import { Loading } from 'he-components';
 import ChartInfoComponent from 'components/chart-info-popup/chart-info-component';
 import SpiArcChartComponent from 'components/charts/spi-arc-chart/spi-arc-chart-component';
 
-import { SPI_LATEST_YEAR, REGION_OPTIONS } from 'constants/dashboard-constants.js';
+import {
+  SPI_LATEST_YEAR,
+  REGION_OPTIONS,
+} from 'constants/dashboard-constants.js';
 
 import spiProvinceImg from 'images/dashboard/tutorials/tutorial_spi_provinces-en.png?react';
 import spiProvinceFRImg from 'images/dashboard/tutorials/tutorial_spi_provinces-fr.png?react';
@@ -35,15 +38,16 @@ import styles from './province-chart-styles.module.scss';
 ChartJS.register(LinearScale, ArcElement, PointElement, Tooltip, Legend);
 
 function getUniqueProvinces(provinces) {
-  const provinceSet = new Set()
+  const provinceSet = new Set();
   provinces.forEach((item) => {
     if (item.name && item.iso3 !== item.region_key) {
-      provinceSet.add(JSON.stringify({ name: item.name }))
+      provinceSet.add(JSON.stringify({ name: item.name }));
     }
-  })
-  const uniqueProvinces = Array.from(provinceSet).map((item) => JSON.parse(item)
-  )
-  return uniqueProvinces
+  });
+  const uniqueProvinces = Array.from(provinceSet).map((item) =>
+    JSON.parse(item)
+  );
+  return uniqueProvinces;
 }
 
 function ProvinceChartComponent(props) {
@@ -76,11 +80,11 @@ function ProvinceChartComponent(props) {
         label: '',
         data: [0, 0],
         backgroundColor: [
-          getCSSVariable('bubble'),
+          getCSSVariable('habitat-country'),
           getCSSVariable('white-opacity-20'),
         ],
         borderColor: [
-          getCSSVariable('bubble'),
+          getCSSVariable('habitat-country'),
           getCSSVariable('white-opacity-20'),
         ],
         borderWidth: 1,
@@ -107,7 +111,11 @@ function ProvinceChartComponent(props) {
 
   const getLastValueForProvince = (provName) => {
     if (!provinces || provinces.length === 0) return null;
-    return last(provinces.filter((prov) => prov.level === 'states' && prov.name === provName));
+    return last(
+      provinces.filter(
+        (prov) => prov.level === 'states' && prov.name === provName
+      )
+    );
   };
 
   const getChartData = (name) => {
@@ -144,12 +152,12 @@ function ProvinceChartComponent(props) {
           {
             label: 'SPI',
             data: provinceData.map((item) => item.spi),
-            borderColor: getCSSVariable('bubble'),
+            borderColor: getCSSVariable('habitat-country'),
           },
           {
             label: t('Area protected'),
             data: provinceData.map((item) => item.percentAreaProtected),
-            borderColor: getCSSVariable('area-protected'),
+            borderColor: getCSSVariable('indicator-area-protected'),
           },
         ],
       });
@@ -187,11 +195,11 @@ function ProvinceChartComponent(props) {
           label: '',
           data: [spi, 100 - spi],
           backgroundColor: [
-            getCSSVariable('bubble'),
+            getCSSVariable('habitat-country'),
             getCSSVariable('white-opacity-20'),
           ],
           borderColor: [
-            getCSSVariable('bubble'),
+            getCSSVariable('habitat-country'),
             getCSSVariable('white-opacity-20'),
           ],
           borderWidth: 1,
@@ -201,7 +209,7 @@ function ProvinceChartComponent(props) {
 
     setSpiArcData(spiArc);
 
-    const uniqueProvinces = getUniqueProvinces(provinces)
+    const uniqueProvinces = getUniqueProvinces(provinces);
     setProvinceList(uniqueProvinces);
 
     // EE and COD could use region name
@@ -216,7 +224,7 @@ function ProvinceChartComponent(props) {
     if (chart && index > -1) {
       if (previousIndex > -1) {
         chart.data.datasets[previousIndex].backgroundColor =
-          getCSSVariable('bubble');
+          getCSSVariable('habitat-country');
       }
       chart.data.datasets[index].backgroundColor =
         getCSSVariable('bubble-selected');
@@ -386,14 +394,14 @@ function ProvinceChartComponent(props) {
   }, []);
 
   useEffect(() => {
-    if (!view || regionLayers.length === 0 ||provinces.length === 0) return;
+    if (!view || regionLayers.length === 0 || provinces.length === 0) return;
     setIsLoading(false);
 
     const watchHandle = watchUtils.watch(() =>
       view.map.allLayers.forEach((layer) => {
         if (layer.id === `${REGION_OPTIONS.PROVINCES}` && layer.visible) {
-          if(provinceList.length === 0){
-            const uniqueProvinces = getUniqueProvinces(provinces)
+          if (provinceList.length === 0) {
+            const uniqueProvinces = getUniqueProvinces(provinces);
             setProvinceList(uniqueProvinces);
           }
 
@@ -401,7 +409,11 @@ function ProvinceChartComponent(props) {
             getChartData();
           } else if (selectedProvince) {
             handleProvinceSelected(selectedProvince);
-            setFoundIndex(provinceList.findIndex((region) => region.name === selectedProvince.name));
+            setFoundIndex(
+              provinceList.findIndex(
+                (region) => region.name === selectedProvince.name
+              )
+            );
             getChartData(selectedProvince.name);
           } else {
             setSelectedProvince(provinces[0]);
@@ -413,7 +425,7 @@ function ProvinceChartComponent(props) {
 
     return () => {
       watchHandle.remove();
-    }
+    };
   }, [view, regionLayers, provinces]);
 
   useEffect(() => {
@@ -519,4 +531,3 @@ function ProvinceChartComponent(props) {
 }
 
 export default ProvinceChartComponent;
-
