@@ -87,7 +87,8 @@ const config: any = {
       reportOnFailure: true,
       processingConcurrency: 1,
       include: [
-        'src/containers/sidebars/dashboard-sidebar/**/*component.jsx'
+        'src/containers/sidebars/dashboard-sidebar/**/*component.jsx',
+        'src/containers/sidebars/dashboard-trends-sidebar/**/*component.jsx',
       ],
       thresholds: {
         lines: 80,
