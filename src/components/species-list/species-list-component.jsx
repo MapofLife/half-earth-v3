@@ -215,11 +215,7 @@ function SpeciesListComponent(props) {
   };
 
   const getLabel = validateSpeciesList
-    ? countryISO.toUpperCase() === 'PER'
-      ? t('Validar completa')
-      : t('Validate complete')
-    : countryISO.toUpperCase() === 'PER'
-    ? t('Validar lista')
+    ? t('Validate complete')
     : t('Validate list');
 
   useEffect(() => {

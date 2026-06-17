@@ -499,9 +499,7 @@ describe('RegionsAnalysisComponent', () => {
     });
 
     await waitFor(() => {
-      expect(
-        screen.getByText('Salir del modo de exploración')
-      ).toBeInTheDocument();
+      expect(screen.getByText('Exit explore mode')).toBeInTheDocument();
     });
 
     expect(props.setSelectedIndex).toHaveBeenCalledWith(

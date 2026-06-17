@@ -529,13 +529,9 @@ function RegionsAnalysisComponent(props) {
 
   const exploreModeLabel = useMemo(() => {
     if (!showHover) {
-      return countryISO.toUpperCase() === 'PER'
-        ? t('Salir del modo de exploración')
-        : t('Exit explore mode');
+      return t('Exit explore mode');
     }
-    return countryISO.toUpperCase() === 'PER'
-      ? t('Entrar en modo de exploración')
-      : t('enter explore mode');
+    return t('enter explore mode');
   }, [showHover]);
 
   useEffect(() => {
@@ -654,11 +650,7 @@ function RegionsAnalysisComponent(props) {
           <Button
             type="rectangular"
             className={styles.customArea}
-            label={
-              countryISO.toUpperCase() === 'PER'
-                ? t('Dibujar un área personalizada')
-                : t('Draw a custom area')
-            }
+            label={t('Draw a custom area')}
             handleClick={() =>
               optionSelected({
                 currentTarget: { value: REGION_OPTIONS.DRAW },
