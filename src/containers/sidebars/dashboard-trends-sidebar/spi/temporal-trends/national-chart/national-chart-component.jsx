@@ -27,6 +27,7 @@ import spiTrendFRImg from 'images/dashboard/tutorials/tutorial_spi_temporalTrend
 import { SECTION_INFO } from '../../../../dashboard-sidebar/tutorials/sections/sections-info';
 
 import styles from './national-chart-styles.module.scss';
+import { MARINE } from '../../../dashboard-trends-sidebar-component';
 
 ChartJS.register(LinearScale, LineElement, PointElement, Tooltip, Legend);
 
@@ -35,7 +36,7 @@ function TemporalTrendsSpiNationalChartComponent(props) {
   const locale = useLocale();
   const { lightMode } = useContext(LightModeContext);
 
-  const { countryData, lang } = props;
+  const { countryData, lang, spiActiveTrend } = props;
 
   const [data, setData] = useState();
   const [currentScore, setCurrentScore] = useState();
@@ -228,7 +229,9 @@ function TemporalTrendsSpiNationalChartComponent(props) {
               </div>
               <span />
               <span>{t('Area Protected')}</span>
-              <span>SPI</span>
+              <span>
+                {spiActiveTrend === MARINE ? t('Marine SPI') : t('SPI')}
+              </span>
             </div>
           )}
         </div>

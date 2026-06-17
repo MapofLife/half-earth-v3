@@ -17,6 +17,7 @@ import {
   NATIONAL_TREND,
   TABS,
   PROVINCE_TREND,
+  MARINE,
 } from '../../containers/sidebars/dashboard-trends-sidebar/dashboard-trends-sidebar-component';
 
 let highlight;
@@ -41,6 +42,7 @@ function AreaHighlightManagerComponent(props) {
     activeTrend,
     shiActiveTrend,
     siiActiveTrend,
+    spiActiveTrend,
     layerView,
     setLayerView,
     setRegionName,
@@ -408,7 +410,11 @@ function AreaHighlightManagerComponent(props) {
     hoverHighlight?.remove();
 
     if (selectedIndex === NAVIGATION.TRENDS) {
-      if (tabOption === TABS.SPI && activeTrend !== NATIONAL_TREND) {
+      if (
+        tabOption === TABS.SPI &&
+        activeTrend !== NATIONAL_TREND &&
+        spiActiveTrend !== MARINE
+      ) {
         setOnClickHandler(
           view.on('click', (event) => handleRegionClicked(event))
         );
@@ -438,6 +444,7 @@ function AreaHighlightManagerComponent(props) {
     activeTrend,
     shiActiveTrend,
     siiActiveTrend,
+    spiActiveTrend,
     selectedIndex,
     showHover,
   ]);

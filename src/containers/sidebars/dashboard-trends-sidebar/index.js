@@ -74,6 +74,7 @@ function DashboardTrendsSidebarContainer(props) {
 
   const [shiValue, setShiValue] = useState(0);
   const [spiValue, setSpiValue] = useState(0);
+  const [spiMarineValue, setSpiMarineValue] = useState(0);
   const [siiValue, setSiiValue] = useState(0);
 
   const getCountryData = async (countryURL) => {
@@ -83,6 +84,11 @@ function DashboardTrendsSidebarContainer(props) {
     setShiProvinceTrendData(data);
     setSpiValue(
       last(data.filter((item) => item.level === 'country')).spi.toFixed(1)
+    );
+    setSpiMarineValue(
+      last(data.filter((item) => item.level === 'country')).spi_marine?.toFixed(
+        1
+      )
     );
     const shiValues =
       data.find(
@@ -631,6 +637,7 @@ function DashboardTrendsSidebarContainer(props) {
       countryISO={countryISO}
       shiValue={shiValue}
       spiValue={spiValue}
+      spiMarineValue={spiMarineValue}
       siiValue={siiValue}
       provinces={provinces}
       countryData={countryData}
