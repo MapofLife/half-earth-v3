@@ -370,20 +370,14 @@ describe('DataLayerComponent', () => {
     renderComponent({ countryISO: 'PER', countryName: 'Peru' });
 
     await waitFor(() => {
-      expect(
-        screen.getByText('Enviar comentarios sobre los datos')
-      ).toBeInTheDocument();
+      expect(screen.getByText('Send Feedback')).toBeInTheDocument();
     });
 
-    fireEvent.click(
-      screen.getAllByText('Enviar comentarios sobre los datos')[0]
-    );
+    fireEvent.click(screen.getAllByText('Send Feedback')[0]);
 
-    expect(screen.getByText('Problemas con los datos')).toBeInTheDocument();
+    expect(screen.getByText('Data Issues')).toBeInTheDocument();
     fireEvent.click(screen.getByText('Cancel'));
-    expect(
-      screen.queryByText('Problemas con los datos')
-    ).not.toBeInTheDocument();
+    expect(screen.queryByText('Data Issues')).not.toBeInTheDocument();
   });
 
   it('renders Peru-specific land pressure headings and private occurrence data', async () => {
@@ -405,12 +399,8 @@ describe('DataLayerComponent', () => {
     });
 
     await waitFor(() => {
-      expect(
-        screen.getByText('Capas de presión por uso del suelo')
-      ).toBeInTheDocument();
-      expect(
-        screen.getByText('Capas de presión para uso marino')
-      ).toBeInTheDocument();
+      expect(screen.getByText('Land Use Pressure')).toBeInTheDocument();
+      expect(screen.getByText('Marine Use Pressure')).toBeInTheDocument();
       expect(groupedListSpy).toHaveBeenCalled();
     });
 

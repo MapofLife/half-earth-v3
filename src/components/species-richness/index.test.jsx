@@ -244,7 +244,7 @@ describe('SpeciesRichness', () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText('NATIONAL SPI POR GRUPO TAXONÓMICO')
+        screen.getByText('NATIONAL SPI BY TAXONOMIC GROUP')
       ).toBeInTheDocument();
     });
 
@@ -270,7 +270,7 @@ describe('SpeciesRichness', () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText('Loreto SHI POR GRUPO TAXONÓMICO')
+        screen.getByText('Loreto SHI BY TAXONOMIC GROUP')
       ).toBeInTheDocument();
     });
 
