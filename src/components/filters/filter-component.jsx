@@ -289,11 +289,7 @@ function FilterComponent(props) {
         <Button
           className={styles.viewFlaggedButton}
           type="rectangular"
-          label={
-            countryISO.toUpperCase() === 'PER'
-              ? t('Ver especies marcadas')
-              : t('View flagged species')
-          }
+          label={t('View flagged species')}
           handleClick={() => {
             setUpdateFlaggedSpecies((prev) => !prev);
             setShowFlaggedSpecies(true);

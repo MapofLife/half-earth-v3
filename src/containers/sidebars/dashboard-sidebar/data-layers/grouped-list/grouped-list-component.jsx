@@ -694,10 +694,7 @@ function GroupedListComponent(props) {
   useEffect(() => {
     if (!showPredictionMap) return;
     displaySingleLayer({
-      label:
-        countryISO.toUpperCase() === 'PER'
-          ? t('Modelo de Distribución de Especies (MDE)')
-          : t('Species Distribution Model'),
+      label: t('Species Distribution Model'),
       items: [],
       id: LAYER_OPTIONS.PREDICTION_MAPS,
       total_no_rows: '',

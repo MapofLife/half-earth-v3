@@ -76,10 +76,7 @@ function LayerLegendComponent(props) {
     {
       type: 'landCover',
       id: PERU_CROPS_LAYER,
-      label:
-        countryISO.toUpperCase() === 'PER'
-          ? t('Cultivos de Perú')
-          : t('Peru Crops'),
+      label: t('Peru Crops'),
       heatMapImage: '',
       details: ``,
       showDetails: false,
@@ -90,10 +87,7 @@ function LayerLegendComponent(props) {
     {
       type: 'landCover',
       id: APURIMAC_LANDCOVER_LAYER,
-      label:
-        countryISO.toUpperCase() === 'PER'
-          ? t('Cambio en la cubierta del suelo de Apurímac')
-          : t('Apurimac Landcover change'),
+      label: t('Apurimac Landcover change'),
       heatMapImage: '',
       details: ``,
       showDetails: false,
@@ -104,10 +98,7 @@ function LayerLegendComponent(props) {
     {
       type: 'landCover',
       id: APURIMAC_SPECIES_LOSS_HABITY_SUITABILITY_LAYER,
-      label:
-        countryISO.toUpperCase() === 'PER'
-          ? t('Especies de Apurímac con pérdida en la adecuación del hábitat')
-          : t('Apurímac species with a loss in habitat suitability'),
+      label: t('Apurímac species with a loss in habitat suitability'),
       heatMapImage: '',
       details: ``,
       showDetails: false,
@@ -118,10 +109,7 @@ function LayerLegendComponent(props) {
     {
       type: 'landCover',
       id: APURIMAC_SPECIES_GAIN_HABITY_SUITABILITY_LAYER,
-      label:
-        countryISO.toUpperCase() === 'PER'
-          ? t('Especies de Apurímac con ganancia en la adecuación del hábitat')
-          : t('Apurímac species with a gain in habitat suitability'),
+      label: t('Apurímac species with a gain in habitat suitability'),
       heatMapImage: '',
       details: ``,
       showDetails: false,
@@ -391,10 +379,7 @@ function LayerLegendComponent(props) {
     {
       type: 'socioEconomic',
       id: POVERTY_AND_DEPRIVATION_LAYER,
-      label:
-        countryISO.toUpperCase() === 'PER'
-          ? t('Pobreza y privación')
-          : t('Poverty and Deprivation'),
+      label: t('Poverty and Deprivation'),
       heatMapImage: '',
       details: ``,
       showDetails: false,
@@ -408,10 +393,7 @@ function LayerLegendComponent(props) {
     {
       type: 'landCover',
       id: LAND_COVER_LAYER,
-      label:
-        countryISO.toUpperCase() === 'PER'
-          ? t('Capas de cubierta del suelo (2022)')
-          : t('Land cover (2022)'),
+      label: t('Land cover (2022)'),
       heatMapImage: '',
       details: ``,
       showDetails: false,
@@ -706,11 +688,7 @@ function LayerLegendComponent(props) {
             <div className={styles.layer}>
               <div className={styles.title}>
                 <span className={styles.label}>
-                  {countryISO.toUpperCase() === 'PER' ? (
-                    <b>{t('Capas de biodiversidad')}</b>
-                  ) : (
-                    <b>{t('Biodiversity Layers')}</b>
-                  )}
+                  <b>{t('Biodiversity Layers')}</b>
                 </span>
               </div>
             </div>
@@ -757,11 +735,7 @@ function LayerLegendComponent(props) {
             <div className={styles.layer}>
               <div className={styles.title}>
                 <span className={styles.label}>
-                  {countryISO.toUpperCase() === 'PER' ? (
-                    <b>{t('Capas de presión por uso del suelo')}</b>
-                  ) : (
-                    <b>{t('Land Use Pressure Layers')}</b>
-                  )}
+                  <b>{t('Land Use Pressure Layers')}</b>
                 </span>
               </div>
             </div>
@@ -808,11 +782,7 @@ function LayerLegendComponent(props) {
             <div className={styles.layer}>
               <div className={styles.title}>
                 <span className={styles.label}>
-                  {countryISO.toUpperCase() === 'PER' ? (
-                    <b>{t('Capas de presión para uso marino')}</b>
-                  ) : (
-                    <b>{t('Marine Use Pressure Layers')}</b>
-                  )}
+                  <b>{t('Marine Use Pressure Layers')}</b>
                 </span>
               </div>
             </div>
@@ -859,11 +829,7 @@ function LayerLegendComponent(props) {
             <div className={styles.layer}>
               <div className={styles.title}>
                 <span className={styles.label}>
-                  {countryISO.toUpperCase() === 'PER' ? (
-                    <b>{t('Capas de cubierta/uso del suelo')}</b>
-                  ) : (
-                    <b>{t('Land Cover/Use Layers')}</b>
-                  )}
+                  <b>{t('Land Cover/Use Layers')}</b>
                 </span>
               </div>
             </div>
