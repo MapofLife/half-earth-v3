@@ -24,6 +24,7 @@ import MinimizeIcon from 'icons/closes.svg?react';
 
 import LayerLegendContainer from '../../../components/layer-legend';
 import {
+  MARINE,
   MEX,
   PROVINCE_TREND,
   TERRISTRIAL,
@@ -280,7 +281,9 @@ function DashboardViewComponent(props) {
       />
       <LightModeProvider>
         {/* <TopMenuContainer {...props} /> */}
-        {showLegend && <MapLegendContainer map={map} {...props} />}
+        {showLegend && spiActiveTrend !== MARINE && (
+          <MapLegendContainer map={map} {...props} />
+        )}
         {(selectedIndex === NAVIGATION.REGION ||
           selectedIndex === NAVIGATION.EXPLORE_SPECIES) && (
           <LayerLegendContainer map={map} view={view} {...props} />
