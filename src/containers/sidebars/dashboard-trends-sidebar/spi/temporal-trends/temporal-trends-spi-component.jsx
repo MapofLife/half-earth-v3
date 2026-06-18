@@ -61,6 +61,7 @@ function TemporalTrendsSpiComponent(props) {
     clickedRegion,
     setClickedRegion,
     handleRegionSelected,
+    setShowLegend,
     view,
     map,
   } = props;
@@ -95,6 +96,11 @@ function TemporalTrendsSpiComponent(props) {
   const handleSpiActionChange = async (option) => {
     // setClickedRegion(null);
     // handleRegionSelected(null);
+    if (option === MARINE) {
+      setShowLegend(false);
+    } else {
+      setShowLegend(true);
+    }
     setShowTable(false);
     setSpiActiveTrend(option);
   };

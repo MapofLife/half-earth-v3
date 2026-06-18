@@ -27,6 +27,7 @@ import {
   MARINE,
   MEX,
   PROVINCE_TREND,
+  TABS,
   TERRISTRIAL,
 } from '../../sidebars/dashboard-trends-sidebar/dashboard-trends-sidebar-component';
 import { Snackbar } from '@mui/material';
@@ -140,7 +141,11 @@ function DashboardViewComponent(props) {
 
   useEffect(() => {
     if (Object.values(mapLegendLayers).length > 0) {
-      setShowLegend(true);
+      if (spiActiveTrend === MARINE && tabOption === TABS.SPI) {
+        setShowLegend(false);
+      } else {
+        setShowLegend(true);
+      }
     } else {
       setShowLegend(false);
     }
@@ -281,9 +286,7 @@ function DashboardViewComponent(props) {
       />
       <LightModeProvider>
         {/* <TopMenuContainer {...props} /> */}
-        {showLegend && spiActiveTrend !== MARINE && (
-          <MapLegendContainer map={map} {...props} />
-        )}
+        {showLegend && <MapLegendContainer map={map} {...props} />}
         {(selectedIndex === NAVIGATION.REGION ||
           selectedIndex === NAVIGATION.EXPLORE_SPECIES) && (
           <LayerLegendContainer map={map} view={view} {...props} />
@@ -320,6 +323,7 @@ function DashboardViewComponent(props) {
           setSnackBar={setSnackBar}
           setShowHover={setShowHover}
           showHover={showHover}
+          setShowLegend={setShowLegend}
           {...props}
         />
       </LightModeProvider>
