@@ -41,6 +41,7 @@ function DashboardTrendsSidebar(props) {
     tabOption,
     setTabOption,
     regionLayers,
+    setRegionLayers,
     handleRegionSelected,
     countryISO,
     map,
@@ -102,6 +103,13 @@ function DashboardTrendsSidebar(props) {
 
     // if(guyRiver){
     //   guyRiver.visible = false;
+    // }
+
+    // const foundMarineLayer = map.layers.items.find(
+    //   (item) => item.id === 'marine-layer'
+    // );
+    // if (foundMarineLayer) {
+    //   map.remove(foundMarineLayer);
     // }
 
     if (tabClicked === TABS.SII) {

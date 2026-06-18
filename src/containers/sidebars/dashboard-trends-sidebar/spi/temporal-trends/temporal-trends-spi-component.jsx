@@ -2,18 +2,27 @@ import React, { useContext, useEffect, useState } from 'react';
 
 import { useT, T } from '@transifex/react';
 
-import { numberToLocaleStringWithOneDecimal } from 'utils/dashboard-utils.js';
+import {
+  numberToLocaleStringWithOneDecimal,
+  PROVINCE_FEATURE_GLOBAL_OUTLINE_ID,
+} from 'utils/dashboard-utils.js';
 
 import cx from 'classnames';
 import { LightModeContext } from 'context/light-mode';
 import last from 'lodash/last';
-
+import {
+  REGION_OPTIONS,
+  LAYER_OPTIONS,
+} from 'constants/dashboard-constants.js';
 import Button from 'components/button';
 import DownloadGbifReport from 'components/DownloadGbifReport';
 
 import EsriFeatureService from 'services/esri-feature-service';
 
-import { COUNTRIES_DATA_SERVICE_URL } from 'constants/layers-urls';
+import {
+  COUNTRIES_DATA_SERVICE_URL,
+  DASHBOARD_URLS,
+} from 'constants/layers-urls';
 
 import {
   MEX,
@@ -31,7 +40,7 @@ import {
   MARINE,
 } from '../../dashboard-trends-sidebar-component';
 import styles from '../../dashboard-trends-sidebar-styles.module.scss';
-
+import { removeRegionLayers } from 'utils/dashboard-utils';
 import NationalChartContainer from './national-chart';
 import ProvinceChartContainer from './province-chart';
 import TrendTableComponent from './trend-table/trend-table-component';
@@ -46,12 +55,14 @@ function TemporalTrendsSpiComponent(props) {
     setActiveTrend,
     spiActiveTrend,
     setSpiActiveTrend,
+    setMapLegendLayers,
     countryData,
     countryISO,
     clickedRegion,
     setClickedRegion,
     handleRegionSelected,
     view,
+    map,
   } = props;
 
   const [showTable, setShowTable] = useState(false);
@@ -81,9 +92,9 @@ function TemporalTrendsSpiComponent(props) {
     }
   };
 
-  const handleSpiActionChange = (option) => {
-    setClickedRegion(null);
-    handleRegionSelected(null);
+  const handleSpiActionChange = async (option) => {
+    // setClickedRegion(null);
+    // handleRegionSelected(null);
     setShowTable(false);
     setSpiActiveTrend(option);
   };
@@ -235,9 +246,11 @@ function TemporalTrendsSpiComponent(props) {
                 />
               </div>
             )}
-            <span className={styles.helpText}>
-              {t('Toggle national SPI and province-level breakdown.')}
-            </span>
+            {spiActiveTrend !== 'MARINE' && (
+              <span className={styles.helpText}>
+                {t('Toggle national SPI and province-level breakdown.')}
+              </span>
+            )}
             {countryISO.toLowerCase() === 'guy-fm' && (
               <div className={styles.btnGroup}>
                 <Button
@@ -258,7 +271,7 @@ function TemporalTrendsSpiComponent(props) {
                 />
               </div>
             )}
-            {activeTrend === PROVINCE_TREND && (
+            {activeTrend === PROVINCE_TREND && spiActiveTrend !== 'MARINE' && (
               <>
                 {!showTable && (
                   <Button

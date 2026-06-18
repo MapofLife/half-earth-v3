@@ -149,7 +149,7 @@ function DashboardNavComponent(props) {
         >
           <TimeLineIcon />
         </button>
-        {/* <button
+        <button
           type="button"
           aria-label={t('Planning')}
           title={t('Planning')}
@@ -159,7 +159,7 @@ function DashboardNavComponent(props) {
           onClick={() => updateHistory(NAVIGATION.PLANNING, titles.PLANNING)}
         >
           <PlanningIcon />
-        </button> */}
+        </button>
         {/* <button
           type="button"
           aria-label={t('Expert Tools')}

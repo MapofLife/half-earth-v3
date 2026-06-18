@@ -209,8 +209,7 @@ export const LAYERS_URLS = {
     'https://utility.arcgis.com/usrsvcs/servers/685d69cda038469f93dcfd96355abefc/rest/services/PriorPolygons/FeatureServer',
   [FEATURED_PLACES_LAYER]:
     'https://services9.arcgis.com/IkktFdUAcY3WrH25/arcgis/rest/services/featured_places_discover_added/FeatureServer',
-  [FEATURED_PLACES_PORTAL_ID]:
-  '51f5377402444b04b0a48b223d7431a3',
+  [FEATURED_PLACES_PORTAL_ID]: '51f5377402444b04b0a48b223d7431a3',
 
   // Carbon layer
   [CARBON_LAYER]:
@@ -478,7 +477,7 @@ export const LAYERS_URLS = {
     'https://utility.arcgis.com/usrsvcs/servers/e34b098b0bc047439e2139c8651673ef/rest/services/specific_regions_precalculated_aoi_summaries_Oct_2025/FeatureServer/0',
   [SPECIFIC_REGIONS_WDPA_LAYER]:
     'https://services9.arcgis.com/IkktFdUAcY3WrH25/arcgis/rest/services/SpecificRegions_wdpa_202401/FeatureServer/0',
-    // Regional richness and rarity layers
+  // Regional richness and rarity layers
   [AMPHIB_RICHNESS_NATIONAL]:
     'https://tiles.arcgis.com/tiles/IkktFdUAcY3WrH25/arcgis/rest/services/amphibians_richness_nationally_scaled_SEA_NA_SACA/MapServer',
   [AMPHIB_RARITY_NATIONAL]:
@@ -508,8 +507,8 @@ export const LAYERS_URLS = {
 
 export const DASHBOARD_URLS = {
   INITIAL_COUNTRY_LAYER: '53a1e68de7e4499cad77c80daba46a94',
-  DATASET_LAYER_INFO:
-    `${API_BASE_URL}/datasets/metadata?dataset_id=`,
+  MARINE_LAYER_PORTAL_ID: '3fe44b68a95248eb939c3bd2883b133d',
+  DATASET_LAYER_INFO: `${API_BASE_URL}/datasets/metadata?dataset_id=`,
   DATASET_LAYER_GROUP_INFO: `${API_BASE_URL}/datasets/type`,
   REGIONS_MOL_DATA: `${API_BASE_URL}/spatial/species/list`,
   ARCGIS_USER_INFO_URL: `${NBIS_BASE_URL}/get-arcgis-user-info`,
@@ -521,25 +520,27 @@ export const DASHBOARD_URLS = {
   GET_CUSTOM_AREA_URL: `${NBIS_BASE_URL}/get-custom-regions`,
   CREATE_FEEDBACK_URL: `${NBIS_BASE_URL}/create-feedback`,
   BUCKET_SPECIES_URL: `${NBIS_BASE_URL}/get-species`,
-  SPI_PROVINCE_TREND_URL:
-    `${NBIS_BASE_URL}/get-indicators`,
-  SPI_HISTOGRAM_URL:
-    `${NBIS_BASE_URL}/get-bar-data`,
+  SPI_PROVINCE_TREND_URL: `${NBIS_BASE_URL}/get-indicators`,
+  SPI_HISTOGRAM_URL: `${NBIS_BASE_URL}/get-bar-data`,
   // use updated api, not dev-api.mol.org
   COD_REGIONAL_SPECIES_LAYER: 'd9b12607731a42e8b463612d7b51ffa5',
-  PRIORITY_SPECIES: // TODO: hardcoded species on home page
+  // TODO: hardcoded species on home page
+  PRIORITY_SPECIES:
     'https://services1.arcgis.com/7uJv7I3kgh2y7Pe0/arcgis/rest/services/priority_species/FeatureServer',
-  IGNORE_SPECIES_LIST:  // TODO: review with Tamara
+  // TODO: review with Tamara
+  IGNORE_SPECIES_LIST:
     'https://services1.arcgis.com/7uJv7I3kgh2y7Pe0/arcgis/rest/services/species_to_remove/FeatureServer',
   PRIVATE_COD_OCCURENCE_LAYER:
     'https://services3.arcgis.com/Zyt0ectKCtAdsOa2/arcgis/rest/services/occurrences_RDC/FeatureServer',
-  PRIVATE_COD_OCCURENCE_METADATA_LAYER: // metadata about the studies in the private occurrence data
+  // metadata about the studies in the private occurrence data
+  PRIVATE_COD_OCCURENCE_METADATA_LAYER:
     'https://services3.arcgis.com/Zyt0ectKCtAdsOa2/arcgis/rest/services/occurrence_metadata/FeatureServer',
   PRIVATE_GIN_OCCURENCE_LAYER:
     'https://services5.arcgis.com/0f65lZbPr3QAKkSu/arcgis/rest/services/occurrences_GIN/FeatureServer',
   PRIVATE_GUY_OCCURENCE_LAYER:
-  'https://services1.arcgis.com/7uJv7I3kgh2y7Pe0/arcgis/rest/services/occurrences_GUY_test/FeatureServer',
-  PRIVATE_GIN_OCCURENCE_METADATA_LAYER: // metadata about the studies in the private occurrence data
+    'https://services1.arcgis.com/7uJv7I3kgh2y7Pe0/arcgis/rest/services/occurrences_GUY_test/FeatureServer',
+  // metadata about the studies in the private occurrence data
+  PRIVATE_GIN_OCCURENCE_METADATA_LAYER:
     'https://services5.arcgis.com/0f65lZbPr3QAKkSu/arcgis/rest/services/occurrence_metadata/FeatureServer',
   ZONE_OCCURRENCE:
     'https://services1.arcgis.com/7uJv7I3kgh2y7Pe0/arcgis/rest/services/species_occurences_iso3_level/FeatureServer',
@@ -553,8 +554,11 @@ export const DASHBOARD_URLS = {
     'https://services1.arcgis.com/7uJv7I3kgh2y7Pe0/arcgis/rest/services/species_sps_region_global/FeatureServer',
   REGION_BIODIVERSITY_SHS_URL:
     ' https://services1.arcgis.com/7uJv7I3kgh2y7Pe0/arcgis/rest/services/species_shs_region_global/FeatureServer',
-  SDM_FEATURE_LAYER_URL: // Guyana monkey SDM
+  // Guyana monkey SDM
+  SDM_FEATURE_LAYER_URL:
     'https://tiles.arcgis.com/tiles/7uJv7I3kgh2y7Pe0/arcgis/rest/services/Ateles_paniscus/MapServer',
+  MARINE_LAYER_URL:
+    'https://services1.arcgis.com/7uJv7I3kgh2y7Pe0/arcgis/rest/services/marine_eez_boundary_2025_spi/FeatureServer',
 };
 
 export const NBIS_URLS = {

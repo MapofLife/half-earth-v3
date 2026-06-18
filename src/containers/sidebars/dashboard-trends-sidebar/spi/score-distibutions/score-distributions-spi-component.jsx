@@ -45,6 +45,7 @@ function ScoreDistributionsSpiComponent(props) {
     setFromTrends,
     lang,
     countryISO,
+    spiActiveTrend,
     zoneHistrogramData,
   } = props;
   const { lightMode } = useContext(LightModeContext);
@@ -145,15 +146,18 @@ function ScoreDistributionsSpiComponent(props) {
   const getBucketSpecies = (low, high) => {
     const regionKey =
       activeTrend === PROVINCE_TREND ? selectedProvince.region_key : countryISO;
-    const response = fetch(
-      `${DASHBOARD_URLS.BUCKET_SPECIES_URL}?iso3=${countryISO}&region_key=${regionKey}&min_value=${low}&max_value=${high}&filter_by=sps&lang=${tx.currentLocale}`,
-      {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
-    )
+
+    let url = `${DASHBOARD_URLS.BUCKET_SPECIES_URL}?iso3=${countryISO}&region_key=${regionKey}&min_value=${low}&max_value=${high}&filter_by=sps&lang=${tx.currentLocale}`;
+
+    if (spiActiveTrend === 'MARINE') {
+      url += '&marine=True';
+    }
+    const response = fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
       .then((res) => {
         if (res.ok) {
           res.json().then((data) => {
@@ -175,7 +179,14 @@ function ScoreDistributionsSpiComponent(props) {
   };
 
   const getChartData = async () => {
-    const taxaSet = { amphibians: {}, birds: {}, mammals: {}, reptiles: {} };
+    const taxaSet = {
+      amphibians: {},
+      birds: {},
+      mammals: {},
+      reptiles: {},
+      fishes: {},
+      marine_mammals: {},
+    };
 
     let locationData = [];
     if (activeTrend === PROVINCE_TREND && selectedProvince) {
@@ -210,6 +221,9 @@ function ScoreDistributionsSpiComponent(props) {
       taxaSet.birds[bin] = a.birds_spi_count || a.birds;
       taxaSet.mammals[bin] = a.mammals_spi_count || a.mammals;
       taxaSet.reptiles[bin] = a.reptiles_spi_count || a.reptiles;
+      taxaSet.fishes[bin] = a.fishes_marine_sps_count || a.fishes;
+      taxaSet.marine_mammals[bin] =
+        a.mammals_marine_sps_count || a.marine_mammals;
     });
 
     const uniqueKeys = new Set([
@@ -217,32 +231,49 @@ function ScoreDistributionsSpiComponent(props) {
       ...Object.keys(taxaSet.mammals),
       ...Object.keys(taxaSet.reptiles),
       ...Object.keys(taxaSet.amphibians),
+      ...Object.keys(taxaSet.fishes),
+      ...Object.keys(taxaSet.marine_mammals),
     ]);
+
+    const terrirestrialData = [
+      {
+        label: t('Birds'),
+        data: Object.values(taxaSet.birds),
+        backgroundColor: getCSSVariable('birds'),
+      },
+      {
+        label: t('Mammals'),
+        data: Object.values(taxaSet.mammals),
+        backgroundColor: getCSSVariable('mammals'),
+      },
+      {
+        label: t('Reptiles'),
+        data: Object.values(taxaSet.reptiles),
+        backgroundColor: getCSSVariable('reptiles'),
+      },
+      {
+        label: t('Amphibians'),
+        data: Object.values(taxaSet.amphibians),
+        backgroundColor: getCSSVariable('amphibians'),
+      },
+    ];
+
+    const marineData = [
+      {
+        label: t('Fishes'),
+        data: Object.values(taxaSet.fishes),
+        backgroundColor: getCSSVariable('fishes'),
+      },
+      {
+        label: t('Marine Mammals'),
+        data: Object.values(taxaSet.marine_mammals),
+        backgroundColor: getCSSVariable('marine-mammals'),
+      },
+    ];
 
     setChartData({
       labels: [...uniqueKeys].map((key) => key),
-      datasets: [
-        {
-          label: t('Birds'),
-          data: Object.values(taxaSet.birds),
-          backgroundColor: getCSSVariable('birds'),
-        },
-        {
-          label: t('Mammals'),
-          data: Object.values(taxaSet.mammals),
-          backgroundColor: getCSSVariable('mammals'),
-        },
-        {
-          label: t('Reptiles'),
-          data: Object.values(taxaSet.reptiles),
-          backgroundColor: getCSSVariable('reptiles'),
-        },
-        {
-          label: t('Amphibians'),
-          data: Object.values(taxaSet.amphibians),
-          backgroundColor: getCSSVariable('amphibians'),
-        },
-      ],
+      datasets: spiActiveTrend === 'MARINE' ? marineData : terrirestrialData,
     });
     setIsLoading(false);
   };
@@ -346,11 +377,19 @@ function ScoreDistributionsSpiComponent(props) {
           },
         ]);
       } else {
-        const bird = species.find((item) => item.taxa === 'birds');
-        const mammal = species.find((item) => item.taxa === 'mammals');
-        const reptile = species.find((item) => item.taxa === 'reptiles');
-        const amphibian = species.find((item) => item.taxa === 'amphibians');
-        setSpsSpecies([bird, mammal, reptile, amphibian]);
+        if (spiActiveTrend === 'MARINE') {
+          const fish = species.find((item) => item.taxa === 'fishes_marine');
+          const marineMammal = species.find(
+            (item) => item.taxa === 'mammals_marine'
+          );
+          setSpsSpecies([fish, marineMammal]);
+        } else {
+          const bird = species.find((item) => item.taxa === 'birds');
+          const mammal = species.find((item) => item.taxa === 'mammals');
+          const reptile = species.find((item) => item.taxa === 'reptiles');
+          const amphibian = species.find((item) => item.taxa === 'amphibians');
+          setSpsSpecies([bird, mammal, reptile, amphibian]);
+        }
       }
     }
     setIsSpeciesLoading(false);
@@ -389,7 +428,7 @@ function ScoreDistributionsSpiComponent(props) {
     if (zoneHistrogramData.length) {
       loadSpecies();
     }
-  }, [spiScoresData, activeTrend, zoneHistrogramData]);
+  }, [spiScoresData, activeTrend, spiActiveTrend, zoneHistrogramData]);
 
   useEffect(() => {
     if (!spiSelectSpeciesData?.length) return;
@@ -461,7 +500,7 @@ function ScoreDistributionsSpiComponent(props) {
       <div
         className={cx(lightMode ? compStyles.light : '', compStyles.chartArea)}
       >
-        <SpeciesRichnessComponent {...props} />
+        <SpeciesRichnessComponent spi {...props} />
         {isLoading && <Loading height={200} />}
         {!isLoading && (
           <ChartInfoComponent chartInfo={chartInfo} {...props}>

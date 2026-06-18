@@ -1,5 +1,5 @@
 import { LAYER_OPTIONS, LAYER_TITLE_TYPES } from 'constants/dashboard-constants.js';
-import { LAYERS_URLS } from 'constants/layers-urls';
+import { DASHBOARD_URLS, LAYERS_URLS } from 'constants/layers-urls';
 import { LOCAL_SPATIAL_REFERENCE } from 'constants/scenes-constants';
 import { AddFeature, GetFeatures, GetLayer } from 'types/services-types';
 import {
@@ -105,6 +105,10 @@ async function getFeatureLayer(portalItemId, countryISO, id, classType = null) {
   if (classType === 'LND') {
     // const className = classType === 'INT' ? 'Intervention' : 'Landscape';
     definitionExpression = `class = 'Landscape'`;
+  }
+
+  if(portalItemId === DASHBOARD_URLS.MARINE_LAYER_PORTAL_ID) {
+    definitionExpression = `ISO_TER1 = '${countryISO}' OR ISO_SOV1 = '${countryISO}' OR ISO_SOV2 = '${countryISO}' OR ISO_SOV3 = '${countryISO}'`;
   }
   const featureLayer = new FeatureLayer({
     portalItem: {
