@@ -413,7 +413,7 @@ function LayerLegendComponent(props) {
   const [panamaLayers, setPanamaLayers] = useState([
     {
       id: 'panama_eco_region_graphics',
-      label: t('Panama Economic Regions'),
+      label: t('Terrestrial ecoregions of Panama'),
       heatMapImage: '',
       details: `Publication date: 2012-12-04 <br/>Responsible party<br/>Organization's name: RAISG - Red Amazónica de Información Socioambiental Georreferenciada<br/>Contact's role: point of contact<br/>Delivery point: <a href="http://raisg.socioambiental.org/contact" target="_blank" rel="noopener noreferrer">http://raisg.socioambiental.org/contact</a>`,
       showDetails: false,
