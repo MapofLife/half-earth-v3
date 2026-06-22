@@ -91,8 +91,8 @@ const config: any = {
         'src/containers/sidebars/dashboard-trends-sidebar/**/*component.jsx',
       ],
       thresholds: {
-        lines: 80,
-        statements: 80,
+        lines: 93,
+        statements: 93,
         functions: 80,
         branches: 80,
       },

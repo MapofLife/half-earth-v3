@@ -61,6 +61,13 @@ function DashboardSidebar(props) {
       setRegionName(null);
       setRegionLayers({});
     }
+
+    const sample_priority_layer = map.layers?.items.find(
+      (item) => item.id === 'sample_priority_layer'
+    );
+    if (sample_priority_layer) {
+      map.remove(sample_priority_layer);
+    }
   }, [selectedIndex]);
 
   useEffect(() => {
