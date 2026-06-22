@@ -813,6 +813,17 @@ function LayerLegendComponent(props) {
       </ul>
       {indigenousRegions.includes(countryISO) && (
         <ul className={styles.layers}>
+          <li>
+            <div className={styles.dataLayer}>
+              <div className={styles.layer}>
+                <div className={styles.title}>
+                  <span className={styles.label}>
+                    <b>{t('Indigenous Layers')}</b>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </li>
           {Object.values(indigenousLandsLayer).map((layer) => (
             <li key={`${layer.id}-${layer.label}`}>
               <div className={styles.dataLayer}>
