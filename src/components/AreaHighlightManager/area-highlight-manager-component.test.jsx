@@ -40,6 +40,7 @@ vi.mock(
   () => ({
     NATIONAL_TREND: 'NATIONAL',
     PROVINCE_TREND: 'PROVINCE',
+    MARINE: 'MARINE',
     TABS: {
       SHI: 1,
       SPI: 2,

@@ -235,6 +235,14 @@ function SpeciesRichnessComponent(props) {
               count: +values.amphibians * 100,
               total: +total.amphibians,
             },
+            fishes: {
+              count: 0,
+              total: 0,
+            },
+            marMammals: {
+              count: 0,
+              total: 0,
+            },
           });
         }
       } else {
@@ -361,6 +369,14 @@ function SpeciesRichnessComponent(props) {
           amphibians: {
             count: AmphibianSPI,
             total: AmphibianSpeciesRichness,
+          },
+          fishes: {
+            count: 0,
+            total: 0,
+          },
+          marMammals: {
+            count: 0,
+            total: 0,
           },
         });
       }

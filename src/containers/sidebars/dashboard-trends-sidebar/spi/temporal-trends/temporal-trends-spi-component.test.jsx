@@ -106,6 +106,8 @@ function renderComponent(overrides = {}) {
     setClickedRegion: vi.fn(),
     handleRegionSelected: vi.fn(),
     view: { goTo: vi.fn() },
+    setShowLegend: vi.fn(),
+    setSpiActiveTrend: vi.fn(),
     ...overrides,
   };
 

@@ -45,6 +45,7 @@ vi.mock(
   () => ({
     NATIONAL_TREND: 'NATIONAL',
     PROVINCE_TREND: 'PROVINCE',
+    MARINE: 'MARINE',
     ZONE_3: 'ZONE_3',
     ZONE_5: 'ZONE_5',
   })
@@ -214,6 +215,7 @@ const createProps = (overrides = {}) => ({
     },
   ],
   siiActiveTrend: NATIONAL_TREND,
+  spiActiveTrend: NATIONAL_TREND,
   countryISO: 'PER',
   shi: false,
   sii: false,
@@ -240,7 +242,7 @@ describe('SpeciesRichness', () => {
   });
 
   it('renders the national SPI title and passes country scores to all arc charts', async () => {
-    renderComponent(createProps());
+    renderComponent(createProps({ spi: true }));
 
     await waitFor(() => {
       expect(
@@ -326,6 +328,7 @@ describe('SpeciesRichness', () => {
         countryISO: 'COL',
         activeTrend: 'PER',
         selectedProvince: { name: 'Amazon Zone', region_key: 'zone-1' },
+        spi: true,
       })
     );
 
@@ -427,6 +430,7 @@ describe('SpeciesRichness', () => {
         countryISO: 'COL',
         activeTrend: PROVINCE_TREND,
         selectedProvince: { name: 'Loreto' },
+        spi: true,
       })
     );
 
@@ -446,6 +450,7 @@ describe('SpeciesRichness', () => {
     renderComponent(
       createProps({
         countryISO: 'guy-fm',
+        spi: true,
         countryData: [
           {
             BirdSpeciesRichness: 120,

@@ -15,6 +15,7 @@ vi.mock('utils/css-utils', () => ({
 
 vi.mock('chart.js', () => ({
   Chart: { register: vi.fn() },
+  CategoryScale: {},
   LinearScale: {},
   PointElement: {},
   LineElement: {},

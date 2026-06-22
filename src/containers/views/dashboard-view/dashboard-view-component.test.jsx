@@ -99,7 +99,10 @@ vi.mock(
   '../../sidebars/dashboard-trends-sidebar/dashboard-trends-sidebar-component',
   () => ({
     MEX: 'MEX',
+    NATIONAL_TREND: 'NATIONAL',
     PROVINCE_TREND: 'PROVINCE',
+    TERRISTRIAL: 'TERRESTRIAL',
+    MARINE: 'MARINE',
   })
 );
 
