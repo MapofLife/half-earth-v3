@@ -559,6 +559,8 @@ export const DASHBOARD_URLS = {
     'https://tiles.arcgis.com/tiles/7uJv7I3kgh2y7Pe0/arcgis/rest/services/Ateles_paniscus/MapServer',
   MARINE_LAYER_URL:
     'https://services1.arcgis.com/7uJv7I3kgh2y7Pe0/arcgis/rest/services/marine_eez_boundary_2025_spi/FeatureServer',
+  PANAMA_ECO_REGION_LAYER_URL:
+    'https://geoportal.miambiente.gob.pa/server/rest/services/Nodo_Bosque_Biodiversidad_2/MapServer/11',
   SAMPLE_PRIORITY_LAYER:
     'https://tiles.arcgis.com/tiles/7uJv7I3kgh2y7Pe0/arcgis/rest/services/sample_priority_layer/MapServer',
 };

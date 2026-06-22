@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 import { useT } from '@transifex/react';
-
+import { fromJSON } from '@arcgis/core/symbols/support/jsonUtils.js';
 import {
   APURIMAC_LANDCOVER_FEATURE_ID,
   INDIGENOUS_LANDS_FEATURE_ID,
@@ -9,6 +9,8 @@ import {
 } from 'utils/dashboard-utils';
 
 import TileLayer from '@arcgis/core/layers/TileLayer';
+import GraphicsLayer from '@arcgis/core/layers/GraphicsLayer';
+import Graphic from '@arcgis/core/Graphic';
 import Switch from '@mui/material/Switch';
 import cx from 'classnames';
 
@@ -54,11 +56,12 @@ import {
   PERU_CROPS_LAYER,
   POVERTY_AND_DEPRIVATION_LAYER,
 } from 'constants/layers-slugs';
-import { LAYERS_URLS } from 'constants/layers-urls';
+import { LAYERS_URLS, DASHBOARD_URLS } from 'constants/layers-urls';
 
 import ArrowIcon from 'icons/arrow_right.svg?react';
 
 import styles from './layer-legend-styles.module.scss';
+import { SimpleFillSymbol, SimpleLineSymbol } from '@arcgis/core/symbols';
 
 function LayerLegendComponent(props) {
   const {
@@ -119,9 +122,11 @@ function LayerLegendComponent(props) {
     },
   ];
 
+  const indigenousRegions = ['GUY', 'PER'];
+
   // const [leftPosition, setLeftPosition] = useState(0);
   const [collapse, setCollapse] = useState(true);
-  const [richnessLayers, setRichnessLayers] = useState([
+  const [indigenousLandsLayer, setIndigenousLandsLayer] = useState([
     {
       id: LAYER_OPTIONS.INDIGENOUS_LANDS,
       label: t('Indigenous Territories'),
@@ -132,6 +137,8 @@ function LayerLegendComponent(props) {
       portalId: INDIGENOUS_LANDS_FEATURE_ID,
       speciesCount: 0,
     },
+  ]);
+  const [richnessLayers, setRichnessLayers] = useState([
     {
       id: BIRDS_RICHNESS_1KM,
       label: t('Birds Richness'),
@@ -403,67 +410,168 @@ function LayerLegendComponent(props) {
     },
   ]);
 
+  const [panamaLayers, setPanamaLayers] = useState([
+    {
+      id: 'panama_eco_region_graphics',
+      label: t('Panama Economic Regions'),
+      heatMapImage: '',
+      details: `Publication date: 2012-12-04 <br/>Responsible party<br/>Organization's name: RAISG - Red Amazónica de Información Socioambiental Georreferenciada<br/>Contact's role: point of contact<br/>Delivery point: <a href="http://raisg.socioambiental.org/contact" target="_blank" rel="noopener noreferrer">http://raisg.socioambiental.org/contact</a>`,
+      showDetails: false,
+      showLayer: false,
+      url: DASHBOARD_URLS.PANAMA_ECO_REGION_LAYER_URL,
+      speciesCount: 0,
+    },
+  ]);
+
+  const displayPanamaLayer = async (layer) => {
+    const serviceUrl = layer.url;
+
+    // Fetch layer definition to get the renderer and default symbol
+    const getLayerRenderer = async () => {
+      try {
+        const response = await fetch(`${serviceUrl}?f=json`);
+        const layerDefinition = await response.json();
+        return layerDefinition.drawingInfo?.renderer;
+      } catch (error) {
+        console.warn('Could not fetch layer renderer:', error);
+        return null;
+      }
+    };
+
+    const renderer = await getLayerRenderer();
+
+    EsriFeatureService.getFeatures({
+      url: serviceUrl,
+      whereClause: '1=1',
+      returnGeometry: true,
+    }).then((features) => {
+      if (!features || features.length === 0) return;
+
+      // Create a graphics layer to hold all feature geometries
+      const graphicsLayer = new GraphicsLayer({
+        id: layer.id,
+        title: layer.label,
+      });
+
+      // Loop through all features and add their geometries to the graphics layer
+      features.forEach((feature, index) => {
+        const { geometry, attributes } = feature;
+        if (geometry) {
+          const graphic = new Graphic({
+            geometry,
+            attributes,
+            symbol: new SimpleFillSymbol({
+              style: 'esriSFSSolid',
+              color: renderer?.uniqueValueInfos[index]?.symbol.color,
+              outline: new SimpleLineSymbol({
+                color: renderer?.uniqueValueInfos[index]?.symbol.outline.color,
+                width: 1,
+              }),
+            }),
+          });
+          graphicsLayer.add(graphic);
+        }
+      });
+
+      // Add the graphics layer to the map
+      map.add(graphicsLayer);
+
+      setRegionLayers((rl) => ({
+        ...rl,
+        [layer.id]: graphicsLayer,
+      }));
+
+      map.add(graphicsLayer, map.layers.length - layerIndex);
+
+      view.whenLayerView(graphicsLayer).then(() => {
+        const { renderer } = graphicsLayer;
+        const { uniqueValueGroups } = renderer;
+        const layerInfo = {
+          ...layer,
+          classes: uniqueValueGroups[0].classes,
+        };
+
+        setMapLegendLayers((ml) => [layerInfo, ...ml]);
+      });
+
+      // Navigate to the first feature's geometry
+      // const firstGeometry = features[0].geometry;
+      // if (firstGeometry) {
+      //   view.goTo({
+      //     target: firstGeometry,
+      //     center: [firstGeometry.longitude - 20, firstGeometry.latitude],
+      //     zoom: 5.5,
+      //     extent: firstGeometry.clone ? firstGeometry.clone() : firstGeometry,
+      //   });
+      // }
+    });
+  };
+
   const displayLayer = async (layer) => {
     if (!layer.showLayer) {
-      if (layer.portalId) {
-        const classType = countryISO === 'PER' ? 'PER_LAYER' : '';
-        const featureLayer = await EsriFeatureService.getFeatureLayer(
-          layer.portalId,
-          countryISO,
-          layer.id,
-          classType
-        );
-        setRegionLayers((rl) => ({
-          ...rl,
-          [layer.id]: featureLayer,
-        }));
-
-        map.add(featureLayer, map.layers.length - layerIndex);
-
-        view.whenLayerView(featureLayer).then(() => {
-          const { renderer } = featureLayer;
-          const { uniqueValueGroups } = renderer;
-          const layerInfo = {
-            ...layer,
-            classes: uniqueValueGroups[0].classes,
-          };
-
-          setMapLegendLayers((ml) => [layerInfo, ...ml]);
-        });
-      } else if (layer.url) {
-        const mapLayers = LAYERS_URLS[layer.url];
-        let promises;
-        if (Array.isArray(mapLayers)) {
-          promises = mapLayers.map(
-            async (mapLayer) =>
-              new TileLayer({
-                url: mapLayer,
-                id: layer.id,
-                outFields: ['*'],
-              })
+      if (layer.id === 'panama_eco_region_graphics') {
+        displayPanamaLayer(layer);
+      } else {
+        if (layer.portalId) {
+          const classType = countryISO === 'PER' ? 'PER_LAYER' : '';
+          const featureLayer = await EsriFeatureService.getFeatureLayer(
+            layer.portalId,
+            countryISO,
+            layer.id,
+            classType
           );
-        } else {
-          promises = [
-            new TileLayer({
-              url: mapLayers,
-              id: layer.id,
-              outFields: ['*'],
-            }),
-          ];
-        }
-
-        const newLayers = await Promise.all(promises);
-
-        newLayers.forEach((newLayer) => {
           setRegionLayers((rl) => ({
             ...rl,
-            [layer.id]: newLayer,
+            [layer.id]: featureLayer,
           }));
 
-          map.add(newLayer, map.layers.length - layerIndex);
-        });
+          map.add(featureLayer, map.layers.length - layerIndex);
 
-        setMapLegendLayers((ml) => [layer, ...ml]);
+          view.whenLayerView(featureLayer).then(() => {
+            const { renderer } = featureLayer;
+            const { uniqueValueGroups } = renderer;
+            const layerInfo = {
+              ...layer,
+              classes: uniqueValueGroups[0].classes,
+            };
+
+            setMapLegendLayers((ml) => [layerInfo, ...ml]);
+          });
+        } else if (layer.url) {
+          const mapLayers = LAYERS_URLS[layer.url];
+          let promises;
+          if (Array.isArray(mapLayers)) {
+            promises = mapLayers.map(
+              async (mapLayer) =>
+                new TileLayer({
+                  url: mapLayer,
+                  id: layer.id,
+                  outFields: ['*'],
+                })
+            );
+          } else {
+            promises = [
+              new TileLayer({
+                url: mapLayers,
+                id: layer.id,
+                outFields: ['*'],
+              }),
+            ];
+          }
+
+          const newLayers = await Promise.all(promises);
+
+          newLayers.forEach((newLayer) => {
+            setRegionLayers((rl) => ({
+              ...rl,
+              [layer.id]: newLayer,
+            }));
+
+            map.add(newLayer, map.layers.length - layerIndex);
+          });
+
+          setMapLegendLayers((ml) => [layer, ...ml]);
+        }
       }
     } else {
       const layerToRemove = map.layers.items.filter(
@@ -513,6 +621,12 @@ function LayerLegendComponent(props) {
       );
     } else {
       setRichnessLayers((prevLayers) =>
+        prevLayers.map((l) =>
+          l.id === layer.id ? { ...l, showLayer: !layer.showLayer } : l
+        )
+      );
+
+      setPanamaLayers((prevLayers) =>
         prevLayers.map((l) =>
           l.id === layer.id ? { ...l, showLayer: !layer.showLayer } : l
         )
@@ -682,6 +796,60 @@ function LayerLegendComponent(props) {
           })}
         />
       </button>
+      <ul className={styles.layers}>
+        {Object.values(panamaLayers).map((layer) => (
+          <li key={`${layer.id}-${layer.label}`}>
+            <div className={styles.dataLayer}>
+              <div className={styles.layer}>
+                <div className={styles.title}>
+                  <span className={styles.label}>{layer.label}</span>
+                  <ArrowIcon className={styles.arrowIcon} />
+                </div>
+                <Switch onChange={() => displayLayer(layer)} />
+              </div>
+            </div>
+          </li>
+        ))}
+      </ul>
+      {indigenousRegions.includes(countryISO) && (
+        <ul className={styles.layers}>
+          {Object.values(indigenousLandsLayer).map((layer) => (
+            <li key={`${layer.id}-${layer.label}`}>
+              <div className={styles.dataLayer}>
+                <div className={styles.layer}>
+                  <div className={styles.title}>
+                    <span className={styles.label}>{layer.label}</span>
+                    <ArrowIcon className={styles.arrowIcon} />
+                  </div>
+                  <Switch onChange={() => displayLayer(layer)} />
+                </div>
+                {layer.id !== LAYER_OPTIONS.INDIGENOUS_LANDS &&
+                  getSidebarLegend(layer)}
+                {layer.details && (
+                  <div className={styles.details}>
+                    <button
+                      className={styles.view}
+                      type="button"
+                      onClick={() => showDetails(layer)}
+                      aria-label="Collapse details"
+                    >
+                      <span>{t('View details')}</span>
+                      <ArrowIcon
+                        className={cx(styles.arrowIcon, {
+                          [styles.isOpened]: !layer.showDetails,
+                        })}
+                      />
+                    </button>
+                    {layer.showDetails && (
+                      <p dangerouslySetInnerHTML={{ __html: layer.details }} />
+                    )}
+                  </div>
+                )}
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
       <ul className={styles.layers}>
         <li>
           <div className={styles.dataLayer}>

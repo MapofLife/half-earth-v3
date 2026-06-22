@@ -110,6 +110,11 @@ async function getFeatureLayer(portalItemId, countryISO, id, classType = null) {
   if(portalItemId === DASHBOARD_URLS.MARINE_LAYER_PORTAL_ID) {
     definitionExpression = `ISO_TER1 = '${countryISO}' OR ISO_SOV1 = '${countryISO}' OR ISO_SOV2 = '${countryISO}' OR ISO_SOV3 = '${countryISO}'`;
   }
+
+  if(countryISO === 'PAN'){
+    definitionExpression = '';
+  }
+
   const featureLayer = new FeatureLayer({
     portalItem: {
       id: portalItemId,
