@@ -452,10 +452,7 @@ function SpeciesRichnessComponent(props) {
   };
 
   const getData = () => {
-    const group =
-      countryISO.toUpperCase() === 'PER'
-        ? 'POR GRUPO TAXONÓMICO'
-        : 'BY TAXONOMIC GROUP';
+    const group = 'BY TAXONOMIC GROUP';
 
     if (shi) {
       if (shiActiveTrend === NATIONAL_TREND || !selectedProvince) {

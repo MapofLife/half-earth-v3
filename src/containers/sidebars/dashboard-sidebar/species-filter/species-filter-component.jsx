@@ -517,11 +517,7 @@ function SpeciesFilterComponent(props) {
                 <Button
                   className={styles.customAreaButton}
                   type="rectangular"
-                  label={
-                    countryISO.toUpperCase() === 'PER'
-                      ? t('Guardar esta área personalizada')
-                      : t('Save this custom area')
-                  }
+                  label={t('Save this custom area')}
                   handleClick={() => setShowCustomAreaModal(true)}
                 />
               )}
@@ -551,16 +547,12 @@ function SpeciesFilterComponent(props) {
         <article className={styles.feedbackContent}>
           <div className={styles.feedbackHeader}>
             <span className={styles.feedbackTitle}>
-              {countryISO.toUpperCase() === 'PER'
-                ? t('Guardar área personalizada')
-                : t('Save custom area')}
+              {t('Save custom area')}
             </span>
           </div>
           <div className={styles.feedbackBody}>
             <span className={styles.feedbackLabel}>
-              {countryISO.toUpperCase() === 'PER'
-                ? t('Nombre del área personalizada para ser usada en el futuro')
-                : t('Name of custom area to be used in the future')}
+              {t('Name of custom area to be used in the future')}
             </span>
             <input
               type="text"
@@ -573,11 +565,7 @@ function SpeciesFilterComponent(props) {
               className={styles.additionalComments}
               value={customAreaDescription}
               onChange={(e) => setCustomAreaDescription(e.target.value)}
-              placeholder={
-                countryISO.toUpperCase() === 'PER'
-                  ? t('Describe esta área personalizada...')
-                  : t('Describe this custom area...')
-              }
+              placeholder={t('Describe this custom area...')}
             ></textarea>
           </div>
           <div className={styles.feedbackFooter}>
