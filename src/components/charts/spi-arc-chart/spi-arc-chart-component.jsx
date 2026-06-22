@@ -29,7 +29,17 @@ ChartJS.register(
 
 function SpiArcChartComponent(props) {
   const t = useT();
-  const { scores, width, height, data, img, species, value, isPercent } = props;
+  const {
+    scores,
+    width,
+    height,
+    data,
+    img,
+    species,
+    value,
+    isPercent,
+    customName,
+  } = props;
   const { lightMode } = useContext(LightModeContext);
   const [score, setScore] = useState(0);
 
@@ -100,7 +110,7 @@ function SpiArcChartComponent(props) {
         <div className={styles.taxoGroup}>
           <img src={img} width={40} height={40} alt={species} />
           <div className={styles.score}>
-            {scores[species].total} {t(species)}
+            {scores[species].total} {customName ? customName : t(species)}
           </div>
         </div>
       )}

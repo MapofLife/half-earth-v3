@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { removeRegionLayers } from 'utils/dashboard-utils';
 import {
   PROVINCE_FEATURE_GLOBAL_SPI_LAYER_ID,
+  PROVINCE_FEATURE_GLOBAL_OUTLINE_ID,
   SHI_LAYER_ID,
   SII_LAYER_ID,
   ZONE_3_SPI_FEATURE_ID,
@@ -30,6 +31,7 @@ import {
 } from 'constants/layers-urls';
 
 import Component, {
+  MARINE,
   NATIONAL_TREND,
   PROVINCE_TREND,
   TABS,
@@ -54,6 +56,7 @@ function DashboardTrendsSidebarContainer(props) {
     activeTrend,
     shiActiveTrend,
     siiActiveTrend,
+    spiActiveTrend,
   } = props;
 
   const [geo, setGeo] = useState(null);
@@ -74,6 +77,7 @@ function DashboardTrendsSidebarContainer(props) {
 
   const [shiValue, setShiValue] = useState(0);
   const [spiValue, setSpiValue] = useState(0);
+  const [spiMarineValue, setSpiMarineValue] = useState(0);
   const [siiValue, setSiiValue] = useState(0);
 
   const getCountryData = async (countryURL) => {
@@ -83,6 +87,11 @@ function DashboardTrendsSidebarContainer(props) {
     setShiProvinceTrendData(data);
     setSpiValue(
       last(data.filter((item) => item.level === 'country')).spi.toFixed(1)
+    );
+    setSpiMarineValue(
+      last(data.filter((item) => item.level === 'country')).marine_spi?.toFixed(
+        1
+      )
     );
     const shiValues =
       data.find(
@@ -326,10 +335,28 @@ function DashboardTrendsSidebarContainer(props) {
 
       map.add(layer);
 
+      // marine spi layer
+      const marineLayer = await EsriFeatureService.getFeatureLayer(
+        DASHBOARD_URLS.MARINE_LAYER_PORTAL_ID,
+        countryISO,
+        `${countryISO}-marine-spi`
+      );
+      marineLayer.visible = false;
+      map.add(marineLayer);
+
+      // provinces layer just outlines
+      const provinceOutlineLayer = await EsriFeatureService.getFeatureLayer(
+        PROVINCE_FEATURE_GLOBAL_OUTLINE_ID,
+        countryISO
+      );
+      map.add(provinceOutlineLayer);
+
       // eslint-disable-next-line no-shadow
       setRegionLayers((regionLayers) => ({
         ...regionLayers,
         [LAYER_OPTIONS.PROVINCES]: layer,
+        [`${countryISO}-marine-spi`]: marineLayer,
+        [`${countryISO}-provinces`]: provinceOutlineLayer,
       }));
 
       if (tabOption === TABS.SPI) {
@@ -518,6 +545,10 @@ function DashboardTrendsSidebarContainer(props) {
         }
 
         loadZone('zone5', 'spi');
+      } else if (spiActiveTrend === MARINE) {
+        getHistogramData(
+          `${DASHBOARD_URLS.SPI_HISTOGRAM_URL}?iso3=${countryCode}&region_key=${countryCode}&marine=True`
+        );
       } else {
         if (zone3Layer) {
           zone3Layer.visible = false;
@@ -624,13 +655,20 @@ function DashboardTrendsSidebarContainer(props) {
       getZoneData();
       getZoneHistogramData();
     }
-  }, [selectedProvince, activeTrend, shiActiveTrend, siiActiveTrend]);
+  }, [
+    selectedProvince,
+    activeTrend,
+    shiActiveTrend,
+    siiActiveTrend,
+    spiActiveTrend,
+  ]);
 
   return (
     <Component
       countryISO={countryISO}
       shiValue={shiValue}
       spiValue={spiValue}
+      spiMarineValue={spiMarineValue}
       siiValue={siiValue}
       provinces={provinces}
       countryData={countryData}

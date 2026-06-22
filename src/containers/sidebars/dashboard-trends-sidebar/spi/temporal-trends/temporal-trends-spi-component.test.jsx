@@ -106,6 +106,8 @@ function renderComponent(overrides = {}) {
     setClickedRegion: vi.fn(),
     handleRegionSelected: vi.fn(),
     view: { goTo: vi.fn() },
+    setShowLegend: vi.fn(),
+    setSpiActiveTrend: vi.fn(),
     ...overrides,
   };
 
@@ -264,9 +266,9 @@ describe('TemporalTrendsSpiComponent', () => {
     const props = renderComponent({ activeTrend: NATIONAL_TREND });
 
     fireEvent.click(screen.getByText('TERRESTRIAL'));
-    expect(props.setActiveTrend).toHaveBeenCalledWith(PROVINCE_TREND);
+    expect(props.setSpiActiveTrend).toHaveBeenCalledWith('TERRESTRIAL');
 
     fireEvent.click(screen.getByText('MARINE'));
-    expect(props.setActiveTrend).toHaveBeenCalledWith(NATIONAL_TREND);
+    expect(props.setSpiActiveTrend).toHaveBeenCalledWith('MARINE');
   });
 });

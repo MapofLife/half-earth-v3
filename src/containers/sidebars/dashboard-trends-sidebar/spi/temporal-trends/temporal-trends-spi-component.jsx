@@ -2,18 +2,27 @@ import React, { useContext, useEffect, useState } from 'react';
 
 import { useT, T } from '@transifex/react';
 
-import { numberToLocaleStringWithOneDecimal } from 'utils/dashboard-utils.js';
+import {
+  numberToLocaleStringWithOneDecimal,
+  PROVINCE_FEATURE_GLOBAL_OUTLINE_ID,
+} from 'utils/dashboard-utils.js';
 
 import cx from 'classnames';
 import { LightModeContext } from 'context/light-mode';
 import last from 'lodash/last';
-
+import {
+  REGION_OPTIONS,
+  LAYER_OPTIONS,
+} from 'constants/dashboard-constants.js';
 import Button from 'components/button';
 import DownloadGbifReport from 'components/DownloadGbifReport';
 
 import EsriFeatureService from 'services/esri-feature-service';
 
-import { COUNTRIES_DATA_SERVICE_URL } from 'constants/layers-urls';
+import {
+  COUNTRIES_DATA_SERVICE_URL,
+  DASHBOARD_URLS,
+} from 'constants/layers-urls';
 
 import {
   MEX,
@@ -31,7 +40,7 @@ import {
   MARINE,
 } from '../../dashboard-trends-sidebar-component';
 import styles from '../../dashboard-trends-sidebar-styles.module.scss';
-
+import { removeRegionLayers } from 'utils/dashboard-utils';
 import NationalChartContainer from './national-chart';
 import ProvinceChartContainer from './province-chart';
 import TrendTableComponent from './trend-table/trend-table-component';
@@ -44,12 +53,17 @@ function TemporalTrendsSpiComponent(props) {
     countryName,
     activeTrend,
     setActiveTrend,
+    spiActiveTrend,
+    setSpiActiveTrend,
+    setMapLegendLayers,
     countryData,
     countryISO,
     clickedRegion,
     setClickedRegion,
     handleRegionSelected,
+    setShowLegend,
     view,
+    map,
   } = props;
 
   const [showTable, setShowTable] = useState(false);
@@ -57,8 +71,6 @@ function TemporalTrendsSpiComponent(props) {
   const [areaProtected, setAreaProtected] = useState(0);
   const [startYear, setStartYear] = useState('1980');
   const [filteredCountryData, setFilteredCountryData] = useState([]);
-
-  const [spiActiveTrend, setSpiActiveTrend] = useState(TERRISTRIAL);
 
   const eewwfRegions = ['MEX', 'PER', 'BRA', 'MDG', 'VNM', 'LND', 'INT'];
 
@@ -79,6 +91,18 @@ function TemporalTrendsSpiComponent(props) {
       const areaProtectedChange = totalRegionAreas / spiChange;
       setAreaProtected(areaProtectedChange);
     }
+  };
+
+  const handleSpiActionChange = async (option) => {
+    // setClickedRegion(null);
+    // handleRegionSelected(null);
+    if (option === MARINE) {
+      setShowLegend(false);
+    } else {
+      setShowLegend(true);
+    }
+    setShowTable(false);
+    setSpiActiveTrend(option);
   };
 
   const handleActionChange = (option) => {
@@ -133,23 +157,49 @@ function TemporalTrendsSpiComponent(props) {
             <Button
               type="rectangular"
               className={cx(styles.saveButton, {
-                [styles.notActive]: activeTrend !== PROVINCE_TREND,
+                [styles.notActive]: spiActiveTrend !== TERRISTRIAL,
               })}
               label={t(TERRISTRIAL)}
-              handleClick={() => handleActionChange(PROVINCE_TREND)}
+              handleClick={() => handleSpiActionChange(TERRISTRIAL)}
             />
             <Button
               type="rectangular"
               className={cx(styles.saveButton, {
-                [styles.notActive]: activeTrend !== NATIONAL_TREND,
+                [styles.notActive]: spiActiveTrend !== MARINE,
               })}
               label={t(MARINE)}
-              handleClick={() => handleActionChange(NATIONAL_TREND)}
+              handleClick={() => handleSpiActionChange(MARINE)}
             />
           </div>
         </div>
         <span className={styles.title}>{t('Temporal Trends')}</span>
-        {countryISO.toLowerCase() !== 'ee' && (
+        {spiActiveTrend === MARINE && (
+          <p className={styles.description}>
+            <T
+              _str="Since {startYear}, the {countryName} has added {areaBold} of marine area into its protected area network, representing {areaProtectedPercentBold} of the area of {countryName}’s exclusive economic zone, increasing its Marine Species Protection Index from {spiInfoBold}"
+              startYear={startYear}
+              countryName={t(countryName)}
+              areaBold={
+                <b>
+                  {numberToLocaleStringWithOneDecimal(areaProtected)} km
+                  <sup>2</sup>
+                </b>
+              }
+              areaProtectedPercentBold={<b>{areaProtectedPercent}%</b>}
+              spiInfoBold={
+                <b>{`${countryData[0]?.spi.toFixed(1)} ${t('in')} ${
+                  countryData[0]?.year
+                } ${t('to')} ${last(
+                  countryData.filter((item) => item.level === 'country')
+                )?.spi.toFixed(1)} ${t('in')} ${
+                  last(countryData.filter((item) => item.level === 'country'))
+                    ?.year
+                }`}</b>
+              }
+            />
+          </p>
+        )}
+        {spiActiveTrend !== MARINE && countryISO.toLowerCase() !== 'ee' && (
           <p className={styles.description}>
             <T
               _str="Since {startYear}, the {countryName} has added {areaBold} of land into its protected area network, representing {areaProtectedPercentBold} of the total land in the country, increasing its Species Protection Index from {spiInfoBold}"
@@ -177,31 +227,36 @@ function TemporalTrendsSpiComponent(props) {
         )}
         {countryISO.toLowerCase() !== 'ee' && (
           <div className={styles.options}>
-            <div className={styles.btnGroup}>
-              <Button
-                type="rectangular"
-                className={cx(styles.saveButton, {
-                  [styles.notActive]: activeTrend !== PROVINCE_TREND,
-                })}
-                label={
-                  countryISO.toUpperCase() === 'PER'
-                    ? t('Departamento')
-                    : t('Province')
-                }
-                handleClick={() => handleActionChange(PROVINCE_TREND)}
-              />
-              <Button
-                type="rectangular"
-                className={cx(styles.saveButton, {
-                  [styles.notActive]: activeTrend !== NATIONAL_TREND,
-                })}
-                label={t('National')}
-                handleClick={() => handleActionChange(NATIONAL_TREND)}
-              />
-            </div>
-            <span className={styles.helpText}>
-              {t('Toggle national SPI and province-level breakdown.')}
-            </span>
+            {spiActiveTrend !== MARINE && (
+              <div className={styles.btnGroup}>
+                <Button
+                  type="rectangular"
+                  className={cx(styles.saveButton, {
+                    [styles.notActive]: activeTrend !== PROVINCE_TREND,
+                  })}
+                  label={
+                    countryISO.toUpperCase() === 'PER'
+                      ? t('Departamento')
+                      : t('Province')
+                  }
+                  handleClick={() => handleActionChange(PROVINCE_TREND)}
+                />
+
+                <Button
+                  type="rectangular"
+                  className={cx(styles.saveButton, {
+                    [styles.notActive]: activeTrend !== NATIONAL_TREND,
+                  })}
+                  label={t('National')}
+                  handleClick={() => handleActionChange(NATIONAL_TREND)}
+                />
+              </div>
+            )}
+            {spiActiveTrend !== 'MARINE' && (
+              <span className={styles.helpText}>
+                {t('Toggle national SPI and province-level breakdown.')}
+              </span>
+            )}
             {countryISO.toLowerCase() === 'guy-fm' && (
               <div className={styles.btnGroup}>
                 <Button
@@ -222,7 +277,7 @@ function TemporalTrendsSpiComponent(props) {
                 />
               </div>
             )}
-            {activeTrend === PROVINCE_TREND && (
+            {activeTrend === PROVINCE_TREND && spiActiveTrend !== 'MARINE' && (
               <>
                 {!showTable && (
                   <Button
@@ -323,13 +378,13 @@ function TemporalTrendsSpiComponent(props) {
         )}
       {!showTable && countryISO.toLowerCase() !== 'ee' && (
         <>
-          {activeTrend === NATIONAL_TREND && (
+          {(activeTrend === NATIONAL_TREND || spiActiveTrend === MARINE) && (
             <NationalChartContainer
               {...props}
               countryData={filteredCountryData}
             />
           )}
-          {activeTrend === PROVINCE_TREND && (
+          {activeTrend === PROVINCE_TREND && spiActiveTrend !== MARINE && (
             <ProvinceChartContainer {...props} />
           )}
           {activeTrend === ZONE_3 && (

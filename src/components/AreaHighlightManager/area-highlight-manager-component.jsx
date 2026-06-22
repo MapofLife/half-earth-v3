@@ -17,6 +17,7 @@ import {
   NATIONAL_TREND,
   TABS,
   PROVINCE_TREND,
+  MARINE,
 } from '../../containers/sidebars/dashboard-trends-sidebar/dashboard-trends-sidebar-component';
 
 let highlight;
@@ -41,6 +42,7 @@ function AreaHighlightManagerComponent(props) {
     activeTrend,
     shiActiveTrend,
     siiActiveTrend,
+    spiActiveTrend,
     layerView,
     setLayerView,
     setRegionName,
@@ -61,7 +63,8 @@ function AreaHighlightManagerComponent(props) {
           return view.whenLayerView(
             regionLayers[`${countryISO}-spi`] ||
               regionLayers[`${countryISO}-spi-lnd`] ||
-              regionLayers[`${countryISO}-spi-int`]
+              regionLayers[`${countryISO}-spi-int`] ||
+              regionLayers[`${countryISO}-marine-spi`]
           );
         }
 
@@ -347,10 +350,52 @@ function AreaHighlightManagerComponent(props) {
 
     if (view && Object.keys(regionLayers).length) {
       if (selectedIndex === NAVIGATION.TRENDS) {
+        const marineLayer = await view.whenLayerView(
+          regionLayers[`${countryISO}-marine-spi`]
+        );
+        marineLayer.visible = false;
+
         if (tabOption === TABS.SPI) {
           if (countryISO.toLowerCase() === 'ee') {
             layer = await getLayerView();
           } else if (activeTrend !== PROVINCE_TREND) {
+            layer = await getLayerView();
+          } else if (spiActiveTrend === MARINE) {
+            // find marine spi layer
+            layer = await view.whenLayerView(
+              regionLayers[`${countryISO}-marine-spi`]
+            );
+
+            // find spi terrestre layer and hide it
+            const spiLayer = await view.whenLayerView(
+              regionLayers[LAYER_OPTIONS.PROVINCES]
+            );
+            spiLayer.visible = false;
+
+            // find province outline layer and show it
+            const outlineLayer = await view.whenLayerView(
+              regionLayers[`${countryISO}-provinces`]
+            );
+            outlineLayer.visible = true;
+          } else if (spiActiveTrend !== MARINE) {
+            // find marine spi layer and hide it
+            const marineLayer = await view.whenLayerView(
+              regionLayers[`${countryISO}-marine-spi`]
+            );
+            marineLayer.visible = false;
+
+            // find spi terrestre layer and show it
+            const spiLayer = await view.whenLayerView(
+              regionLayers[LAYER_OPTIONS.PROVINCES]
+            );
+            spiLayer.visible = true;
+
+            // find province outline layer and hide it
+            const outlineLayer = await view.whenLayerView(
+              regionLayers[`${countryISO}-provinces`]
+            );
+            outlineLayer.visible = false;
+
             layer = await getLayerView();
           } else {
             layer = await view.whenLayerView(
@@ -389,7 +434,14 @@ function AreaHighlightManagerComponent(props) {
 
       setLayerView(layer);
     }
-  }, [regionLayers, view, tabOption, mapLegendLayers, selectedIndex]);
+  }, [
+    regionLayers,
+    view,
+    tabOption,
+    mapLegendLayers,
+    selectedIndex,
+    spiActiveTrend,
+  ]);
 
   useEffect(() => {
     if (!layerView) return;
@@ -408,7 +460,11 @@ function AreaHighlightManagerComponent(props) {
     hoverHighlight?.remove();
 
     if (selectedIndex === NAVIGATION.TRENDS) {
-      if (tabOption === TABS.SPI && activeTrend !== NATIONAL_TREND) {
+      if (
+        tabOption === TABS.SPI &&
+        activeTrend !== NATIONAL_TREND &&
+        spiActiveTrend !== MARINE
+      ) {
         setOnClickHandler(
           view.on('click', (event) => handleRegionClicked(event))
         );
@@ -438,6 +494,7 @@ function AreaHighlightManagerComponent(props) {
     activeTrend,
     shiActiveTrend,
     siiActiveTrend,
+    spiActiveTrend,
     selectedIndex,
     showHover,
   ]);

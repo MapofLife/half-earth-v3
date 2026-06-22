@@ -27,6 +27,7 @@ import spiTrendFRImg from 'images/dashboard/tutorials/tutorial_spi_temporalTrend
 import { SECTION_INFO } from '../../../../dashboard-sidebar/tutorials/sections/sections-info';
 
 import styles from './national-chart-styles.module.scss';
+import { MARINE } from '../../../dashboard-trends-sidebar-component';
 
 ChartJS.register(LinearScale, LineElement, PointElement, Tooltip, Legend);
 
@@ -35,7 +36,7 @@ function TemporalTrendsSpiNationalChartComponent(props) {
   const locale = useLocale();
   const { lightMode } = useContext(LightModeContext);
 
-  const { countryData, lang } = props;
+  const { countryData, lang, spiActiveTrend } = props;
 
   const [data, setData] = useState();
   const [currentScore, setCurrentScore] = useState();
@@ -138,24 +139,50 @@ function TemporalTrendsSpiNationalChartComponent(props) {
 
   useEffect(() => {
     if (!currentScore) return;
-    const { spi, area_protected, area_km2 } = currentScore;
+    const {
+      spi,
+      area_protected,
+      area_km2,
+      marine_spi,
+      marine_spi_pct_protected,
+    } = currentScore;
 
-    const PercentAreaProtected = area_protected
-      ? Math.round((area_protected / area_km2) * 100)
-      : 0;
+    let PercentAreaProtected = 0;
 
-    const globalSpi = {
-      labels: [t('Global SPI'), t('Remaining')],
-      datasets: [
-        {
-          label: '',
-          data: [spi, 100 - spi],
-          backgroundColor: [getCSSVariable('habitat-country'), emptyArcColor],
-          borderColor: [getCSSVariable('habitat-country'), emptyArcColor],
-          borderWidth: 1,
-        },
-      ],
-    };
+    let globalSpi = {};
+
+    if (spiActiveTrend === MARINE) {
+      globalSpi = {
+        labels: [t('Global Marine SPI'), t('Remaining')],
+        datasets: [
+          {
+            label: '',
+            data: [marine_spi, 100 - marine_spi],
+            backgroundColor: [getCSSVariable('habitat-country'), emptyArcColor],
+            borderColor: [getCSSVariable('habitat-country'), emptyArcColor],
+            borderWidth: 1,
+          },
+        ],
+      };
+      PercentAreaProtected = marine_spi_pct_protected;
+    } else {
+      globalSpi = {
+        labels: [t('Global SPI'), t('Remaining')],
+        datasets: [
+          {
+            label: '',
+            data: [spi, 100 - spi],
+            backgroundColor: [getCSSVariable('habitat-country'), emptyArcColor],
+            borderColor: [getCSSVariable('habitat-country'), emptyArcColor],
+            borderWidth: 1,
+          },
+        ],
+      };
+
+      PercentAreaProtected = area_protected
+        ? Math.round((area_protected / area_km2) * 100)
+        : 0;
+    }
 
     const areaProt = {
       labels: [t('Area Protected'), t('Remaining')],
@@ -180,14 +207,18 @@ function TemporalTrendsSpiNationalChartComponent(props) {
       labels: countryData.map((item) => item.year),
       datasets: [
         {
-          label: 'SPI',
-          data: countryData.map((item) => item.spi),
+          label: spiActiveTrend === MARINE ? 'Marine SPI' : 'SPI',
+          data: countryData.map((item) =>
+            spiActiveTrend === MARINE ? item.marine_spi : item.spi
+          ),
           borderColor: getCSSVariable('habitat-country'),
         },
         {
           label: t('Area protected'),
-          data: countryData.map(
-            (item) => (item.area_protected / item.area_km2) * 100
+          data: countryData.map((item) =>
+            spiActiveTrend === MARINE
+              ? item.marine_spi_pct_protected
+              : (item.area_protected / item.area_km2) * 100
           ),
           borderColor: getCSSVariable('indicator-area-protected'),
         },
@@ -196,7 +227,7 @@ function TemporalTrendsSpiNationalChartComponent(props) {
     setSpiArcData(globalSpi);
     setAreaProtected(PercentAreaProtected);
     setAreaProtectedData(areaProt);
-  }, [currentScore]);
+  }, [currentScore, spiActiveTrend]);
 
   return (
     <div className={cx(lightMode ? styles.light : '', styles.container)}>
@@ -220,15 +251,25 @@ function TemporalTrendsSpiNationalChartComponent(props) {
                 width="125x"
                 height="75px"
                 data={spiArcData}
-                value={currentScore.spi}
+                value={
+                  spiActiveTrend === MARINE
+                    ? currentScore.marine_spi
+                    : currentScore.spi
+                }
               />
               <div className={styles.values}>
-                <b>{currentScore.spi_rank}</b>
+                <b>
+                  {spiActiveTrend === MARINE
+                    ? currentScore.marine_spi_rank
+                    : currentScore.spi_rank}
+                </b>
                 <span>{t('Global Ranking')}</span>
               </div>
               <span />
               <span>{t('Area Protected')}</span>
-              <span>SPI</span>
+              <span>
+                {spiActiveTrend === MARINE ? t('Marine SPI') : t('SPI')}
+              </span>
             </div>
           )}
         </div>

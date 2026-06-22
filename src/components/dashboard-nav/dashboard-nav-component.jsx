@@ -33,6 +33,7 @@ function DashboardNavComponent(props) {
     speciesInfo,
     setSpeciesInfo,
     speciesDataLoading,
+    countryISO,
   } = props;
   const { lightMode } = useContext(LightModeContext);
 
@@ -149,17 +150,19 @@ function DashboardNavComponent(props) {
         >
           <TimeLineIcon />
         </button>
-        {/* <button
-          type="button"
-          aria-label={t('Planning')}
-          title={t('Planning')}
-          className={cx({
-            [styles.selected]: selectedIndex === NAVIGATION.PLANNING,
-          })}
-          onClick={() => updateHistory(NAVIGATION.PLANNING, titles.PLANNING)}
-        >
-          <PlanningIcon />
-        </button> */}
+        {countryISO.toUpperCase() === 'PAN' && (
+          <button
+            type="button"
+            aria-label={t('Planning')}
+            title={t('Planning')}
+            className={cx({
+              [styles.selected]: selectedIndex === NAVIGATION.PLANNING,
+            })}
+            onClick={() => updateHistory(NAVIGATION.PLANNING, titles.PLANNING)}
+          >
+            <PlanningIcon />
+          </button>
+        )}
         {/* <button
           type="button"
           aria-label={t('Expert Tools')}
