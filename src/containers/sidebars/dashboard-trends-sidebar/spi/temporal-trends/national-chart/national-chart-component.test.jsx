@@ -13,12 +13,22 @@ vi.mock('utils/css-utils', () => ({
   getCSSVariable: (value) => value,
 }));
 
+vi.mock('hooks/esri', () => ({
+  default: () => ({
+    view: null,
+    map: null,
+  }),
+}));
+
 vi.mock('chart.js', () => ({
   Chart: { register: vi.fn() },
   CategoryScale: {},
   LinearScale: {},
+  ArcElement: {},
+  BarElement: {},
   PointElement: {},
   LineElement: {},
+  Title: {},
   Tooltip: {},
   Legend: {},
 }));
