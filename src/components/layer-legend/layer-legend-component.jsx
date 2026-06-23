@@ -423,6 +423,15 @@ function LayerLegendComponent(props) {
     },
   ]);
 
+  const [showBiodiversityLayers, setShowBiodiversityLayers] = useState(false);
+  const [showLandUsePressureLayers, setShowLandUsePressureLayers] =
+    useState(false);
+  const [showMarineUsePressureLayers, setShowMarineUsePressureLayers] =
+    useState(false);
+  const [showSocioEconomicLayers, setShowSocioEconomicLayers] = useState(false);
+  const [showLandCoverLayers, setShowLandCoverLayers] = useState(false);
+  const [showPanamaLayers, setShowPanamaLayers] = useState(false);
+
   const displayPanamaLayer = async (layer) => {
     const serviceUrl = layer.url;
 
@@ -864,16 +873,21 @@ function LayerLegendComponent(props) {
       <ul className={styles.layers}>
         <li>
           <div className={styles.dataLayer}>
-            <div className={styles.layer}>
-              <div className={styles.title}>
-                <span className={styles.label}>
-                  <b>{t('Biodiversity Layers')}</b>
-                </span>
-              </div>
+            <div
+              className={cx(styles.titleWrapper, styles.label)}
+              onClick={() => setShowBiodiversityLayers(!showBiodiversityLayers)}
+            >
+              <b>{t('Biodiversity Layers')}</b>
+              <ArrowIcon
+                className={cx(styles.arrowIcon, {
+                  [styles.isOpened]: !showBiodiversityLayers,
+                })}
+              />
             </div>
           </div>
         </li>
-        {richnessLayers &&
+        {showBiodiversityLayers &&
+          richnessLayers &&
           Object.values(richnessLayers).map((layer) => (
             <li key={`${layer.id}-${layer.label}`}>
               <div className={styles.dataLayer}>
@@ -909,18 +923,26 @@ function LayerLegendComponent(props) {
               </div>
             </li>
           ))}
+
         <li>
           <div className={styles.dataLayer}>
-            <div className={styles.layer}>
-              <div className={styles.title}>
-                <span className={styles.label}>
-                  <b>{t('Land Use Pressure Layers')}</b>
-                </span>
-              </div>
+            <div
+              className={cx(styles.titleWrapper, styles.label)}
+              onClick={() =>
+                setShowLandUsePressureLayers(!showLandUsePressureLayers)
+              }
+            >
+              <b>{t('Land Use Pressure Layers')}</b>
+              <ArrowIcon
+                className={cx(styles.arrowIcon, {
+                  [styles.isOpened]: !showLandUsePressureLayers,
+                })}
+              />
             </div>
           </div>
         </li>
-        {landUsePressureLayers &&
+        {showLandUsePressureLayers &&
+          landUsePressureLayers &&
           Object.values(landUsePressureLayers).map((layer) => (
             <li key={`${layer.id}-${layer.label}`}>
               <div className={styles.dataLayer}>
@@ -956,18 +978,26 @@ function LayerLegendComponent(props) {
               </div>
             </li>
           ))}
+
         <li>
           <div className={styles.dataLayer}>
-            <div className={styles.layer}>
-              <div className={styles.title}>
-                <span className={styles.label}>
-                  <b>{t('Marine Use Pressure Layers')}</b>
-                </span>
-              </div>
+            <div
+              className={cx(styles.titleWrapper, styles.label)}
+              onClick={() =>
+                setShowMarineUsePressureLayers(!showMarineUsePressureLayers)
+              }
+            >
+              <b>{t('Marine Use Pressure Layers')}</b>
+              <ArrowIcon
+                className={cx(styles.arrowIcon, {
+                  [styles.isOpened]: !showMarineUsePressureLayers,
+                })}
+              />
             </div>
           </div>
         </li>
-        {marineUsePressureLayers &&
+        {showMarineUsePressureLayers &&
+          marineUsePressureLayers &&
           Object.values(marineUsePressureLayers).map((layer) => (
             <li key={`${layer.id}-${layer.label}`}>
               <div className={styles.dataLayer}>
@@ -1003,18 +1033,24 @@ function LayerLegendComponent(props) {
               </div>
             </li>
           ))}
+
         <li>
           <div className={styles.dataLayer}>
-            <div className={styles.layer}>
-              <div className={styles.title}>
-                <span className={styles.label}>
-                  <b>{t('Land Cover/Use Layers')}</b>
-                </span>
-              </div>
+            <div
+              className={cx(styles.titleWrapper, styles.label)}
+              onClick={() => setShowLandCoverLayers(!showLandCoverLayers)}
+            >
+              <b>{t('Land Cover/Use Layers')}</b>
+              <ArrowIcon
+                className={cx(styles.arrowIcon, {
+                  [styles.isOpened]: !showLandCoverLayers,
+                })}
+              />
             </div>
           </div>
         </li>
-        {landCoverLayers &&
+        {showLandCoverLayers &&
+          landCoverLayers &&
           Object.values(landCoverLayers).map((layer) => (
             <li key={`${layer.id}-${layer.label}`}>
               <div className={styles.dataLayer}>
@@ -1031,17 +1067,24 @@ function LayerLegendComponent(props) {
         {countryISO === 'PER' && (
           <li>
             <div className={styles.dataLayer}>
-              <div className={styles.layer}>
-                <div className={styles.title}>
-                  <span className={styles.label}>
-                    <b>{t('Socio-Economic')}</b>
-                  </span>
-                </div>
+              <div
+                className={cx(styles.titleWrapper, styles.label)}
+                onClick={() =>
+                  setShowSocioEconomicLayers(!showSocioEconomicLayers)
+                }
+              >
+                <b>{t('Socio-Economic Layers')}</b>
+                <ArrowIcon
+                  className={cx(styles.arrowIcon, {
+                    [styles.isOpened]: !showSocioEconomicLayers,
+                  })}
+                />
               </div>
             </div>
           </li>
         )}
-        {countryISO === 'PER' &&
+        {showSocioEconomicLayers &&
+          countryISO === 'PER' &&
           socioEconomicLayers &&
           Object.values(socioEconomicLayers).map((layer) => (
             <li key={`${layer.id}-${layer.label}`}>

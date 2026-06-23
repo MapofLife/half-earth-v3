@@ -482,7 +482,7 @@ function GroupedListComponent(props) {
                   filter: ['==', ['geometry-type'], 'Point'],
                   paint: {
                     'circle-color': '#FFA500',
-                    'circle-radius': 8,
+                    'circle-radius': 4,
                     'circle-stroke-color': '#FFA500',
                     'circle-stroke-width': 2,
                     'circle-opacity': 1,
@@ -496,7 +496,7 @@ function GroupedListComponent(props) {
                   filter: ['==', ['geometry-type'], 'Point'],
                   paint: {
                     'circle-color': '#FFA500',
-                    'circle-radius': 8,
+                    'circle-radius': 4,
                     'circle-stroke-color': '#FFA500',
                     'circle-stroke-width': 2,
                     'circle-opacity': 1,
