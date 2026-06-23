@@ -358,8 +358,6 @@ function AreaHighlightManagerComponent(props) {
         if (tabOption === TABS.SPI) {
           if (countryISO.toLowerCase() === 'ee') {
             layer = await getLayerView();
-          } else if (activeTrend !== PROVINCE_TREND) {
-            layer = await getLayerView();
           } else if (spiActiveTrend === MARINE) {
             // find marine spi layer
             layer = await view.whenLayerView(
@@ -396,6 +394,8 @@ function AreaHighlightManagerComponent(props) {
             );
             outlineLayer.visible = false;
 
+            layer = await getLayerView();
+          } else if (activeTrend !== PROVINCE_TREND) {
             layer = await getLayerView();
           } else {
             layer = await view.whenLayerView(
