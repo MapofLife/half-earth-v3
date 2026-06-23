@@ -141,7 +141,11 @@ function DashboardViewComponent(props) {
 
   useEffect(() => {
     if (Object.values(mapLegendLayers).length > 0) {
-      if (spiActiveTrend === MARINE && tabOption === TABS.SPI) {
+      if (
+        spiActiveTrend === MARINE &&
+        tabOption === TABS.SPI &&
+        selectedIndex === NAVIGATION.TRENDS
+      ) {
         setShowLegend(false);
       } else {
         setShowLegend(true);
