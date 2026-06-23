@@ -124,6 +124,16 @@ async function getFeatureLayer(portalItemId, countryISO, id, classType = null) {
   return featureLayer;
 }
 
+async function getFeatureLayerByUrl(url, id){
+  const featureLayer = new FeatureLayer({
+    url,
+    id,
+  });
+
+  await featureLayer.load();
+  return featureLayer;
+}
+
 function getFeatureOccurenceLayer(
   portalItemId,
   scientificName,
@@ -338,6 +348,7 @@ export default {
   getLayer,
   addFeature,
   getFeatureLayer,
+  getFeatureLayerByUrl,
   getGeoJsonLayer,
   getVectorTileLayer,
   getXYZLayer,

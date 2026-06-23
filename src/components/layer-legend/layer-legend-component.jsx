@@ -435,85 +435,91 @@ function LayerLegendComponent(props) {
   const displayPanamaLayer = async (layer) => {
     const serviceUrl = layer.url;
 
-    // Fetch layer definition to get the renderer and default symbol
-    const getLayerRenderer = async () => {
-      try {
-        const response = await fetch(`${serviceUrl}?f=json`);
-        const layerDefinition = await response.json();
-        return layerDefinition.drawingInfo?.renderer;
-      } catch (error) {
-        console.warn('Could not fetch layer renderer:', error);
-        return null;
+    EsriFeatureService.getFeatureLayerByUrl(layer.url, layer.id).then(
+      (mapImageLayer) => {
+        setRegionLayers((rl) => ({
+          ...rl,
+          [layer.id]: mapImageLayer,
+        }));
+
+        map.add(mapImageLayer, map.layers.length - layerIndex);
+
+        view.whenLayerView(mapImageLayer).then(() => {
+          const { renderer } = mapImageLayer;
+          const { uniqueValueGroups } = renderer;
+          const layerInfo = {
+            ...layer,
+            classes: uniqueValueGroups[0].classes,
+          };
+
+          setMapLegendLayers((ml) => [layerInfo, ...ml]);
+        });
       }
-    };
+    );
+    //   url: serviceUrl,
+    //   whereClause: '1=1',
+    //   returnGeometry: true,
+    // }).then((features) => {
+    //   if (!features || features.length === 0) return;
 
-    const renderer = await getLayerRenderer();
+    //   // Create a graphics layer to hold all feature geometries
+    //   const graphicsLayer = new GraphicsLayer({
+    //     id: layer.id,
+    //     title: layer.label,
+    //   });
 
-    EsriFeatureService.getFeatures({
-      url: serviceUrl,
-      whereClause: '1=1',
-      returnGeometry: true,
-    }).then((features) => {
-      if (!features || features.length === 0) return;
+    //   // Loop through all features and add their geometries to the graphics layer
+    //   features.forEach((feature, index) => {
+    //     const { geometry, attributes } = feature;
+    //     if (geometry) {
+    //       const graphic = new Graphic({
+    //         geometry,
+    //         attributes,
+    //         symbol: new SimpleFillSymbol({
+    //           style: 'esriSFSSolid',
+    //           color: renderer?.uniqueValueInfos[index]?.symbol.color,
+    //           outline: new SimpleLineSymbol({
+    //             color: renderer?.uniqueValueInfos[index]?.symbol.outline.color,
+    //             width: 1,
+    //           }),
+    //         }),
+    //       });
+    //       graphicsLayer.add(graphic);
+    //     }
+    //   });
 
-      // Create a graphics layer to hold all feature geometries
-      const graphicsLayer = new GraphicsLayer({
-        id: layer.id,
-        title: layer.label,
-      });
+    //   // Add the graphics layer to the map
+    //   map.add(graphicsLayer);
 
-      // Loop through all features and add their geometries to the graphics layer
-      features.forEach((feature, index) => {
-        const { geometry, attributes } = feature;
-        if (geometry) {
-          const graphic = new Graphic({
-            geometry,
-            attributes,
-            symbol: new SimpleFillSymbol({
-              style: 'esriSFSSolid',
-              color: renderer?.uniqueValueInfos[index]?.symbol.color,
-              outline: new SimpleLineSymbol({
-                color: renderer?.uniqueValueInfos[index]?.symbol.outline.color,
-                width: 1,
-              }),
-            }),
-          });
-          graphicsLayer.add(graphic);
-        }
-      });
+    //   setRegionLayers((rl) => ({
+    //     ...rl,
+    //     [layer.id]: graphicsLayer,
+    //   }));
 
-      // Add the graphics layer to the map
-      map.add(graphicsLayer);
+    //   map.add(graphicsLayer, map.layers.length - layerIndex);
 
-      setRegionLayers((rl) => ({
-        ...rl,
-        [layer.id]: graphicsLayer,
-      }));
+    //   view.whenLayerView(graphicsLayer).then(() => {
+    //     const { renderer } = graphicsLayer;
+    //     const { uniqueValueGroups } = renderer;
+    //     const layerInfo = {
+    //       ...layer,
+    //       classes: uniqueValueGroups[0].classes,
+    //     };
 
-      map.add(graphicsLayer, map.layers.length - layerIndex);
+    //     setMapLegendLayers((ml) => [layerInfo, ...ml]);
+    //   });
 
-      view.whenLayerView(graphicsLayer).then(() => {
-        const { renderer } = graphicsLayer;
-        const { uniqueValueGroups } = renderer;
-        const layerInfo = {
-          ...layer,
-          classes: uniqueValueGroups[0].classes,
-        };
-
-        setMapLegendLayers((ml) => [layerInfo, ...ml]);
-      });
-
-      // Navigate to the first feature's geometry
-      // const firstGeometry = features[0].geometry;
-      // if (firstGeometry) {
-      //   view.goTo({
-      //     target: firstGeometry,
-      //     center: [firstGeometry.longitude - 20, firstGeometry.latitude],
-      //     zoom: 5.5,
-      //     extent: firstGeometry.clone ? firstGeometry.clone() : firstGeometry,
-      //   });
-      // }
-    });
+    //   // Navigate to the first feature's geometry
+    //   // const firstGeometry = features[0].geometry;
+    //   // if (firstGeometry) {
+    //   //   view.goTo({
+    //   //     target: firstGeometry,
+    //   //     center: [firstGeometry.longitude - 20, firstGeometry.latitude],
+    //   //     zoom: 5.5,
+    //   //     extent: firstGeometry.clone ? firstGeometry.clone() : firstGeometry,
+    //   //   });
+    //   // }
+    // });
   };
 
   const displayLayer = async (layer) => {
