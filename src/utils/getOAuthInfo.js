@@ -4,9 +4,9 @@ import OAuthInfo from '@arcgis/core/identity/OAuthInfo';
 export const getOAuthInfo = (countryISO) => {
   if (countryISO === 'GUY') {
     return new OAuthInfo({
-      appId: '2g74U2WEt7zh0Kpx',
+      appId: 'X4S6wWke5Cv8CaWz',
       popup: false,
-      portalUrl: 'https://guyana.maps.arcgis.com',
+      portalUrl: 'https://mols.maps.arcgis.com/',
     });
   }
 
