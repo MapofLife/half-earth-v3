@@ -138,7 +138,13 @@ function MapLegendComponent(props) {
     if (socioEconomicLayers.includes(layer.id)) {
       return (
         <div style={{ display: 'flex', gap: '5px', marginTop: '5px' }}>
-          <div className={cx(styles.box, pressureStyles['socio-economic'])} />
+          <div
+            className={cx(
+              styles.box,
+              styles.sdm,
+              pressureStyles['socio-economic']
+            )}
+          />
         </div>
       );
     }
@@ -146,7 +152,13 @@ function MapLegendComponent(props) {
     if (richnessLayers.includes(layer.id)) {
       return (
         <div style={{ display: 'flex', gap: '5px', marginTop: '5px' }}>
-          <div className={cx(styles.box, pressureStyles['biodiversity'])} />
+          <div
+            className={cx(
+              styles.box,
+              styles.sdm,
+              pressureStyles['biodiversity']
+            )}
+          />
         </div>
       );
     }
@@ -155,7 +167,11 @@ function MapLegendComponent(props) {
       return (
         <div style={{ display: 'flex', gap: '5px', marginTop: '5px' }}>
           <div
-            className={cx(styles.box, pressureStyles['land-human-pressures'])}
+            className={cx(
+              styles.box,
+              styles.sdm,
+              pressureStyles['land-human-pressures']
+            )}
           />
         </div>
       );
@@ -165,7 +181,11 @@ function MapLegendComponent(props) {
       return (
         <div style={{ display: 'flex', gap: '5px', marginTop: '5px' }}>
           <div
-            className={cx(styles.box, pressureStyles['marine-human-pressures'])}
+            className={cx(
+              styles.box,
+              styles.sdm,
+              pressureStyles['marine-human-pressures']
+            )}
           />
         </div>
       );
