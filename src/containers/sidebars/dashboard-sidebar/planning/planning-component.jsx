@@ -7,6 +7,7 @@ import hrTheme from 'styles/themes/hr-theme.module.scss';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import { Slider } from '@mui/material';
+import Button from 'components/button';
 
 const marks = [
   {
@@ -37,6 +38,7 @@ function PlanningComponent({
   displaySlider,
   maximumArea,
   setMaximumArea,
+  onCalculatePlanning,
 }) {
   const t = useT();
   const locale = useLocale();
@@ -101,6 +103,11 @@ function PlanningComponent({
           />
         </div>
       </div>
+      <Button
+        type="rectangular"
+        label={t('Calculate Priority Areas')}
+        handleClick={onCalculatePlanning}
+      />
     </section>
   );
 }

@@ -29,10 +29,6 @@ function PlanningContainer({ map }) {
   };
 
   const updateValue = async (option, value) => {
-    const sample_priority_layer = map.layers.items.find(
-      (item) => item.id === 'sample_priority_layer'
-    );
-
     ecoValue.current = option.label === 'Ecotourism' ? value : ecoValue.current;
     speciesValue.current =
       option.label === 'Species' ? value : speciesValue.current;
@@ -41,6 +37,12 @@ function PlanningContainer({ map }) {
       prevOptions.map((opt) =>
         opt.label === option.label ? { ...opt, value } : opt
       )
+    );
+  };
+
+  const handleCalculatePlanning = async () => {
+    const sample_priority_layer = map.layers.items.find(
+      (item) => item.id === 'sample_priority_layer'
     );
 
     if (ecoValue.current >= 0.5 && speciesValue.current >= 0.5) {
@@ -66,6 +68,7 @@ function PlanningContainer({ map }) {
       updateValue={updateValue}
       maximumArea={maximumArea}
       setMaximumArea={setMaximumArea}
+      onCalculatePlanning={handleCalculatePlanning}
     />
   );
 }
