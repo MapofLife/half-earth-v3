@@ -201,7 +201,9 @@ function MapLegendComponent(props) {
             marginTop: '5px',
           }}
         >
-          <div className={cx(styles.box, styles.predictionGradient)} />
+          <div
+            className={cx(styles.box, styles.sdm, styles.predictionGradient)}
+          />
           <span>Likelihood</span>
           <div className={styles.legendValues}>
             <span>{lowText}</span>
