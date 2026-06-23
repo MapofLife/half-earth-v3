@@ -527,7 +527,7 @@ function SpeciesRichnessComponent(props) {
     <div className={cx(lightMode ? styles.light : '', styles.container)}>
       <div className={styles.title}>{titleText}</div>
       <div className={styles.spis}>
-        {spiActiveTrend === MARINE && (
+        {spi && spiActiveTrend === MARINE && (
           <>
             <SpiArcChartComponent
               value={scores.fishes.count}
@@ -546,7 +546,7 @@ function SpeciesRichnessComponent(props) {
             />
           </>
         )}
-        {spiActiveTrend !== MARINE && (
+        {(shi || sii || spiActiveTrend !== MARINE) && (
           <>
             <SpiArcChartComponent
               value={scores.birds.count}

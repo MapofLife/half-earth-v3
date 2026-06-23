@@ -545,7 +545,7 @@ function DashboardTrendsSidebarContainer(props) {
         }
 
         loadZone('zone5', 'spi');
-      } else if (spiActiveTrend === MARINE) {
+      } else if (spiActiveTrend === MARINE && tabOption === TABS.SPI) {
         getHistogramData(
           `${DASHBOARD_URLS.SPI_HISTOGRAM_URL}?iso3=${countryCode}&region_key=${countryCode}&marine=True`
         );
@@ -661,6 +661,7 @@ function DashboardTrendsSidebarContainer(props) {
     shiActiveTrend,
     siiActiveTrend,
     spiActiveTrend,
+    tabOption,
   ]);
 
   return (
