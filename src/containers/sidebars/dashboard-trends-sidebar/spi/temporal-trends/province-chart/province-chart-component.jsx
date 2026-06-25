@@ -356,6 +356,8 @@ function ProvinceChartComponent(props) {
       y: {
         beginAtZero: true,
         display: true,
+        min: 0,
+        max: 100,
         title: {
           display: true,
           text: t('SPI / Percent of Area Protected'),
