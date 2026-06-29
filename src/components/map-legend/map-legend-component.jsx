@@ -99,13 +99,11 @@ function MapLegendComponent(props) {
   const siiLow = 0;
   const siiHigh = 50;
 
-  const lowText = countryISO.toUpperCase() === 'PER' ? t('Baja') : t('Low');
-  const highText = countryISO.toUpperCase() === 'PER' ? t('Alto') : t('High');
-  const lossText =
-    countryISO.toUpperCase() === 'PER' ? t('Pérdida') : t('Loss');
-  const stableText =
-    countryISO.toUpperCase() === 'PER' ? t('Estable') : t('Stable');
-  const gainText = countryISO.toUpperCase() === 'PER' ? t('Ganar') : t('Gain');
+  const lowText = t('Low');
+  const highText = t('High');
+  const lossText = t('Loss');
+  const stableText = t('Stable');
+  const gainText = t('Gain');
 
   const getLayerIcon = (layer) => {
     if (layer.parentId === LAYER_OPTIONS.EXPERT_RANGE_MAPS) {
@@ -140,7 +138,13 @@ function MapLegendComponent(props) {
     if (socioEconomicLayers.includes(layer.id)) {
       return (
         <div style={{ display: 'flex', gap: '5px', marginTop: '5px' }}>
-          <div className={cx(styles.box, pressureStyles['socio-economic'])} />
+          <div
+            className={cx(
+              styles.box,
+              styles.sdm,
+              pressureStyles['socio-economic']
+            )}
+          />
         </div>
       );
     }
@@ -148,7 +152,13 @@ function MapLegendComponent(props) {
     if (richnessLayers.includes(layer.id)) {
       return (
         <div style={{ display: 'flex', gap: '5px', marginTop: '5px' }}>
-          <div className={cx(styles.box, pressureStyles['biodiversity'])} />
+          <div
+            className={cx(
+              styles.box,
+              styles.sdm,
+              pressureStyles['biodiversity']
+            )}
+          />
         </div>
       );
     }
@@ -157,7 +167,11 @@ function MapLegendComponent(props) {
       return (
         <div style={{ display: 'flex', gap: '5px', marginTop: '5px' }}>
           <div
-            className={cx(styles.box, pressureStyles['land-human-pressures'])}
+            className={cx(
+              styles.box,
+              styles.sdm,
+              pressureStyles['land-human-pressures']
+            )}
           />
         </div>
       );
@@ -167,7 +181,11 @@ function MapLegendComponent(props) {
       return (
         <div style={{ display: 'flex', gap: '5px', marginTop: '5px' }}>
           <div
-            className={cx(styles.box, pressureStyles['marine-human-pressures'])}
+            className={cx(
+              styles.box,
+              styles.sdm,
+              pressureStyles['marine-human-pressures']
+            )}
           />
         </div>
       );
@@ -183,7 +201,9 @@ function MapLegendComponent(props) {
             marginTop: '5px',
           }}
         >
-          <div className={cx(styles.box, styles.predictionGradient)} />
+          <div
+            className={cx(styles.box, styles.sdm, styles.predictionGradient)}
+          />
           <span>Likelihood</span>
           <div className={styles.legendValues}>
             <span>{lowText}</span>

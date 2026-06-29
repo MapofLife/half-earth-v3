@@ -22,6 +22,7 @@ function renderComponent(overrides = {}) {
     speciesInfo: null,
     setSpeciesInfo: vi.fn(),
     speciesDataLoading: false,
+    countryISO: 'PER',
     ...overrides,
   };
 
@@ -124,6 +125,7 @@ describe('DashboardNavComponent', () => {
       speciesInfo: null,
       setSpeciesInfo: vi.fn(),
       speciesDataLoading: false,
+      countryISO: 'PER',
     };
 
     render(

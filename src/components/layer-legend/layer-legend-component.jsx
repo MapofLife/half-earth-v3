@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 import { useT } from '@transifex/react';
-
+import { fromJSON } from '@arcgis/core/symbols/support/jsonUtils.js';
 import {
   APURIMAC_LANDCOVER_FEATURE_ID,
   INDIGENOUS_LANDS_FEATURE_ID,
@@ -9,6 +9,8 @@ import {
 } from 'utils/dashboard-utils';
 
 import TileLayer from '@arcgis/core/layers/TileLayer';
+import GraphicsLayer from '@arcgis/core/layers/GraphicsLayer';
+import Graphic from '@arcgis/core/Graphic';
 import Switch from '@mui/material/Switch';
 import cx from 'classnames';
 
@@ -54,11 +56,12 @@ import {
   PERU_CROPS_LAYER,
   POVERTY_AND_DEPRIVATION_LAYER,
 } from 'constants/layers-slugs';
-import { LAYERS_URLS } from 'constants/layers-urls';
+import { LAYERS_URLS, DASHBOARD_URLS } from 'constants/layers-urls';
 
 import ArrowIcon from 'icons/arrow_right.svg?react';
 
 import styles from './layer-legend-styles.module.scss';
+import { SimpleFillSymbol, SimpleLineSymbol } from '@arcgis/core/symbols';
 
 function LayerLegendComponent(props) {
   const {
@@ -76,10 +79,7 @@ function LayerLegendComponent(props) {
     {
       type: 'landCover',
       id: PERU_CROPS_LAYER,
-      label:
-        countryISO.toUpperCase() === 'PER'
-          ? t('Cultivos de Perú')
-          : t('Peru Crops'),
+      label: t('Peru Crops'),
       heatMapImage: '',
       details: ``,
       showDetails: false,
@@ -90,10 +90,7 @@ function LayerLegendComponent(props) {
     {
       type: 'landCover',
       id: APURIMAC_LANDCOVER_LAYER,
-      label:
-        countryISO.toUpperCase() === 'PER'
-          ? t('Cambio en la cubierta del suelo de Apurímac')
-          : t('Apurimac Landcover change'),
+      label: t('Apurimac Landcover change'),
       heatMapImage: '',
       details: ``,
       showDetails: false,
@@ -104,10 +101,7 @@ function LayerLegendComponent(props) {
     {
       type: 'landCover',
       id: APURIMAC_SPECIES_LOSS_HABITY_SUITABILITY_LAYER,
-      label:
-        countryISO.toUpperCase() === 'PER'
-          ? t('Especies de Apurímac con pérdida en la adecuación del hábitat')
-          : t('Apurímac species with a loss in habitat suitability'),
+      label: t('Apurímac species with a loss in habitat suitability'),
       heatMapImage: '',
       details: ``,
       showDetails: false,
@@ -118,10 +112,7 @@ function LayerLegendComponent(props) {
     {
       type: 'landCover',
       id: APURIMAC_SPECIES_GAIN_HABITY_SUITABILITY_LAYER,
-      label:
-        countryISO.toUpperCase() === 'PER'
-          ? t('Especies de Apurímac con ganancia en la adecuación del hábitat')
-          : t('Apurímac species with a gain in habitat suitability'),
+      label: t('Apurímac species with a gain in habitat suitability'),
       heatMapImage: '',
       details: ``,
       showDetails: false,
@@ -131,9 +122,11 @@ function LayerLegendComponent(props) {
     },
   ];
 
+  const indigenousRegions = ['GUY', 'PER'];
+
   // const [leftPosition, setLeftPosition] = useState(0);
   const [collapse, setCollapse] = useState(true);
-  const [richnessLayers, setRichnessLayers] = useState([
+  const [indigenousLandsLayer, setIndigenousLandsLayer] = useState([
     {
       id: LAYER_OPTIONS.INDIGENOUS_LANDS,
       label: t('Indigenous Territories'),
@@ -144,6 +137,8 @@ function LayerLegendComponent(props) {
       portalId: INDIGENOUS_LANDS_FEATURE_ID,
       speciesCount: 0,
     },
+  ]);
+  const [richnessLayers, setRichnessLayers] = useState([
     {
       id: BIRDS_RICHNESS_1KM,
       label: t('Birds Richness'),
@@ -391,10 +386,7 @@ function LayerLegendComponent(props) {
     {
       type: 'socioEconomic',
       id: POVERTY_AND_DEPRIVATION_LAYER,
-      label:
-        countryISO.toUpperCase() === 'PER'
-          ? t('Pobreza y privación')
-          : t('Poverty and Deprivation'),
+      label: t('Poverty and Deprivation'),
       heatMapImage: '',
       details: ``,
       showDetails: false,
@@ -408,10 +400,7 @@ function LayerLegendComponent(props) {
     {
       type: 'landCover',
       id: LAND_COVER_LAYER,
-      label:
-        countryISO.toUpperCase() === 'PER'
-          ? t('Capas de cubierta del suelo (2022)')
-          : t('Land cover (2022)'),
+      label: t('Land cover (2022)'),
       heatMapImage: '',
       details: ``,
       showDetails: false,
@@ -421,25 +410,42 @@ function LayerLegendComponent(props) {
     },
   ]);
 
-  const displayLayer = async (layer) => {
-    if (!layer.showLayer) {
-      if (layer.portalId) {
-        const classType = countryISO === 'PER' ? 'PER_LAYER' : '';
-        const featureLayer = await EsriFeatureService.getFeatureLayer(
-          layer.portalId,
-          countryISO,
-          layer.id,
-          classType
-        );
+  const [panamaLayers, setPanamaLayers] = useState([
+    {
+      id: 'panama_eco_region_graphics',
+      label: t('Terrestrial ecoregions of Panama'),
+      heatMapImage: '',
+      details: `Publication date: 2012-12-04 <br/>Responsible party<br/>Organization's name: RAISG - Red Amazónica de Información Socioambiental Georreferenciada<br/>Contact's role: point of contact<br/>Delivery point: <a href="http://raisg.socioambiental.org/contact" target="_blank" rel="noopener noreferrer">http://raisg.socioambiental.org/contact</a>`,
+      showDetails: false,
+      showLayer: false,
+      url: DASHBOARD_URLS.PANAMA_ECO_REGION_LAYER_URL,
+      speciesCount: 0,
+    },
+  ]);
+
+  const [showBiodiversityLayers, setShowBiodiversityLayers] = useState(false);
+  const [showLandUsePressureLayers, setShowLandUsePressureLayers] =
+    useState(false);
+  const [showMarineUsePressureLayers, setShowMarineUsePressureLayers] =
+    useState(false);
+  const [showSocioEconomicLayers, setShowSocioEconomicLayers] = useState(false);
+  const [showLandCoverLayers, setShowLandCoverLayers] = useState(false);
+  const [showPanamaLayers, setShowPanamaLayers] = useState(false);
+
+  const displayPanamaLayer = async (layer) => {
+    const serviceUrl = layer.url;
+
+    EsriFeatureService.getFeatureLayerByUrl(layer.url, layer.id).then(
+      (mapImageLayer) => {
         setRegionLayers((rl) => ({
           ...rl,
-          [layer.id]: featureLayer,
+          [layer.id]: mapImageLayer,
         }));
 
-        map.add(featureLayer, map.layers.length - layerIndex);
+        map.add(mapImageLayer, map.layers.length - layerIndex);
 
-        view.whenLayerView(featureLayer).then(() => {
-          const { renderer } = featureLayer;
+        view.whenLayerView(mapImageLayer).then(() => {
+          const { renderer } = mapImageLayer;
           const { uniqueValueGroups } = renderer;
           const layerInfo = {
             ...layer,
@@ -448,40 +454,139 @@ function LayerLegendComponent(props) {
 
           setMapLegendLayers((ml) => [layerInfo, ...ml]);
         });
-      } else if (layer.url) {
-        const mapLayers = LAYERS_URLS[layer.url];
-        let promises;
-        if (Array.isArray(mapLayers)) {
-          promises = mapLayers.map(
-            async (mapLayer) =>
-              new TileLayer({
-                url: mapLayer,
-                id: layer.id,
-                outFields: ['*'],
-              })
+      }
+    );
+    //   url: serviceUrl,
+    //   whereClause: '1=1',
+    //   returnGeometry: true,
+    // }).then((features) => {
+    //   if (!features || features.length === 0) return;
+
+    //   // Create a graphics layer to hold all feature geometries
+    //   const graphicsLayer = new GraphicsLayer({
+    //     id: layer.id,
+    //     title: layer.label,
+    //   });
+
+    //   // Loop through all features and add their geometries to the graphics layer
+    //   features.forEach((feature, index) => {
+    //     const { geometry, attributes } = feature;
+    //     if (geometry) {
+    //       const graphic = new Graphic({
+    //         geometry,
+    //         attributes,
+    //         symbol: new SimpleFillSymbol({
+    //           style: 'esriSFSSolid',
+    //           color: renderer?.uniqueValueInfos[index]?.symbol.color,
+    //           outline: new SimpleLineSymbol({
+    //             color: renderer?.uniqueValueInfos[index]?.symbol.outline.color,
+    //             width: 1,
+    //           }),
+    //         }),
+    //       });
+    //       graphicsLayer.add(graphic);
+    //     }
+    //   });
+
+    //   // Add the graphics layer to the map
+    //   map.add(graphicsLayer);
+
+    //   setRegionLayers((rl) => ({
+    //     ...rl,
+    //     [layer.id]: graphicsLayer,
+    //   }));
+
+    //   map.add(graphicsLayer, map.layers.length - layerIndex);
+
+    //   view.whenLayerView(graphicsLayer).then(() => {
+    //     const { renderer } = graphicsLayer;
+    //     const { uniqueValueGroups } = renderer;
+    //     const layerInfo = {
+    //       ...layer,
+    //       classes: uniqueValueGroups[0].classes,
+    //     };
+
+    //     setMapLegendLayers((ml) => [layerInfo, ...ml]);
+    //   });
+
+    //   // Navigate to the first feature's geometry
+    //   // const firstGeometry = features[0].geometry;
+    //   // if (firstGeometry) {
+    //   //   view.goTo({
+    //   //     target: firstGeometry,
+    //   //     center: [firstGeometry.longitude - 20, firstGeometry.latitude],
+    //   //     zoom: 5.5,
+    //   //     extent: firstGeometry.clone ? firstGeometry.clone() : firstGeometry,
+    //   //   });
+    //   // }
+    // });
+  };
+
+  const displayLayer = async (layer) => {
+    if (!layer.showLayer) {
+      if (layer.id === 'panama_eco_region_graphics') {
+        displayPanamaLayer(layer);
+      } else {
+        if (layer.portalId) {
+          const classType = countryISO === 'PER' ? 'PER_LAYER' : '';
+          const featureLayer = await EsriFeatureService.getFeatureLayer(
+            layer.portalId,
+            countryISO,
+            layer.id,
+            classType
           );
-        } else {
-          promises = [
-            new TileLayer({
-              url: mapLayers,
-              id: layer.id,
-              outFields: ['*'],
-            }),
-          ];
-        }
-
-        const newLayers = await Promise.all(promises);
-
-        newLayers.forEach((newLayer) => {
           setRegionLayers((rl) => ({
             ...rl,
-            [layer.id]: newLayer,
+            [layer.id]: featureLayer,
           }));
 
-          map.add(newLayer, map.layers.length - layerIndex);
-        });
+          map.add(featureLayer, map.layers.length - layerIndex);
 
-        setMapLegendLayers((ml) => [layer, ...ml]);
+          view.whenLayerView(featureLayer).then(() => {
+            const { renderer } = featureLayer;
+            const { uniqueValueGroups } = renderer;
+            const layerInfo = {
+              ...layer,
+              classes: uniqueValueGroups[0].classes,
+            };
+
+            setMapLegendLayers((ml) => [layerInfo, ...ml]);
+          });
+        } else if (layer.url) {
+          const mapLayers = LAYERS_URLS[layer.url];
+          let promises;
+          if (Array.isArray(mapLayers)) {
+            promises = mapLayers.map(
+              async (mapLayer) =>
+                new TileLayer({
+                  url: mapLayer,
+                  id: layer.id,
+                  outFields: ['*'],
+                })
+            );
+          } else {
+            promises = [
+              new TileLayer({
+                url: mapLayers,
+                id: layer.id,
+                outFields: ['*'],
+              }),
+            ];
+          }
+
+          const newLayers = await Promise.all(promises);
+
+          newLayers.forEach((newLayer) => {
+            setRegionLayers((rl) => ({
+              ...rl,
+              [layer.id]: newLayer,
+            }));
+
+            map.add(newLayer, map.layers.length - layerIndex);
+          });
+
+          setMapLegendLayers((ml) => [layer, ...ml]);
+        }
       }
     } else {
       const layerToRemove = map.layers.items.filter(
@@ -531,6 +636,12 @@ function LayerLegendComponent(props) {
       );
     } else {
       setRichnessLayers((prevLayers) =>
+        prevLayers.map((l) =>
+          l.id === layer.id ? { ...l, showLayer: !layer.showLayer } : l
+        )
+      );
+
+      setPanamaLayers((prevLayers) =>
         prevLayers.map((l) =>
           l.id === layer.id ? { ...l, showLayer: !layer.showLayer } : l
         )
@@ -701,22 +812,88 @@ function LayerLegendComponent(props) {
         />
       </button>
       <ul className={styles.layers}>
+        {Object.values(panamaLayers).map((layer) => (
+          <li key={`${layer.id}-${layer.label}`}>
+            <div className={styles.dataLayer}>
+              <div className={styles.layer}>
+                <div className={styles.title}>
+                  <span className={styles.label}>{layer.label}</span>
+                  <ArrowIcon className={styles.arrowIcon} />
+                </div>
+                <Switch onChange={() => displayLayer(layer)} />
+              </div>
+            </div>
+          </li>
+        ))}
+      </ul>
+      {indigenousRegions.includes(countryISO) && (
+        <ul className={styles.layers}>
+          <li>
+            <div className={styles.dataLayer}>
+              <div className={styles.layer}>
+                <div className={styles.title}>
+                  <span className={styles.label}>
+                    <b>{t('Indigenous Layers')}</b>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </li>
+          {Object.values(indigenousLandsLayer).map((layer) => (
+            <li key={`${layer.id}-${layer.label}`}>
+              <div className={styles.dataLayer}>
+                <div className={styles.layer}>
+                  <div className={styles.title}>
+                    <span className={styles.label}>{layer.label}</span>
+                    <ArrowIcon className={styles.arrowIcon} />
+                  </div>
+                  <Switch onChange={() => displayLayer(layer)} />
+                </div>
+                {layer.id !== LAYER_OPTIONS.INDIGENOUS_LANDS &&
+                  getSidebarLegend(layer)}
+                {layer.details && (
+                  <div className={styles.details}>
+                    <button
+                      className={styles.view}
+                      type="button"
+                      onClick={() => showDetails(layer)}
+                      aria-label="Collapse details"
+                    >
+                      <span>{t('View details')}</span>
+                      <ArrowIcon
+                        className={cx(styles.arrowIcon, {
+                          [styles.isOpened]: !layer.showDetails,
+                        })}
+                      />
+                    </button>
+                    {layer.showDetails && (
+                      <p dangerouslySetInnerHTML={{ __html: layer.details }} />
+                    )}
+                  </div>
+                )}
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+      <ul className={styles.layers}>
         <li>
           <div className={styles.dataLayer}>
-            <div className={styles.layer}>
-              <div className={styles.title}>
-                <span className={styles.label}>
-                  {countryISO.toUpperCase() === 'PER' ? (
-                    <b>{t('Capas de biodiversidad')}</b>
-                  ) : (
-                    <b>{t('Biodiversity Layers')}</b>
-                  )}
-                </span>
-              </div>
+            <div
+              className={cx(styles.titleWrapper, styles.label)}
+              onClick={() => setShowBiodiversityLayers(!showBiodiversityLayers)}
+            >
+              <b>{t('Biodiversity Layers')}</b>
+              <ArrowIcon
+                className={cx(styles.arrowIcon, {
+                  [styles.isOpened]: !showBiodiversityLayers,
+                })}
+              />
             </div>
           </div>
         </li>
-        {richnessLayers &&
+        {showBiodiversityLayers &&
+          richnessLayers &&
           Object.values(richnessLayers).map((layer) => (
             <li key={`${layer.id}-${layer.label}`}>
               <div className={styles.dataLayer}>
@@ -752,22 +929,26 @@ function LayerLegendComponent(props) {
               </div>
             </li>
           ))}
+
         <li>
           <div className={styles.dataLayer}>
-            <div className={styles.layer}>
-              <div className={styles.title}>
-                <span className={styles.label}>
-                  {countryISO.toUpperCase() === 'PER' ? (
-                    <b>{t('Capas de presión por uso del suelo')}</b>
-                  ) : (
-                    <b>{t('Land Use Pressure Layers')}</b>
-                  )}
-                </span>
-              </div>
+            <div
+              className={cx(styles.titleWrapper, styles.label)}
+              onClick={() =>
+                setShowLandUsePressureLayers(!showLandUsePressureLayers)
+              }
+            >
+              <b>{t('Land Use Pressure Layers')}</b>
+              <ArrowIcon
+                className={cx(styles.arrowIcon, {
+                  [styles.isOpened]: !showLandUsePressureLayers,
+                })}
+              />
             </div>
           </div>
         </li>
-        {landUsePressureLayers &&
+        {showLandUsePressureLayers &&
+          landUsePressureLayers &&
           Object.values(landUsePressureLayers).map((layer) => (
             <li key={`${layer.id}-${layer.label}`}>
               <div className={styles.dataLayer}>
@@ -803,22 +984,26 @@ function LayerLegendComponent(props) {
               </div>
             </li>
           ))}
+
         <li>
           <div className={styles.dataLayer}>
-            <div className={styles.layer}>
-              <div className={styles.title}>
-                <span className={styles.label}>
-                  {countryISO.toUpperCase() === 'PER' ? (
-                    <b>{t('Capas de presión para uso marino')}</b>
-                  ) : (
-                    <b>{t('Marine Use Pressure Layers')}</b>
-                  )}
-                </span>
-              </div>
+            <div
+              className={cx(styles.titleWrapper, styles.label)}
+              onClick={() =>
+                setShowMarineUsePressureLayers(!showMarineUsePressureLayers)
+              }
+            >
+              <b>{t('Marine Use Pressure Layers')}</b>
+              <ArrowIcon
+                className={cx(styles.arrowIcon, {
+                  [styles.isOpened]: !showMarineUsePressureLayers,
+                })}
+              />
             </div>
           </div>
         </li>
-        {marineUsePressureLayers &&
+        {showMarineUsePressureLayers &&
+          marineUsePressureLayers &&
           Object.values(marineUsePressureLayers).map((layer) => (
             <li key={`${layer.id}-${layer.label}`}>
               <div className={styles.dataLayer}>
@@ -854,22 +1039,24 @@ function LayerLegendComponent(props) {
               </div>
             </li>
           ))}
+
         <li>
           <div className={styles.dataLayer}>
-            <div className={styles.layer}>
-              <div className={styles.title}>
-                <span className={styles.label}>
-                  {countryISO.toUpperCase() === 'PER' ? (
-                    <b>{t('Capas de cubierta/uso del suelo')}</b>
-                  ) : (
-                    <b>{t('Land Cover/Use Layers')}</b>
-                  )}
-                </span>
-              </div>
+            <div
+              className={cx(styles.titleWrapper, styles.label)}
+              onClick={() => setShowLandCoverLayers(!showLandCoverLayers)}
+            >
+              <b>{t('Land Cover/Use Layers')}</b>
+              <ArrowIcon
+                className={cx(styles.arrowIcon, {
+                  [styles.isOpened]: !showLandCoverLayers,
+                })}
+              />
             </div>
           </div>
         </li>
-        {landCoverLayers &&
+        {showLandCoverLayers &&
+          landCoverLayers &&
           Object.values(landCoverLayers).map((layer) => (
             <li key={`${layer.id}-${layer.label}`}>
               <div className={styles.dataLayer}>
@@ -886,17 +1073,24 @@ function LayerLegendComponent(props) {
         {countryISO === 'PER' && (
           <li>
             <div className={styles.dataLayer}>
-              <div className={styles.layer}>
-                <div className={styles.title}>
-                  <span className={styles.label}>
-                    <b>{t('Socio-Economic')}</b>
-                  </span>
-                </div>
+              <div
+                className={cx(styles.titleWrapper, styles.label)}
+                onClick={() =>
+                  setShowSocioEconomicLayers(!showSocioEconomicLayers)
+                }
+              >
+                <b>{t('Socio-Economic Layers')}</b>
+                <ArrowIcon
+                  className={cx(styles.arrowIcon, {
+                    [styles.isOpened]: !showSocioEconomicLayers,
+                  })}
+                />
               </div>
             </div>
           </li>
         )}
-        {countryISO === 'PER' &&
+        {showSocioEconomicLayers &&
+          countryISO === 'PER' &&
           socioEconomicLayers &&
           Object.values(socioEconomicLayers).map((layer) => (
             <li key={`${layer.id}-${layer.label}`}>

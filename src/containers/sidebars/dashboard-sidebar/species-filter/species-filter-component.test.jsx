@@ -377,16 +377,14 @@ describe('SpeciesFilterComponent', () => {
     });
 
     await waitFor(() => {
-      expect(
-        screen.getByText('Guardar esta área personalizada')
-      ).toBeInTheDocument();
+      expect(screen.getByText('Save this custom area')).toBeInTheDocument();
     });
 
-    fireEvent.click(screen.getByText('Guardar esta área personalizada'));
+    fireEvent.click(screen.getByText('Save this custom area'));
 
-    expect(screen.getByText('Guardar área personalizada')).toBeInTheDocument();
+    expect(screen.getByText('Save custom area')).toBeInTheDocument();
     expect(
-      screen.getByPlaceholderText('Describe esta área personalizada...')
+      screen.getByPlaceholderText('Describe this custom area...')
     ).toBeInTheDocument();
   });
 });

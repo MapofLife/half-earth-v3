@@ -482,7 +482,7 @@ function GroupedListComponent(props) {
                   filter: ['==', ['geometry-type'], 'Point'],
                   paint: {
                     'circle-color': '#FFA500',
-                    'circle-radius': 8,
+                    'circle-radius': 4,
                     'circle-stroke-color': '#FFA500',
                     'circle-stroke-width': 2,
                     'circle-opacity': 1,
@@ -496,7 +496,7 @@ function GroupedListComponent(props) {
                   filter: ['==', ['geometry-type'], 'Point'],
                   paint: {
                     'circle-color': '#FFA500',
-                    'circle-radius': 8,
+                    'circle-radius': 4,
                     'circle-stroke-color': '#FFA500',
                     'circle-stroke-width': 2,
                     'circle-opacity': 1,
@@ -694,10 +694,7 @@ function GroupedListComponent(props) {
   useEffect(() => {
     if (!showPredictionMap) return;
     displaySingleLayer({
-      label:
-        countryISO.toUpperCase() === 'PER'
-          ? t('Modelo de Distribución de Especies (MDE)')
-          : t('Species Distribution Model'),
+      label: t('Species Distribution Model'),
       items: [],
       id: LAYER_OPTIONS.PREDICTION_MAPS,
       total_no_rows: '',

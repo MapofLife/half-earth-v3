@@ -24,8 +24,11 @@ import MinimizeIcon from 'icons/closes.svg?react';
 
 import LayerLegendContainer from '../../../components/layer-legend';
 import {
+  MARINE,
   MEX,
   PROVINCE_TREND,
+  TABS,
+  TERRISTRIAL,
 } from '../../sidebars/dashboard-trends-sidebar/dashboard-trends-sidebar-component';
 import { Snackbar } from '@mui/material';
 
@@ -72,6 +75,8 @@ function DashboardViewComponent(props) {
   const [layerInfo, setLayerInfo] = useState();
   const [showLegend, setShowLegend] = useState(false);
   const [activeTrend, setActiveTrend] = useState(PROVINCE_TREND);
+
+  const [spiActiveTrend, setSpiActiveTrend] = useState(TERRISTRIAL);
   const [shiActiveTrend, setShiActiveTrend] = useState(PROVINCE_TREND);
   const [siiActiveTrend, setSiiActiveTrend] = useState(PROVINCE_TREND);
   const [showHover, setShowHover] = useState(true);
@@ -136,7 +141,15 @@ function DashboardViewComponent(props) {
 
   useEffect(() => {
     if (Object.values(mapLegendLayers).length > 0) {
-      setShowLegend(true);
+      if (
+        spiActiveTrend === MARINE &&
+        tabOption === TABS.SPI &&
+        selectedIndex === NAVIGATION.TRENDS
+      ) {
+        setShowLegend(false);
+      } else {
+        setShowLegend(true);
+      }
     } else {
       setShowLegend(false);
     }
@@ -269,6 +282,7 @@ function DashboardViewComponent(props) {
         setSelectedProvince={setSelectedProvince}
         activeTrend={activeTrend}
         shiActiveTrend={shiActiveTrend}
+        spiActiveTrend={spiActiveTrend}
         siiActiveTrend={siiActiveTrend}
         handleRegionSelected={handleRegionSelected}
         showHover={showHover}
@@ -282,6 +296,8 @@ function DashboardViewComponent(props) {
           <LayerLegendContainer map={map} view={view} {...props} />
         )}
         <DashboardSidebarContainer
+          spiActiveTrend={spiActiveTrend}
+          setSpiActiveTrend={setSpiActiveTrend}
           map={map}
           view={view}
           setMapViewSettings={setMapViewSettings}
@@ -311,6 +327,7 @@ function DashboardViewComponent(props) {
           setSnackBar={setSnackBar}
           setShowHover={setShowHover}
           showHover={showHover}
+          setShowLegend={setShowLegend}
           {...props}
         />
       </LightModeProvider>

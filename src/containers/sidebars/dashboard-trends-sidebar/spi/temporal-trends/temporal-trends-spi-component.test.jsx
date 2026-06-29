@@ -10,6 +10,7 @@ const MEX = 'MEX';
 const NATIONAL_TREND = 'NATIONAL';
 const PROVINCE_TREND = 'PROVINCE';
 const ZONE_3 = 'ZONE_3';
+const ZONE_5 = 'ZONE_5';
 
 vi.mock('../../dashboard-trends-sidebar-component', () => ({
   MEX: 'MEX',
@@ -21,6 +22,8 @@ vi.mock('../../dashboard-trends-sidebar-component', () => ({
   INT: 'INT',
   NATIONAL_TREND: 'NATIONAL',
   PROVINCE_TREND: 'PROVINCE',
+  TERRISTRIAL: 'TERRESTRIAL',
+  MARINE: 'MARINE',
   ZONE_3: 'ZONE_3',
   ZONE_5: 'ZONE_5',
 }));
@@ -103,6 +106,8 @@ function renderComponent(overrides = {}) {
     setClickedRegion: vi.fn(),
     handleRegionSelected: vi.fn(),
     view: { goTo: vi.fn() },
+    setShowLegend: vi.fn(),
+    setSpiActiveTrend: vi.fn(),
     ...overrides,
   };
 
@@ -180,6 +185,14 @@ describe('TemporalTrendsSpiComponent', () => {
       );
     });
 
+    fireEvent.click(screen.getByText('Peru'));
+    fireEvent.click(screen.getByText('Brazil'));
+    fireEvent.click(screen.getByText('Madagascar'));
+    fireEvent.click(screen.getByText('Vietnam'));
+    await waitFor(() => {
+      expect(getFeaturesMock).toHaveBeenCalledTimes(5);
+    });
+
     fireEvent.click(screen.getByText('Landscape'));
     expect(props.setActiveTrend).toHaveBeenCalledWith(LND);
 
@@ -214,5 +227,48 @@ describe('TemporalTrendsSpiComponent', () => {
         ],
       })
     );
+  });
+
+  it('renders ZONE_5 chart for GUY-FM branch', () => {
+    renderComponent({
+      countryISO: 'GUY-FM',
+      activeTrend: ZONE_5,
+    });
+
+    expect(screen.getByText('ZONE_5')).toBeInTheDocument();
+    expect(screen.getByTestId('spi-zone-chart')).toBeInTheDocument();
+    expect(zoneChartMock).toHaveBeenCalledWith(
+      expect.objectContaining({ zone: ZONE_5 })
+    );
+  });
+
+  it('shows Departamento label and download button for PER', async () => {
+    renderComponent({ countryISO: 'PER', activeTrend: PROVINCE_TREND });
+
+    await waitFor(() => {
+      expect(screen.getByText('Departamento')).toBeInTheDocument();
+    });
+    expect(screen.getByTestId('download-spi')).toBeInTheDocument();
+  });
+
+  it('closes full province table when Close full table is clicked', async () => {
+    renderComponent({ activeTrend: PROVINCE_TREND });
+
+    fireEvent.click(screen.getByText('View Full Province table'));
+    expect(screen.getByTestId('spi-trend-table')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText('Close full table'));
+    expect(screen.queryByTestId('spi-trend-table')).not.toBeInTheDocument();
+    expect(screen.getByTestId('spi-province-chart')).toBeInTheDocument();
+  });
+
+  it('clicks TERRESTRIAL and MARINE top buttons', async () => {
+    const props = renderComponent({ activeTrend: NATIONAL_TREND });
+
+    fireEvent.click(screen.getByText('TERRESTRIAL'));
+    expect(props.setSpiActiveTrend).toHaveBeenCalledWith('TERRESTRIAL');
+
+    fireEvent.click(screen.getByText('MARINE'));
+    expect(props.setSpiActiveTrend).toHaveBeenCalledWith('MARINE');
   });
 });

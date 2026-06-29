@@ -11,6 +11,8 @@ import ShiContainer from './shi';
 import SiiContainer from './sii';
 import SpiContainer from './spi';
 
+export const TERRISTRIAL = 'TERRESTRIAL';
+export const MARINE = 'MARINE';
 export const NATIONAL_TREND = 'NATIONAL';
 export const PROVINCE_TREND = 'PROVINCE';
 export const ZONE_3 = 'ZONE_3';
@@ -35,9 +37,11 @@ function DashboardTrendsSidebar(props) {
     shiValue,
     siiValue,
     spiValue,
+    spiMarineValue,
     tabOption,
     setTabOption,
     regionLayers,
+    setRegionLayers,
     handleRegionSelected,
     countryISO,
     map,
@@ -99,6 +103,13 @@ function DashboardTrendsSidebar(props) {
 
     // if(guyRiver){
     //   guyRiver.visible = false;
+    // }
+
+    // const foundMarineLayer = map.layers.items.find(
+    //   (item) => item.id === 'marine-layer'
+    // );
+    // if (foundMarineLayer) {
+    //   map.remove(foundMarineLayer);
     // }
 
     if (tabClicked === TABS.SII) {
@@ -205,38 +216,34 @@ function DashboardTrendsSidebar(props) {
   };
 
   useEffect(() => {
-    const guyRiver = map.layers.items.find(
-      (item) => item.id === `GUY-RIVER`
-    );
+    const guyRiver = map.layers.items.find((item) => item.id === `GUY-RIVER`);
 
     const guyRiverName = map.layers.items.find(
       (item) => item.id === `GUY-RIVER-NAME`
     );
 
-    if(guyRiver){
+    if (guyRiver) {
       guyRiver.visible = false;
     }
 
-    if(guyRiverName){
+    if (guyRiverName) {
       guyRiverName.visible = false;
     }
 
     return () => {
-      const guyRiver = map.layers.items.find(
-        (item) => item.id === `GUY-RIVER`
-      );
+      const guyRiver = map.layers.items.find((item) => item.id === `GUY-RIVER`);
 
       const guyRiverName = map.layers.items.find(
-      (item) => item.id === `GUY-RIVER-NAME`
-    );
+        (item) => item.id === `GUY-RIVER-NAME`
+      );
 
-      if(guyRiver){
+      if (guyRiver) {
         guyRiver.visible = true;
       }
-      if(guyRiverName){
+      if (guyRiverName) {
         guyRiverName.visible = true;
       }
-    }
+    };
   });
 
   return (
@@ -253,7 +260,16 @@ function DashboardTrendsSidebar(props) {
             onClick={() => showHideLayers(TABS.SPI)}
           >
             {countryISO.toLowerCase() !== 'ee' && (
-              <label htmlFor="spi">{spiValue}</label>
+              <>
+                <label htmlFor="spi">
+                  <div>
+                    {spiValue} <i>(Terr.)</i>
+                  </div>{' '}
+                  <div>
+                    {spiMarineValue} <i>(Mar.)</i>
+                  </div>
+                </label>
+              </>
             )}
             <span>{t('Species Protection Index')}</span>
           </button>
@@ -267,7 +283,9 @@ function DashboardTrendsSidebar(props) {
             name="shi"
           >
             {countryISO.toLowerCase() !== 'ee' && (
-              <label htmlFor="shi">{shiValue}</label>
+              <label htmlFor="shi">
+                {shiValue} <i>(Terr.)</i>
+              </label>
             )}
             <span>{t('Species Habitat Index')}</span>
           </button>
@@ -281,7 +299,9 @@ function DashboardTrendsSidebar(props) {
               onClick={() => showHideLayers(TABS.SII)}
               name="sii"
             >
-              <label htmlFor="sii">{siiValue}</label>
+              <label htmlFor="sii">
+                {siiValue} <i>(Terr.)</i>
+              </label>
               <span>{t('Species Information Index')}</span>
             </button>
           )}

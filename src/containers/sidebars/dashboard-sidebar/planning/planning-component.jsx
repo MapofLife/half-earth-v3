@@ -2,11 +2,12 @@ import React, { useContext } from 'react';
 import cx from 'classnames';
 import { useLocale, useT } from '@transifex/react';
 import { LightModeContext } from 'context/light-mode';
-import styles from './planning-styles.module.scss'
+import styles from './planning-styles.module.scss';
 import hrTheme from 'styles/themes/hr-theme.module.scss';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import { Slider } from '@mui/material';
+import Button from 'components/button';
 
 const marks = [
   {
@@ -14,15 +15,15 @@ const marks = [
     label: '0%',
   },
   {
-    value: .25,
+    value: 0.25,
     label: '25%',
   },
   {
-    value: .50,
+    value: 0.5,
     label: '50%',
   },
   {
-    value: .75,
+    value: 0.75,
     label: '75%',
   },
   {
@@ -31,7 +32,14 @@ const marks = [
   },
 ];
 
-function PlanningComponent({options, updateValue, displaySlider, maximumArea, setMaximumArea}) {
+function PlanningComponent({
+  options,
+  updateValue,
+  displaySlider,
+  maximumArea,
+  setMaximumArea,
+  onCalculatePlanning,
+}) {
   const t = useT();
   const locale = useLocale();
   const { lightMode } = useContext(LightModeContext);
@@ -39,9 +47,7 @@ function PlanningComponent({options, updateValue, displaySlider, maximumArea, se
     <section className={cx(lightMode ? styles.light : '', styles.container)}>
       <span className={styles.sectionTitle}>{t('Planning')}</span>
       <span className={styles.sectionSubtitle}>
-        {t(
-          'Placeholder text for planning'
-        )}
+        {t('Placeholder text for planning')}
       </span>
       <hr className={hrTheme.dark} />
       <div className={styles.options}>
@@ -62,23 +68,25 @@ function PlanningComponent({options, updateValue, displaySlider, maximumArea, se
         ))}
       </div>
       <div className={styles.sliders}>
-        {options.filter(opt => opt.checked).map((option, index) => (
-          <>
-            <span className={styles.sliderLabel}>{t(option.label)}</span>
-            <div className={styles.sliderContainer} key={index}>
-              <Slider
-                title={option.label}
-                className={styles.slider}
-                min={0}
-                max={1}
-                marks={marks}
-                step={0.25}
-                value={option.value}
-                onChange={(e, value) => updateValue(option, value)}
-              />
+        {options
+          .filter((opt) => opt.checked)
+          .map((option, index) => (
+            <div key={option.label}>
+              <span className={styles.sliderLabel}>{t(option.label)}</span>
+              <div className={styles.sliderContainer}>
+                <Slider
+                  title={option.label}
+                  className={styles.slider}
+                  min={0}
+                  max={1}
+                  marks={marks}
+                  step={0.25}
+                  value={option.value}
+                  onChange={(e, value) => updateValue(option, value)}
+                />
+              </div>
             </div>
-          </>
-        ))}
+          ))}
       </div>
       <hr className={hrTheme.dark} />
       <div className={styles.sliders}>
@@ -95,8 +103,13 @@ function PlanningComponent({options, updateValue, displaySlider, maximumArea, se
           />
         </div>
       </div>
+      <Button
+        type="rectangular"
+        label={t('Calculate Priority Areas')}
+        handleClick={onCalculatePlanning}
+      />
     </section>
-  )
+  );
 }
 
-export default PlanningComponent
+export default PlanningComponent;

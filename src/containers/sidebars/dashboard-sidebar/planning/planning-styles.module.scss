@@ -40,59 +40,71 @@
     color: var(--font-color);
   }
 
-  .options{
+  .options {
     display: grid;
     column-gap: 15px;
     align-items: center;
     padding-left: 10px;
     color: var(--font-color);
 
-    span{
+    span {
       color: var(--font-color);
 
-      &[aria-disabled="true"]{
+      &[aria-disabled='true'] {
         color: var(--disabled);
       }
     }
 
-    > span{
+    > span {
       text-align: center;
     }
   }
 
-  .sliders{
+  .sliders {
     display: flex;
     flex-direction: column;
     gap: 10px;
 
-    .sliderLabel{
+    .sliderLabel {
       font-size: $font-size-sm;
       font-weight: 600;
       color: var(--font-color);
       padding-left: 10px;
     }
 
-    .sliderContainer{
+    .sliderContainer {
       display: flex;
       flex-direction: column;
       gap: 5px;
       padding: 0 20px;
 
-      .slider{
+      .slider {
         color: $brand-color-main;
       }
 
-      .sliderValue{
+      .sliderValue {
         display: flex;
         align-items: center;
         gap: 10px;
 
-        .sliderSection{
+        .sliderSection {
           flex-grow: 1;
           height: 4px;
           background: var(--border-color);
         }
       }
+    }
+  }
+
+  button {
+    width: 50%;
+    display: flex;
+    align-self: flex-end;
+    margin-top: 10px;
+    color: var(--save-button-text);
+    background-color: var(--border-color);
+    &:hover {
+      background-color: var(--border-color-hover);
     }
   }
 }

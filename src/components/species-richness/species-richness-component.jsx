@@ -31,7 +31,13 @@ import MammalsWhite from 'images/dashboard/mammal_icon_white.png?react';
 import ReptilesBlack from 'images/dashboard/reptile_icon_black.png?react';
 import ReptilesWhite from 'images/dashboard/reptile_icon_white.png?react';
 
+import FishesBlack from 'images/dashboard/fish_icon_black.png?react';
+import FishesWhite from 'images/dashboard/fish_icon_white.png?react';
+import MarMammalsBlack from 'images/dashboard/marine_mammal_icon_black.png?react';
+import MarMammalsWhite from 'images/dashboard/marine_mammal_icon_white.png?react';
+
 import {
+  MARINE,
   NATIONAL_TREND,
   PROVINCE_TREND,
   ZONE_3,
@@ -59,6 +65,7 @@ function SpeciesRichnessComponent(props) {
   const {
     selectedProvince,
     activeTrend,
+    spiActiveTrend,
     provinces,
     countryData,
     zoneData,
@@ -69,6 +76,7 @@ function SpeciesRichnessComponent(props) {
     countryISO,
     shi,
     sii,
+    spi,
   } = props;
 
   const acceptedZones = ['ACC_3', 'ACC_5', 'MEX', 'PER', 'BRA', 'MDG', 'VNM'];
@@ -90,6 +98,16 @@ function SpeciesRichnessComponent(props) {
       percentage: 0,
     },
     amphibians: {
+      count: 0,
+      total: 0,
+      percentage: 0,
+    },
+    fishes: {
+      count: 0,
+      total: 0,
+      percentage: 0,
+    },
+    marMammals: {
       count: 0,
       total: 0,
       percentage: 0,
@@ -124,7 +142,25 @@ function SpeciesRichnessComponent(props) {
       spiData = formattedData.sii_taxa;
     }
 
-    const { reptiles, amphibians, mammals, birds } = data;
+    if (spi) {
+      data =
+        spiActiveTrend === MARINE
+          ? formattedData.marine_richness_taxa_spi
+          : formattedData.richness_taxa_spi;
+      spiData =
+        spiActiveTrend === MARINE
+          ? formattedData.marine_spi_taxa
+          : formattedData.spi_taxa;
+    }
+
+    const {
+      reptiles,
+      amphibians,
+      mammals,
+      birds,
+      fishes_marine,
+      mammals_marine,
+    } = data;
     setScores({
       birds: {
         count: +spiData.birds,
@@ -141,6 +177,14 @@ function SpeciesRichnessComponent(props) {
       amphibians: {
         count: +spiData.amphibians,
         total: +amphibians,
+      },
+      fishes: {
+        count: +spiData.fishes_marine || 0,
+        total: +fishes_marine || 0,
+      },
+      marMammals: {
+        count: +spiData.mammals_marine || 0,
+        total: +mammals_marine || 0,
       },
     });
   };
@@ -190,6 +234,14 @@ function SpeciesRichnessComponent(props) {
             amphibians: {
               count: +values.amphibians * 100,
               total: +total.amphibians,
+            },
+            fishes: {
+              count: 0,
+              total: 0,
+            },
+            marMammals: {
+              count: 0,
+              total: 0,
             },
           });
         }
@@ -249,18 +301,23 @@ function SpeciesRichnessComponent(props) {
       if (formattedData) {
         populateScores(formattedData);
       }
-    } else {
+    } else if (spi) {
       let formattedData = [];
-      if (selectedProvince && acceptedZones.includes(activeTrend)) {
-        formattedData = zoneData.find(
-          (item) => item.region_key === selectedProvince.region_key
-        );
 
-        if (formattedData) {
-          populateScores(formattedData);
-        }
+      if (spiActiveTrend === MARINE) {
+        formattedData = last(
+          countryData.filter((item) => item.level === 'country')
+        );
       } else {
-        if (activeTrend === PROVINCE_TREND) {
+        if (selectedProvince && acceptedZones.includes(activeTrend)) {
+          formattedData = zoneData.find(
+            (item) => item.region_key === selectedProvince.region_key
+          );
+
+          if (formattedData) {
+            populateScores(formattedData);
+          }
+        } else if (activeTrend === PROVINCE_TREND) {
           let regionData = [];
           if (!selectedProvince) {
             regionData = provinces.filter(
@@ -275,45 +332,53 @@ function SpeciesRichnessComponent(props) {
         } else {
           formattedData = last(countryData);
         }
+      }
 
-        if (
-          countryISO.toLowerCase() !== 'ee' &&
-          countryISO.toLowerCase() !== 'guy-fm'
-        ) {
-          if (formattedData) {
-            populateScores(formattedData);
-          }
-        } else {
-          const {
-            BirdSpeciesRichness,
-            BirdSPI,
-            MammalSpeciesRichness,
-            MammalSPI,
-            ReptileSpeciesRichness,
-            ReptileSPI,
-            AmphibianSpeciesRichness,
-            AmphibianSPI,
-          } = formattedData;
-
-          setScores({
-            birds: {
-              count: BirdSPI,
-              total: BirdSpeciesRichness,
-            },
-            mammals: {
-              count: MammalSPI,
-              total: MammalSpeciesRichness,
-            },
-            reptiles: {
-              count: ReptileSPI,
-              total: ReptileSpeciesRichness,
-            },
-            amphibians: {
-              count: AmphibianSPI,
-              total: AmphibianSpeciesRichness,
-            },
-          });
+      if (
+        countryISO.toLowerCase() !== 'ee' &&
+        countryISO.toLowerCase() !== 'guy-fm'
+      ) {
+        if (formattedData) {
+          populateScores(formattedData);
         }
+      } else {
+        const {
+          BirdSpeciesRichness,
+          BirdSPI,
+          MammalSpeciesRichness,
+          MammalSPI,
+          ReptileSpeciesRichness,
+          ReptileSPI,
+          AmphibianSpeciesRichness,
+          AmphibianSPI,
+        } = formattedData;
+
+        setScores({
+          birds: {
+            count: BirdSPI,
+            total: BirdSpeciesRichness,
+          },
+          mammals: {
+            count: MammalSPI,
+            total: MammalSpeciesRichness,
+          },
+          reptiles: {
+            count: ReptileSPI,
+            total: ReptileSpeciesRichness,
+          },
+          amphibians: {
+            count: AmphibianSPI,
+            total: AmphibianSpeciesRichness,
+          },
+          fishes: {
+            count: 0,
+            total: 0,
+          },
+          marMammals: {
+            count: 0,
+            total: 0,
+          },
+        });
       }
     }
   };
@@ -374,11 +439,36 @@ function SpeciesRichnessComponent(props) {
     ],
   };
 
+  const fishesData = {
+    labels: [t('Fish'), t('Remaining')],
+    datasets: [
+      {
+        label: '',
+        data: getPercentage('fishes'),
+
+        backgroundColor: [getCSSVariable('fishes'), emptyArcColor],
+        borderColor: [getCSSVariable('fishes'), emptyArcColor],
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  const marMammalsData = {
+    labels: [t('Marine Mammals'), t('Remaining')],
+    datasets: [
+      {
+        label: '',
+        data: getPercentage('marMammals'),
+
+        backgroundColor: [getCSSVariable('marine-mammals'), emptyArcColor],
+        borderColor: [getCSSVariable('marine-mammals'), emptyArcColor],
+        borderWidth: 1,
+      },
+    ],
+  };
+
   const getData = () => {
-    const group =
-      countryISO.toUpperCase() === 'PER'
-        ? 'POR GRUPO TAXONÓMICO'
-        : 'BY TAXONOMIC GROUP';
+    const group = 'BY TAXONOMIC GROUP';
 
     if (shi) {
       if (shiActiveTrend === NATIONAL_TREND || !selectedProvince) {
@@ -396,12 +486,16 @@ function SpeciesRichnessComponent(props) {
       } else if (acceptedZones.includes(activeTrend) && selectedProvince) {
         setTitleText(`${selectedProvince?.name} SII ${group}`);
       }
-    } else if (activeTrend === NATIONAL_TREND || !selectedProvince) {
-      setTitleText(`${t('NATIONAL')} SPI ${group}`);
-    } else if (activeTrend === PROVINCE_TREND && selectedProvince) {
-      setTitleText(`${selectedProvince?.name} SPI ${group}`);
-    } else if (acceptedZones.includes(activeTrend) && selectedProvince) {
-      setTitleText(`${selectedProvince?.name} SPI ${group}`);
+    } else if (spi) {
+      if (spiActiveTrend === MARINE) {
+        setTitleText(`${t('NATIONAL')} MARINE SPI ${group}`);
+      } else if (activeTrend === NATIONAL_TREND || !selectedProvince) {
+        setTitleText(`${t('NATIONAL')} SPI ${group}`);
+      } else if (activeTrend === PROVINCE_TREND && selectedProvince) {
+        setTitleText(`${selectedProvince?.name} SPI ${group}`);
+      } else if (acceptedZones.includes(activeTrend) && selectedProvince) {
+        setTitleText(`${selectedProvince?.name} SPI ${group}`);
+      }
     }
     getScores();
   };
@@ -421,40 +515,69 @@ function SpeciesRichnessComponent(props) {
   useEffect(() => {
     if (!selectedProvince) return;
     getData();
-  }, [selectedProvince, activeTrend, shiActiveTrend, siiActiveTrend]);
+  }, [
+    selectedProvince,
+    activeTrend,
+    shiActiveTrend,
+    siiActiveTrend,
+    spiActiveTrend,
+  ]);
 
   return (
     <div className={cx(lightMode ? styles.light : '', styles.container)}>
       <div className={styles.title}>{titleText}</div>
       <div className={styles.spis}>
-        <SpiArcChartComponent
-          value={scores.birds.count}
-          scores={scores}
-          data={birdData}
-          img={lightMode ? BirdsBlack : BirdsWhite}
-          species="birds"
-        />
-        <SpiArcChartComponent
-          value={scores.mammals.count}
-          scores={scores}
-          data={mammalsData}
-          img={lightMode ? MammalsBlack : MammalsWhite}
-          species="mammals"
-        />
-        <SpiArcChartComponent
-          value={scores.reptiles.count}
-          scores={scores}
-          data={reptilesData}
-          img={lightMode ? ReptilesBlack : ReptilesWhite}
-          species="reptiles"
-        />
-        <SpiArcChartComponent
-          value={scores.amphibians.count}
-          scores={scores}
-          data={amphibianData}
-          img={lightMode ? AmphibiansBlack : AmphibiansWhite}
-          species="amphibians"
-        />
+        {spi && spiActiveTrend === MARINE && (
+          <>
+            <SpiArcChartComponent
+              value={scores.fishes.count}
+              scores={scores}
+              data={fishesData}
+              img={lightMode ? FishesBlack : FishesWhite}
+              species="fishes"
+            />
+            <SpiArcChartComponent
+              value={scores.marMammals.count}
+              scores={scores}
+              data={marMammalsData}
+              img={lightMode ? MarMammalsBlack : MarMammalsWhite}
+              species="marMammals"
+              customName={t('Marine Mammals')}
+            />
+          </>
+        )}
+        {(shi || sii || spiActiveTrend !== MARINE) && (
+          <>
+            <SpiArcChartComponent
+              value={scores.birds.count}
+              scores={scores}
+              data={birdData}
+              img={lightMode ? BirdsBlack : BirdsWhite}
+              species="birds"
+            />
+            <SpiArcChartComponent
+              value={scores.mammals.count}
+              scores={scores}
+              data={mammalsData}
+              img={lightMode ? MammalsBlack : MammalsWhite}
+              species="mammals"
+            />
+            <SpiArcChartComponent
+              value={scores.reptiles.count}
+              scores={scores}
+              data={reptilesData}
+              img={lightMode ? ReptilesBlack : ReptilesWhite}
+              species="reptiles"
+            />
+            <SpiArcChartComponent
+              value={scores.amphibians.count}
+              scores={scores}
+              data={amphibianData}
+              img={lightMode ? AmphibiansBlack : AmphibiansWhite}
+              species="amphibians"
+            />
+          </>
+        )}
       </div>
     </div>
   );

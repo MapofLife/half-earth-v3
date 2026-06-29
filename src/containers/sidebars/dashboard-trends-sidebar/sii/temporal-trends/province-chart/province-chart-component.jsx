@@ -36,15 +36,16 @@ import { useWatchUtils } from 'hooks/esri';
 ChartJS.register(LinearScale, ArcElement, PointElement, Tooltip, Legend);
 
 function getUniqueProvinces(provinces) {
-  const provinceSet = new Set()
+  const provinceSet = new Set();
   provinces.forEach((item) => {
     if (item.name && item.iso3 !== item.region_key) {
-      provinceSet.add(JSON.stringify({ name: item.name }))
+      provinceSet.add(JSON.stringify({ name: item.name }));
     }
-  })
-  const uniqueProvinces = Array.from(provinceSet).map((item) => JSON.parse(item)
-  )
-  return uniqueProvinces
+  });
+  const uniqueProvinces = Array.from(provinceSet).map((item) =>
+    JSON.parse(item)
+  );
+  return uniqueProvinces;
 }
 
 function ProvinceChartComponent(props) {
@@ -77,11 +78,11 @@ function ProvinceChartComponent(props) {
         label: '',
         data: [0, 0],
         backgroundColor: [
-          getCSSVariable('bubble'),
+          getCSSVariable('habitat-country'),
           getCSSVariable('white-opacity-20'),
         ],
         borderColor: [
-          getCSSVariable('bubble'),
+          getCSSVariable('habitat-country'),
           getCSSVariable('white-opacity-20'),
         ],
         borderWidth: 1,
@@ -123,7 +124,7 @@ function ProvinceChartComponent(props) {
           ...region,
           label: region_name,
           data: [{ x: AreaProtected, y: SII, r: 8 }],
-          backgroundColor: getCSSVariable('bubble'),
+          backgroundColor: getCSSVariable('habitat-country'),
           borderColor: getCSSVariable('white'),
         });
       });
@@ -147,7 +148,7 @@ function ProvinceChartComponent(props) {
           {
             label: 'SII',
             data: provinceData.map((item) => item.sii),
-            borderColor: getCSSVariable('bubble'),
+            borderColor: getCSSVariable('habitat-country'),
           },
         ],
       });
@@ -189,11 +190,11 @@ function ProvinceChartComponent(props) {
           label: '',
           data: [sii, 100 - sii],
           backgroundColor: [
-            getCSSVariable('bubble'),
+            getCSSVariable('habitat-country'),
             getCSSVariable('white-opacity-20'),
           ],
           borderColor: [
-            getCSSVariable('bubble'),
+            getCSSVariable('habitat-country'),
             getCSSVariable('white-opacity-20'),
           ],
           borderWidth: 1,
@@ -226,7 +227,7 @@ function ProvinceChartComponent(props) {
     if (chart && index > -1) {
       if (previousIndex > -1) {
         chart.data.datasets[previousIndex].backgroundColor =
-          getCSSVariable('bubble');
+          getCSSVariable('habitat-country');
       }
       chart.data.datasets[index].backgroundColor =
         getCSSVariable('bubble-selected');
@@ -396,20 +397,24 @@ function ProvinceChartComponent(props) {
   };
 
   useEffect(() => {
-    if (!view || regionLayers.length === 0 ||provinces.length === 0) return;
+    if (!view || regionLayers.length === 0 || provinces.length === 0) return;
     setIsLoading(false);
 
     const watchHandle = watchUtils.watch(() =>
       view.map.allLayers.forEach((layer) => {
         if (layer.id === `${countryISO}-sii` && layer.visible) {
-          if(provinceList.length === 0){
-            const uniqueProvinces = getUniqueProvinces(provinces)
+          if (provinceList.length === 0) {
+            const uniqueProvinces = getUniqueProvinces(provinces);
             setProvinceList(uniqueProvinces);
           }
 
           if (selectedProvince) {
             handleProvinceSelected(selectedProvince);
-            setFoundIndex(provinceList.findIndex((region) => region.name === selectedProvince.name));
+            setFoundIndex(
+              provinceList.findIndex(
+                (region) => region.name === selectedProvince.name
+              )
+            );
             getChartData(selectedProvince.name);
           } else {
             setSelectedProvince(provinces[0]);
@@ -421,7 +426,7 @@ function ProvinceChartComponent(props) {
 
     return () => {
       watchHandle.remove();
-    }
+    };
   }, [view, regionLayers, provinces]);
 
   useEffect(() => {

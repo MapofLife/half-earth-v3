@@ -14,6 +14,7 @@ import codWhiteLogo from 'logos/iccn_logo_clean_whiteText.png';
 import ginLogo from 'logos/ogpnrf_logo.jpeg';
 import sleLogo from 'logos/sierra-leone.png';
 import pcmLogo from 'logos/PCM-Ambiente.png';
+import panLogo from 'logos/panama_logo.jpg';
 
 import DashboardTrendsSidebarContainer from 'containers/sidebars/dashboard-trends-sidebar';
 
@@ -60,6 +61,13 @@ function DashboardSidebar(props) {
       setRegionName(null);
       setRegionLayers({});
     }
+
+    const sample_priority_layer = map.layers?.items.find(
+      (item) => item.id === 'sample_priority_layer'
+    );
+    if (sample_priority_layer) {
+      map.remove(sample_priority_layer);
+    }
   }, [selectedIndex]);
 
   useEffect(() => {
@@ -73,6 +81,8 @@ function DashboardSidebar(props) {
       setLogo(<img className={styles.logo} src={guyLogo} alt="Logo" />);
     } else if (countryISO.toUpperCase() === 'PER') {
       setLogo(<img className={styles.logo} src={pcmLogo} alt="Logo" />);
+    } else if (countryISO.toUpperCase() === 'PAN') {
+      setLogo(<img className={styles.logo} src={panLogo} alt="Logo" />);
     }
   }, []);
 
