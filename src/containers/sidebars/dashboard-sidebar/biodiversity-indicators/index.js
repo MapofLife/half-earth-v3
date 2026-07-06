@@ -145,7 +145,7 @@ function BioDiversityContainer(props) {
     }
 
     const scores = {
-      habitat: country?.shs[lastCountryYearValue - 1].shs.toFixed(1),
+      habitat: country?.shs[lastCountryYearValue - 1].shs?.toFixed(1) || 0,
       globalHabitat: ((globalAreaScore + globalConnectivityScore) / 2) * 100,
     };
 
@@ -275,11 +275,15 @@ function BioDiversityContainer(props) {
       speciesInfo.taxa
     );
 
-    map.add(webTileLayer);
-    await view.whenLayerView(webTileLayer);
+    if (webTileLayer) {
+      map.add(webTileLayer);
+      await view.whenLayerView(webTileLayer);
+    }
 
-    map.add(protectedLayers);
-    await view.whenLayerView(protectedLayers);
+    if (protectedLayers) {
+      map.add(protectedLayers);
+      await view.whenLayerView(protectedLayers);
+    }
 
     // Add layers to Map Legend
     const protectedAreaLayer = {

@@ -163,9 +163,11 @@ function ProtectionComponent(props) {
                       <sup>2</sup>
                     </td>
                     <td className={styles.textCenter}>
-                      {numberToLocaleStringWithOneDecimal(
-                        parseFloat(row.targetProtected)
-                      )}{' '}
+                      {row.targetProtected
+                        ? numberToLocaleStringWithOneDecimal(
+                            parseFloat(row.targetProtected)
+                          )
+                        : '-'}{' '}
                       km
                       <sup>2</sup>
                     </td>
