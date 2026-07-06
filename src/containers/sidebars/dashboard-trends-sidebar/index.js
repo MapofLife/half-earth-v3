@@ -68,12 +68,16 @@ function DashboardTrendsSidebarContainer(props) {
   const [provinces, setProvinces] = useState([]);
 
   const [spiScoresData, setSpiScoresData] = useState([]);
+  const [spiMarineScoresData, setSpiMarineScoresData] = useState([]);
   const [shiScoresData, setShiScoresData] = useState([]);
   const [siiScoresData, setSiiScoresData] = useState([]);
   const [spiSelectSpeciesData, setSpiSelectSpeciesData] = useState([]);
   const [shiSelectSpeciesData, setShiSelectSpeciesData] = useState([]);
   const [shiProvinceTrendData, setShiProvinceTrendData] = useState([]);
   const [siiSelectSpeciesData, setSiiSelectSpeciesData] = useState([]);
+  const [spiSelectMarineSpeciesData, setSpiSelectMarineSpeciesData] = useState(
+    []
+  );
 
   const [shiValue, setShiValue] = useState(0);
   const [spiValue, setSpiValue] = useState(0);
@@ -121,6 +125,13 @@ function DashboardTrendsSidebarContainer(props) {
       setShiSelectSpeciesData(data);
       setSiiSelectSpeciesData(data);
     }
+  };
+
+  const getMarineHistogramData = async (histogramURL) => {
+    const response = await fetch(histogramURL);
+    const data = await response.json();
+    setSpiMarineScoresData(data);
+    setSpiSelectMarineSpeciesData(data);
   };
 
   const getZoneData = () => {
@@ -478,6 +489,10 @@ function DashboardTrendsSidebarContainer(props) {
 
       const histogramURL = `${DASHBOARD_URLS.SPI_HISTOGRAM_URL}?iso3=${countryCode}&region_key=${countryCode}`;
       getHistogramData(histogramURL);
+
+      getMarineHistogramData(
+        `${DASHBOARD_URLS.SPI_HISTOGRAM_URL}?iso3=${countryCode}&region_key=${countryCode}&marine=True`
+      );
     } else {
       getZoneData();
       getZoneHistogramData();
@@ -545,11 +560,13 @@ function DashboardTrendsSidebarContainer(props) {
         }
 
         loadZone('zone5', 'spi');
-      } else if (spiActiveTrend === MARINE && tabOption === TABS.SPI) {
-        getHistogramData(
-          `${DASHBOARD_URLS.SPI_HISTOGRAM_URL}?iso3=${countryCode}&region_key=${countryCode}&marine=True`
-        );
-      } else {
+      }
+      // else if (spiActiveTrend === MARINE && tabOption === TABS.SPI) {
+      //   getHistogramData(
+      //     `${DASHBOARD_URLS.SPI_HISTOGRAM_URL}?iso3=${countryCode}&region_key=${countryCode}&marine=True`
+      //   );
+      // }
+      else {
         if (zone3Layer) {
           zone3Layer.visible = false;
         }
@@ -676,9 +693,11 @@ function DashboardTrendsSidebarContainer(props) {
       shiCountryData={shiCountryData}
       siiCountryData={siiCountryData}
       spiScoresData={spiScoresData}
+      spiMarineScoresData={spiMarineScoresData}
       shiScoresData={shiScoresData}
       siiScoresData={siiScoresData}
       spiSelectSpeciesData={spiSelectSpeciesData}
+      spiSelectMarineSpeciesData={spiSelectMarineSpeciesData}
       shiSelectSpeciesData={shiSelectSpeciesData}
       siiSelectSpeciesData={siiSelectSpeciesData}
       geo={geo}
