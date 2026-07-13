@@ -2,9 +2,7 @@ import { LAYER_OPTIONS, LAYER_TITLE_TYPES } from 'constants/dashboard-constants.
 import { DASHBOARD_URLS, LAYERS_URLS } from 'constants/layers-urls';
 import { LOCAL_SPATIAL_REFERENCE } from 'constants/scenes-constants';
 import { AddFeature, GetFeatures, GetLayer } from 'types/services-types';
-import {
-    PROTECTED_AREA_EEWWF_FEATURE_ID, PROTECTED_AREA_FEATURE_URL, REGION_RANGE_MAP_URL
-} from 'utils/dashboard-utils';
+import { PROTECTED_AREA_FEATURE_URL, REGION_RANGE_MAP_URL } from 'utils/dashboard-utils';
 
 import Polygon from '@arcgis/core/geometry/Polygon.js';
 import CSVLayer from '@arcgis/core/layers/CSVLayer';

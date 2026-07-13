@@ -5,7 +5,6 @@ import { useT } from '@transifex/react';
 import {
   PROVINCE_FEATURE_GLOBAL_OUTLINE_ID,
   DRC_REGION_FEATURE_ID,
-  NBS_OP_INTERVENTIONS_FEATURE_ID,
   INDIGENOUS_LANDS_FEATURE_ID,
   IUCNStatusTypes,
 } from 'utils/dashboard-utils';
@@ -353,17 +352,6 @@ function SpeciesFilterComponent(props) {
 
           setRegionLayers(() => ({
             [LAYER_OPTIONS.FORESTS]: featureLayer,
-          }));
-          map.add(featureLayer);
-        } else if (option === REGION_OPTIONS.DISSOLVED_NBS) {
-          featureLayer = await EsriFeatureService.getFeatureLayer(
-            NBS_OP_INTERVENTIONS_FEATURE_ID,
-            null,
-            LAYER_OPTIONS.DISSOLVED_NBS
-          );
-
-          setRegionLayers(() => ({
-            [LAYER_OPTIONS.DISSOLVED_NBS]: featureLayer,
           }));
           map.add(featureLayer);
         }

@@ -7,12 +7,6 @@ import {
   PROVINCE_FEATURE_GLOBAL_OUTLINE_ID,
   SHI_LAYER_ID,
   SII_LAYER_ID,
-  ZONE_3_SPI_FEATURE_ID,
-  ZONE_3_SHI_FEATURE_ID,
-  ZONE_5_SPI_FEATURE_ID,
-  ZONE_5_SHI_FEATURE_ID,
-  EEWWF_SPI_FEATURE_ID,
-  EEWWF_SHI_FEATURE_ID,
 } from 'utils/dashboard-utils.js';
 
 import last from 'lodash/last';
@@ -248,231 +242,141 @@ function DashboardTrendsSidebarContainer(props) {
   useEffect(async () => {
     if (!map && !view) return;
 
-    if (countryISO.toLowerCase() === 'ee') {
-      // SPI Layers
-      const eewwfSpiLayer = await EsriFeatureService.getFeatureLayer(
-        EEWWF_SPI_FEATURE_ID,
-        countryISO,
-        `${countryISO}-spi`
-      );
-      eewwfSpiLayer.visible = false;
-      map.add(eewwfSpiLayer);
-      setRegionLayers((regionLayers) => ({
-        ...regionLayers,
-        [`${countryISO}-spi`]: eewwfSpiLayer,
-      }));
+    //   // SPI Layers
 
-      const eewwfSpiLndLayer = await EsriFeatureService.getFeatureLayer(
-        EEWWF_SPI_FEATURE_ID,
-        countryISO,
-        `${countryISO}-spi-lnd`,
-        'LND'
-      );
-      eewwfSpiLndLayer.visible = false;
-      map.add(eewwfSpiLndLayer);
-      setRegionLayers((regionLayers) => ({
-        ...regionLayers,
-        [`${countryISO}-spi-lnd`]: eewwfSpiLndLayer,
-      }));
+    const layer = await EsriFeatureService.getFeatureLayer(
+      PROVINCE_FEATURE_GLOBAL_SPI_LAYER_ID,
+      countryISO
+    );
 
-      const eewwfSpiIntLayer = await EsriFeatureService.getFeatureLayer(
-        EEWWF_SPI_FEATURE_ID,
-        countryISO,
-        `${countryISO}-spi-int`,
-        'INT'
-      );
-      eewwfSpiLndLayer.visible = false;
-      map.add(eewwfSpiIntLayer);
-      setRegionLayers((regionLayers) => ({
-        ...regionLayers,
-        [`${countryISO}-spi-int`]: eewwfSpiIntLayer,
-      }));
+    map.add(layer);
 
-      // SHI layeres
-      const eewwfShiLayer = await EsriFeatureService.getFeatureLayer(
-        EEWWF_SHI_FEATURE_ID,
-        countryISO,
-        `${countryISO}-shi`
-      );
-      eewwfShiLayer.visible = false;
-      map.add(eewwfShiLayer);
-      setRegionLayers((regionLayers) => ({
-        ...regionLayers,
-        [`${countryISO}-shi`]: eewwfShiLayer,
-      }));
+    // marine spi layer
+    const marineLayer = await EsriFeatureService.getFeatureLayer(
+      DASHBOARD_URLS.MARINE_LAYER_PORTAL_ID,
+      countryISO,
+      `${countryISO}-marine-spi`
+    );
+    marineLayer.visible = false;
+    map.add(marineLayer);
 
-      const eewwfShiLndLayer = await EsriFeatureService.getFeatureLayer(
-        EEWWF_SHI_FEATURE_ID,
-        countryISO,
-        `${countryISO}-shi-lnd`,
-        'LND'
-      );
-      eewwfShiLndLayer.visible = false;
-      map.add(eewwfShiLndLayer);
-      setRegionLayers((regionLayers) => ({
-        ...regionLayers,
-        [`${countryISO}-shi-lnd`]: eewwfShiLndLayer,
-      }));
+    // provinces layer just outlines
+    const provinceOutlineLayer = await EsriFeatureService.getFeatureLayer(
+      PROVINCE_FEATURE_GLOBAL_OUTLINE_ID,
+      countryISO
+    );
+    map.add(provinceOutlineLayer);
 
-      const eewwfShiIntLayer = await EsriFeatureService.getFeatureLayer(
-        EEWWF_SHI_FEATURE_ID,
-        countryISO,
-        `${countryISO}-shi-int`,
-        'INT'
-      );
-      eewwfShiIntLayer.visible = false;
-      map.add(eewwfShiIntLayer);
-      setRegionLayers((regionLayers) => ({
-        ...regionLayers,
-        [`${countryISO}-shi-int`]: eewwfShiIntLayer,
-      }));
+    // eslint-disable-next-line no-shadow
+    setRegionLayers((regionLayers) => ({
+      ...regionLayers,
+      [LAYER_OPTIONS.PROVINCES]: layer,
+      [`${countryISO}-marine-spi`]: marineLayer,
+      [`${countryISO}-provinces`]: provinceOutlineLayer,
+    }));
 
-      if (tabOption === TABS.SPI) {
-        eewwfSpiLayer.visible = true;
-        eewwfShiLayer.visible = false;
-      } else if (tabOption === TABS.SHI) {
-        eewwfSpiLayer.visible = false;
-        eewwfShiLayer.visible = true;
-      }
-
-      view.goTo({
-        zoom: 1,
-      });
+    if (tabOption === TABS.SPI) {
+      layer.visible = true;
+      const item = { label: 'SPI', parent: '', id: REGION_OPTIONS.PROVINCES };
+      setMapLegendLayers([item]);
     } else {
-      const layer = await EsriFeatureService.getFeatureLayer(
-        PROVINCE_FEATURE_GLOBAL_SPI_LAYER_ID,
-        countryISO
-      );
+      layer.visible = false;
+    }
 
-      map.add(layer);
+    const outlineFeatureLayer = await EsriFeatureService.getFeatureLayer(
+      SHI_LAYER_ID,
+      countryISO,
+      `${countryISO}-outline`
+    );
+    map.add(outlineFeatureLayer);
 
-      // marine spi layer
-      const marineLayer = await EsriFeatureService.getFeatureLayer(
-        DASHBOARD_URLS.MARINE_LAYER_PORTAL_ID,
+    // eslint-disable-next-line no-shadow
+    setRegionLayers((regionLayers) => ({
+      ...regionLayers,
+      [`${countryISO}-outline`]: outlineFeatureLayer,
+    }));
+
+    if (countryISO.toLowerCase() === 'guy-fm') {
+      const zone3Layer = await EsriFeatureService.getFeatureLayer(
+        ZONE_3_SPI_FEATURE_ID,
         countryISO,
-        `${countryISO}-marine-spi`
+        `${countryISO}-zone3-spi`
       );
-      marineLayer.visible = false;
-      map.add(marineLayer);
+      map.add(zone3Layer);
+      zone3Layer.visible = false;
 
-      // provinces layer just outlines
-      const provinceOutlineLayer = await EsriFeatureService.getFeatureLayer(
-        PROVINCE_FEATURE_GLOBAL_OUTLINE_ID,
-        countryISO
-      );
-      map.add(provinceOutlineLayer);
-
-      // eslint-disable-next-line no-shadow
-      setRegionLayers((regionLayers) => ({
-        ...regionLayers,
-        [LAYER_OPTIONS.PROVINCES]: layer,
-        [`${countryISO}-marine-spi`]: marineLayer,
-        [`${countryISO}-provinces`]: provinceOutlineLayer,
-      }));
-
-      if (tabOption === TABS.SPI) {
-        layer.visible = true;
-        const item = { label: 'SPI', parent: '', id: REGION_OPTIONS.PROVINCES };
-        setMapLegendLayers([item]);
-      } else {
-        layer.visible = false;
-      }
-
-      const outlineFeatureLayer = await EsriFeatureService.getFeatureLayer(
-        SHI_LAYER_ID,
+      const zone5Layer = await EsriFeatureService.getFeatureLayer(
+        ZONE_5_SPI_FEATURE_ID,
         countryISO,
-        `${countryISO}-outline`
+        `${countryISO}-zone5-spi`
       );
-      map.add(outlineFeatureLayer);
+      map.add(zone5Layer);
+      zone5Layer.visible = false;
 
-      // eslint-disable-next-line no-shadow
-      setRegionLayers((regionLayers) => ({
-        ...regionLayers,
-        [`${countryISO}-outline`]: outlineFeatureLayer,
-      }));
-
-      if (countryISO.toLowerCase() === 'guy-fm') {
-        const zone3Layer = await EsriFeatureService.getFeatureLayer(
-          ZONE_3_SPI_FEATURE_ID,
-          countryISO,
-          `${countryISO}-zone3-spi`
-        );
-        map.add(zone3Layer);
-        zone3Layer.visible = false;
-
-        const zone5Layer = await EsriFeatureService.getFeatureLayer(
-          ZONE_5_SPI_FEATURE_ID,
-          countryISO,
-          `${countryISO}-zone5-spi`
-        );
-        map.add(zone5Layer);
-        zone5Layer.visible = false;
-
-        const zone3ShiLayer = await EsriFeatureService.getFeatureLayer(
-          ZONE_3_SHI_FEATURE_ID,
-          countryISO,
-          `${countryISO}-zone3-shi`
-        );
-        map.add(zone3ShiLayer);
-        zone3ShiLayer.visible = false;
-
-        const zone5ShiLayer = await EsriFeatureService.getFeatureLayer(
-          ZONE_5_SHI_FEATURE_ID,
-          countryISO,
-          `${countryISO}-zone5-shi`
-        );
-        map.add(zone5ShiLayer);
-        zone5ShiLayer.visible = false;
-      }
-
-      if (tabOption === TABS.SHI) {
-        outlineFeatureLayer.visible = true;
-        const item = { label: 'SHI', parent: '', id: `${countryISO}-outline` };
-        setMapLegendLayers([item]);
-      } else {
-        outlineFeatureLayer.visible = false;
-      }
-
-      const siiLayer = await EsriFeatureService.getFeatureLayer(
-        SII_LAYER_ID,
+      const zone3ShiLayer = await EsriFeatureService.getFeatureLayer(
+        ZONE_3_SHI_FEATURE_ID,
         countryISO,
-        `${countryISO}-sii`
+        `${countryISO}-zone3-shi`
       );
-      map.add(siiLayer);
+      map.add(zone3ShiLayer);
+      zone3ShiLayer.visible = false;
 
-      // eslint-disable-next-line no-shadow
-      setRegionLayers((regionLayers) => ({
-        ...regionLayers,
-        [`${countryISO}-sii`]: siiLayer,
-      }));
+      const zone5ShiLayer = await EsriFeatureService.getFeatureLayer(
+        ZONE_5_SHI_FEATURE_ID,
+        countryISO,
+        `${countryISO}-zone5-shi`
+      );
+      map.add(zone5ShiLayer);
+      zone5ShiLayer.visible = false;
+    }
 
-      if (tabOption === TABS.SII) {
-        siiLayer.visible = true;
-        layer.visible = false;
-        outlineFeatureLayer.visible = false;
+    if (tabOption === TABS.SHI) {
+      outlineFeatureLayer.visible = true;
+      const item = { label: 'SHI', parent: '', id: `${countryISO}-outline` };
+      setMapLegendLayers([item]);
+    } else {
+      outlineFeatureLayer.visible = false;
+    }
+
+    const siiLayer = await EsriFeatureService.getFeatureLayer(
+      SII_LAYER_ID,
+      countryISO,
+      `${countryISO}-sii`
+    );
+    map.add(siiLayer);
+
+    // eslint-disable-next-line no-shadow
+    setRegionLayers((regionLayers) => ({
+      ...regionLayers,
+      [`${countryISO}-sii`]: siiLayer,
+    }));
+
+    if (tabOption === TABS.SII) {
+      siiLayer.visible = true;
+      layer.visible = false;
+      outlineFeatureLayer.visible = false;
+    } else {
+      siiLayer.visible = false;
+    }
+
+    if (geometry) {
+      if (
+        countryISO.toLowerCase() === 'guy-fm' ||
+        countryISO.toLowerCase() === 'guy'
+      ) {
+        view.goTo({
+          target: geometry,
+          center: [geometry.longitude - 6, geometry.latitude],
+          zoom: 7,
+          extent: geometry.clone(),
+        });
       } else {
-        siiLayer.visible = false;
-      }
-
-      if (geometry) {
-        if (
-          countryISO.toLowerCase() === 'guy-fm' ||
-          countryISO.toLowerCase() === 'guy'
-        ) {
-          view.goTo({
-            target: geometry,
-            center: [geometry.longitude - 6, geometry.latitude],
-            zoom: 7,
-            extent: geometry.clone(),
-          });
-        } else {
-          view.goTo({
-            target: geometry,
-            center: [geometry.longitude - 20, geometry.latitude],
-            zoom: 5.5,
-            extent: geometry.clone(),
-          });
-        }
+        view.goTo({
+          target: geometry,
+          center: [geometry.longitude - 20, geometry.latitude],
+          zoom: 5.5,
+          extent: geometry.clone(),
+        });
       }
     }
   }, [map, view]);
