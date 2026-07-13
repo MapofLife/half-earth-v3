@@ -321,15 +321,6 @@ async function addProtectedAreaLayer(id, countryISO = 'COD') {
   let featurePortalId = PROTECTED_AREA_FEATURE_URL;
   let definitionExpression = `ISO3 = '${countryISO}'`;
 
-  switch (countryISO) {
-    case 'EE':
-      featurePortalId = PROTECTED_AREA_EEWWF_FEATURE_ID;
-      definitionExpression = '';
-      break;
-    default:
-      break;
-  }
-
   const featureLayer = new FeatureLayer({
     portalItem: {
       id: featurePortalId,
