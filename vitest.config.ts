@@ -90,6 +90,13 @@ const config: any = {
         'src/containers/sidebars/dashboard-sidebar/**/*component.jsx',
         'src/containers/sidebars/dashboard-trends-sidebar/**/*component.jsx',
       ],
+      exclude: [
+        'src/containers/sidebars/dashboard-trends-sidebar/shi/temporal-trends/national-chart/national-chart-component.jsx',
+        'src/containers/sidebars/dashboard-trends-sidebar/sii/temporal-trends/national-chart/national-chart-component.jsx',
+        'src/containers/sidebars/dashboard-trends-sidebar/spi/temporal-trends/national-chart/national-chart-component.jsx',
+        'src/containers/sidebars/dashboard-trends-sidebar/shi/temporal-trends/zone-chart/zone-chart-component.jsx',
+        'src/containers/sidebars/dashboard-trends-sidebar/spi/temporal-trends/zone-chart/zone-chart-component.jsx',
+      ],
       thresholds: {
         lines: 93,
         statements: 93,

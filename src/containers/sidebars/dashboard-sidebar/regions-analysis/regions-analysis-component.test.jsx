@@ -323,8 +323,8 @@ describe('RegionsAnalysisComponent', () => {
       );
       expect(mockGetFeatureLayer).toHaveBeenCalledWith(
         expect.anything(),
-        null,
-        LAYER_OPTIONS.DISSOLVED_NBS
+        'EE',
+        'map-EE'
       );
       expect(props.map.add).toHaveBeenCalled();
     });

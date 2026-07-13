@@ -5,6 +5,8 @@ import { LightModeContext } from 'context/light-mode';
 import { NAVIGATION } from 'constants/dashboard-constants';
 import ScoreDistributionsSiiComponent from './score-distributions-sii-component';
 
+let chartProps;
+
 vi.mock('@transifex/react', () => ({
   useT: () => (value) => value,
   useLocale: () => 'en',
@@ -30,7 +32,30 @@ vi.mock('components/chart-info-popup/chart-info-component', () => ({
 vi.mock(
   'components/charts/distribution-chart/distribution-chart-component',
   () => ({
-    default: () => <div data-testid="distribution-chart" />,
+    default: (props) => {
+      chartProps = props;
+      return (
+        <button
+          type="button"
+          data-testid="distribution-chart"
+          onClick={() =>
+            props.options?.onClick?.(
+              null,
+              [
+                {
+                  datasetIndex: 0,
+                  index: 0,
+                  label: '0',
+                },
+              ],
+              {}
+            )
+          }
+        >
+          chart
+        </button>
+      );
+    },
   })
 );
 
@@ -56,6 +81,7 @@ vi.mock('../../dashboard-trends-sidebar-component', () => ({
 
 describe('ScoreDistributionsSiiComponent', () => {
   beforeEach(() => {
+    chartProps = undefined;
     global.fetch = vi.fn().mockResolvedValue({
       ok: true,
       json: vi.fn().mockResolvedValue([]),
@@ -149,5 +175,111 @@ describe('ScoreDistributionsSiiComponent', () => {
     await waitFor(() => {
       expect(setSpsSpecies).toHaveBeenCalled();
     });
+  });
+
+  it('requests bucket species using province region key when chart is clicked', async () => {
+    render(
+      <LightModeContext.Provider value={{ lightMode: false }}>
+        <ScoreDistributionsSiiComponent
+          siiScoresData={[
+            {
+              bin: '0, low',
+              birds: 2,
+              mammals: 1,
+              reptiles: 0,
+              amphibians: 3,
+            },
+          ]}
+          siiSelectSpeciesData={[
+            {
+              species_sii: [
+                {
+                  species: 'Amazona ochrocephala',
+                  commonname: 'Yellow-crowned Amazon',
+                  species_url: 'image',
+                  sis_stewardship: 34.2,
+                  taxa: 'birds',
+                },
+              ],
+            },
+          ]}
+          setMapLegendLayers={vi.fn()}
+          setFromTrends={vi.fn()}
+          setSelectedIndex={vi.fn()}
+          setScientificName={vi.fn()}
+          setSpsSpecies={vi.fn()}
+          lang="en"
+          selectedProvince={{ region_key: 'cusco' }}
+          countryISO="PER"
+          siiActiveTrend="PROVINCE"
+        />
+      </LightModeContext.Provider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('distribution-chart')).toBeInTheDocument();
+      expect(chartProps).toBeDefined();
+    });
+
+    fireEvent.click(screen.getByTestId('distribution-chart'));
+
+    await waitFor(() => {
+      const bucketCall = global.fetch.mock.calls.find(([url]) =>
+        String(url).includes('filter_by=sis_stewardship')
+      );
+      expect(bucketCall).toBeTruthy();
+      expect(bucketCall[0]).toContain('region_key=cusco');
+    });
+  });
+
+  it('formats tooltip title for the top bucket', async () => {
+    render(
+      <LightModeContext.Provider value={{ lightMode: false }}>
+        <ScoreDistributionsSiiComponent
+          siiScoresData={[
+            {
+              bin: '0, low',
+              birds: 2,
+              mammals: 1,
+              reptiles: 0,
+              amphibians: 3,
+            },
+          ]}
+          siiSelectSpeciesData={[
+            {
+              species_sii: [
+                {
+                  species: 'Amazona ochrocephala',
+                  commonname: 'Yellow-crowned Amazon',
+                  species_url: 'image',
+                  sis_stewardship: 34.2,
+                  taxa: 'birds',
+                },
+              ],
+            },
+          ]}
+          setMapLegendLayers={vi.fn()}
+          setFromTrends={vi.fn()}
+          setSelectedIndex={vi.fn()}
+          setScientificName={vi.fn()}
+          setSpsSpecies={vi.fn()}
+          lang="en"
+          selectedProvince={{ region_key: 'cusco' }}
+          countryISO="PER"
+          siiActiveTrend="NATIONAL"
+        />
+      </LightModeContext.Provider>
+    );
+
+    await waitFor(() => {
+      expect(chartProps).toBeDefined();
+    });
+
+    expect(
+      chartProps.options.plugins.tooltip.callbacks.title([{ label: '120' }])
+    ).toBe('> 120');
+    expect(
+      chartProps.options.plugins.tooltip.callbacks.title([{ label: '15' }])
+    ).toBe('15 - 20');
   });
 });

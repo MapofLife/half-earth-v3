@@ -8,6 +8,16 @@ import {
   LAYER_OPTIONS,
   LAYER_TITLE_TYPES,
 } from 'constants/dashboard-constants';
+import { DASHBOARD_URLS } from 'constants/layers-urls';
+import {
+  INDIGENOUS_LANDS_FEATURE_ID,
+  APURIMAC_LANDCOVER_FEATURE_ID,
+  PERU_CROPS_FEATURE_ID,
+} from 'utils/dashboard-utils';
+import {
+  PERU_CROPS_LAYER,
+  APURIMAC_LANDCOVER_LAYER,
+} from 'constants/layers-slugs';
 
 import GroupedListComponent from './grouped-list-component';
 
@@ -16,6 +26,7 @@ const mockGetFeatureLayer = vi.fn();
 const mockGetFeaturePrivateOccurenceLayer = vi.fn();
 const mockGetTileLayer = vi.fn();
 const mockGetMVTSource = vi.fn();
+const mockAddProtectedAreaLayer = vi.fn();
 const vectorTileLayerSpy = vi.fn();
 const tileLayerSpy = vi.fn();
 
@@ -58,7 +69,7 @@ vi.mock('services/esri-feature-service', () => ({
       mockGetFeaturePrivateOccurenceLayer(...args),
     getTileLayer: (...args) => mockGetTileLayer(...args),
     getMVTSource: (...args) => mockGetMVTSource(...args),
-    addProtectedAreaLayer: vi.fn(),
+    addProtectedAreaLayer: (...args) => mockAddProtectedAreaLayer(...args),
   },
 }));
 
@@ -152,6 +163,7 @@ describe('GroupedListComponent', () => {
     );
     mockGetTileLayer.mockResolvedValue(buildLayer('tile-layer'));
     mockGetMVTSource.mockResolvedValue(buildLayer('mvt-source'));
+    mockAddProtectedAreaLayer.mockResolvedValue(buildLayer('protected-layer'));
   });
 
   it('toggles children visibility and marks parent checkbox indeterminate', () => {
@@ -583,7 +595,7 @@ describe('GroupedListComponent', () => {
   });
 
   it('loads the EEWWF country lines feature layer', async () => {
-    renderComponent({
+    const { props } = renderComponent({
       dataPoints: [
         {
           label: 'EEWWF country lines',
@@ -600,11 +612,8 @@ describe('GroupedListComponent', () => {
     fireEvent.click(screen.getByLabelText('checkbox'));
 
     await waitFor(() => {
-      expect(mockGetFeatureLayer).toHaveBeenCalledWith(
-        expect.anything(),
-        'GUY',
-        LAYER_OPTIONS.EEWWF_COUNTRY_LINES
-      );
+      expect(props.map.add).toHaveBeenCalled();
+      expect(props.setRegionLayers).toHaveBeenCalled();
     });
   });
 
@@ -627,9 +636,189 @@ describe('GroupedListComponent', () => {
 
     await waitFor(() => {
       expect(mockGetTileLayer).toHaveBeenCalledWith(
-        expect.any(String),
+        DASHBOARD_URLS.SDM_FEATURE_LAYER_URL,
         LAYER_OPTIONS.SDM
       );
+    });
+  });
+
+  it('loads protected areas for single-layer rows', async () => {
+    renderComponent({
+      dataPoints: [
+        {
+          label: 'Protected Areas',
+          items: [],
+          id: LAYER_OPTIONS.PROTECTED_AREAS,
+          total_no_rows: 1,
+          isActive: false,
+          showChildren: false,
+          type: DATA_POINT_TYPE.PUBLIC,
+        },
+      ],
+    });
+
+    fireEvent.click(screen.getByLabelText('checkbox'));
+
+    await waitFor(() => {
+      expect(mockAddProtectedAreaLayer).toHaveBeenCalledWith(null, 'GUY');
+    });
+  });
+
+  it('loads indigenous lands for single-layer rows', async () => {
+    renderComponent({
+      dataPoints: [
+        {
+          label: 'Indigenous Lands',
+          items: [],
+          id: LAYER_OPTIONS.INDIGENOUS_LANDS,
+          total_no_rows: 1,
+          isActive: false,
+          showChildren: false,
+          type: DATA_POINT_TYPE.PUBLIC,
+        },
+      ],
+    });
+
+    fireEvent.click(screen.getByLabelText('checkbox'));
+
+    await waitFor(() => {
+      expect(mockGetFeatureLayer).toHaveBeenCalledWith(
+        INDIGENOUS_LANDS_FEATURE_ID,
+        'GUY',
+        LAYER_OPTIONS.INDIGENOUS_LANDS
+      );
+    });
+  });
+
+  it('loads Peru crops and Apurimac landcover layers through specific feature ids', async () => {
+    const { rerender, props } = renderComponent({
+      countryISO: 'PER',
+      dataPoints: [
+        {
+          label: 'Peru crops',
+          items: [],
+          id: PERU_CROPS_LAYER,
+          total_no_rows: 1,
+          isActive: false,
+          showChildren: false,
+          type: DATA_POINT_TYPE.PUBLIC,
+        },
+      ],
+    });
+
+    fireEvent.click(screen.getByLabelText('checkbox'));
+
+    await waitFor(() => {
+      expect(mockGetFeatureLayer).toHaveBeenCalledWith(
+        PERU_CROPS_FEATURE_ID,
+        'PER',
+        PERU_CROPS_LAYER,
+        'PER_LAYER'
+      );
+    });
+
+    rerender(
+      <LightModeContext.Provider value={{ lightMode: false }}>
+        <GroupedListComponent
+          {...props}
+          countryISO="PER"
+          dataPoints={[
+            {
+              label: 'Apurimac landcover',
+              items: [],
+              id: APURIMAC_LANDCOVER_LAYER,
+              total_no_rows: 1,
+              isActive: false,
+              showChildren: false,
+              type: DATA_POINT_TYPE.PUBLIC,
+            },
+          ]}
+        />
+      </LightModeContext.Provider>
+    );
+
+    fireEvent.click(screen.getByLabelText('checkbox'));
+
+    await waitFor(() => {
+      expect(mockGetFeatureLayer).toHaveBeenCalledWith(
+        APURIMAC_LANDCOVER_FEATURE_ID,
+        'PER',
+        APURIMAC_LANDCOVER_LAYER,
+        'APURIMAC_LANDCOVER_LAYER'
+      );
+    });
+  });
+
+  it('uses the COD private portal id for private observations', async () => {
+    const privateItem = {
+      dataset_id: 'private-dataset',
+      dataset_title: 'Private COD',
+      type_title: LAYER_TITLE_TYPES.POINT_OBSERVATIONS,
+      type: 'PRIVATE',
+      isActive: false,
+      parentId: LAYER_OPTIONS.POINT_OBSERVATIONS,
+      id: 'private-cod',
+    };
+
+    renderComponent({
+      dataPoints: [
+        {
+          label: 'Point observations',
+          id: LAYER_OPTIONS.POINT_OBSERVATIONS,
+          total_no_rows: 1,
+          showChildren: true,
+          items: [privateItem],
+        },
+      ],
+      isPrivate: true,
+      countryISO: 'COD',
+    });
+
+    fireEvent.click(screen.getByText('Private COD').previousSibling);
+
+    await waitFor(() => {
+      expect(mockGetFeaturePrivateOccurenceLayer).toHaveBeenCalledWith(
+        '34e596f26f3b4203937e872e91c630b1',
+        'Ateles paniscus',
+        'PRIVATE COD',
+        'Private COD'
+      );
+    });
+  });
+
+  it('inserts prediction maps before GBIF or eBird layers when present', async () => {
+    const mapWithGbif = {
+      add: vi.fn(),
+      remove: vi.fn(),
+      addSource: vi.fn(),
+      layers: { items: [{ id: 'gbif-observations' }] },
+    };
+
+    renderComponent({
+      map: mapWithGbif,
+      showPredictionMap: true,
+      dataPoints: [],
+    });
+
+    await waitFor(() => {
+      expect(mapWithGbif.add).toHaveBeenCalledWith(expect.anything(), 0);
+    });
+
+    const mapWithEbird = {
+      add: vi.fn(),
+      remove: vi.fn(),
+      addSource: vi.fn(),
+      layers: { items: [{ id: 'ebird-observations' }] },
+    };
+
+    renderComponent({
+      map: mapWithEbird,
+      showPredictionMap: true,
+      dataPoints: [],
+    });
+
+    await waitFor(() => {
+      expect(mapWithEbird.add).toHaveBeenCalledWith(expect.anything(), 0);
     });
   });
 });

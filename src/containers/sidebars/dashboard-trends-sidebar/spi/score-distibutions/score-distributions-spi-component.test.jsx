@@ -292,4 +292,196 @@ describe('ScoreDistributionsSpiComponent', () => {
       expect(global.fetch).toHaveBeenCalled();
     });
   });
+
+  it('uses marine datasets and appends marine query params for bucket requests', async () => {
+    render(
+      <LightModeContext.Provider value={{ lightMode: false }}>
+        <ScoreDistributionsSpiComponent
+          activeTrend="NATIONAL"
+          selectedProvince={{ region_name: 'Loreto', region_key: 'loreto' }}
+          setSelectedIndex={vi.fn()}
+          setScientificName={vi.fn()}
+          setMapLegendLayers={vi.fn()}
+          spiScoresData={[]}
+          spiMarineScoresData={[
+            {
+              bin: '0, five',
+              fishes_marine_sps_count: 2,
+              mammals_marine_sps_count: 1,
+            },
+          ]}
+          spiSelectSpeciesData={[{ species_sps: [] }]}
+          spiSelectMarineSpeciesData={[
+            {
+              species_sps: [
+                {
+                  species: 'Fishus marinus',
+                  commonname: 'Marine Fish',
+                  species_url: 'fish-image',
+                  sps_score: 2.1,
+                  taxa: 'fishes_marine',
+                },
+                {
+                  species: 'Mammalus marinus',
+                  commonname: 'Marine Mammal',
+                  species_url: 'mammal-image',
+                  sps_score: 3.4,
+                  taxa: 'mammals_marine',
+                },
+              ],
+            },
+          ]}
+          setFromTrends={vi.fn()}
+          lang="en"
+          countryISO="PER"
+          spiActiveTrend="MARINE"
+          zoneHistrogramData={[]}
+        />
+      </LightModeContext.Provider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('distribution-chart')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByTestId('distribution-chart'));
+
+    await waitFor(() => {
+      const bucketCall = global.fetch.mock.calls.find(([url]) =>
+        String(url).includes('filter_by=sps')
+      );
+      expect(bucketCall).toBeTruthy();
+      expect(bucketCall[0]).toContain('marine=True');
+    });
+  });
+
+  it('formats SPI tooltip titles using score buckets', async () => {
+    render(
+      <LightModeContext.Provider value={{ lightMode: false }}>
+        <ScoreDistributionsSpiComponent
+          activeTrend="NATIONAL"
+          selectedProvince={{ region_name: 'Loreto', region_key: 'loreto' }}
+          setSelectedIndex={vi.fn()}
+          setScientificName={vi.fn()}
+          setMapLegendLayers={vi.fn()}
+          spiScoresData={[
+            {
+              bin: '0, five',
+              birds: 2,
+              mammals: 1,
+              reptiles: 0,
+              amphibians: 3,
+            },
+          ]}
+          spiSelectSpeciesData={[
+            {
+              species_sps: [
+                {
+                  species: 'Pyrrhura egregia',
+                  commonname: 'Fiery-shouldered Parakeet',
+                  species_url: 'image',
+                  sps_score: 1.2,
+                  taxa: 'birds',
+                },
+              ],
+            },
+          ]}
+          setFromTrends={vi.fn()}
+          lang="en"
+          countryISO="PER"
+          zoneHistrogramData={[]}
+        />
+      </LightModeContext.Provider>
+    );
+
+    await waitFor(() => {
+      expect(chartProps).toBeDefined();
+    });
+
+    expect(
+      chartProps.options.plugins.tooltip.callbacks.title([{ label: '10' }])
+    ).toBe('10 - 15');
+  });
+
+  it('uses non-EE zone histogram data for accepted zone trends', async () => {
+    render(
+      <LightModeContext.Provider value={{ lightMode: false }}>
+        <ScoreDistributionsSpiComponent
+          activeTrend="ZONE_3"
+          selectedProvince={{ region_name: 'Cusco', region_key: 'ACC_3_CUSCO' }}
+          setSelectedIndex={vi.fn()}
+          setScientificName={vi.fn()}
+          setMapLegendLayers={vi.fn()}
+          spiScoresData={[]}
+          spiSelectSpeciesData={[]}
+          setFromTrends={vi.fn()}
+          lang="en"
+          countryISO="PER"
+          zoneHistrogramData={[
+            {
+              region_key: 'ACC_3_CUSCO',
+              project: 'per',
+              bin: '0, five',
+              birds_spi_count: 2,
+              mammals_spi_count: 1,
+              reptiles_spi_count: 0,
+              amphibians_spi_count: 3,
+              species_sps: [
+                {
+                  species: 'Zoneus peru',
+                  commonname: 'Peru Zone Species',
+                  species_url: 'zone-image',
+                  spi_score: 6.2,
+                  stewardship: 0.3,
+                  taxa: 'birds',
+                  threat_status: 'Least Concern',
+                },
+              ],
+            },
+          ]}
+        />
+      </LightModeContext.Provider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Peru Zone Species')).toBeInTheDocument();
+      expect(screen.getByTestId('distribution-chart')).toBeInTheDocument();
+    });
+  });
+
+  it('does not request bucket species when chart click has no selected elements', async () => {
+    render(
+      <LightModeContext.Provider value={{ lightMode: false }}>
+        <ScoreDistributionsSpiComponent
+          activeTrend="NATIONAL"
+          selectedProvince={{ region_name: 'Loreto', region_key: 'loreto' }}
+          setSelectedIndex={vi.fn()}
+          setScientificName={vi.fn()}
+          setMapLegendLayers={vi.fn()}
+          spiScoresData={[
+            {
+              bin: '0, five',
+              birds: 2,
+              mammals: 1,
+              reptiles: 0,
+              amphibians: 3,
+            },
+          ]}
+          spiSelectSpeciesData={[]}
+          setFromTrends={vi.fn()}
+          lang="en"
+          countryISO="PER"
+          zoneHistrogramData={[]}
+        />
+      </LightModeContext.Provider>
+    );
+
+    await waitFor(() => {
+      expect(chartProps).toBeDefined();
+    });
+
+    global.fetch.mockClear();
+    chartProps.options.onClick(null, []);
+    expect(global.fetch).not.toHaveBeenCalled();
+  });
 });
