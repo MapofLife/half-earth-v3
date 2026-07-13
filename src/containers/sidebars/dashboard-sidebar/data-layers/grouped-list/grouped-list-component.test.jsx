@@ -336,6 +336,45 @@ describe('GroupedListComponent', () => {
     });
   });
 
+  it('removes an active public point observation layer', async () => {
+    const pointItem = {
+      dataset_id: '9905692e-6a28-4310-b01e-476a471e5bf8',
+      dataset_title: 'GBIF',
+      type_title: LAYER_TITLE_TYPES.POINT_OBSERVATIONS,
+      isActive: true,
+      parentId: LAYER_OPTIONS.POINT_OBSERVATIONS,
+      id: 'point-active',
+      no_rows: 4,
+    };
+
+    const { props } = renderComponent({
+      map: {
+        add: vi.fn(),
+        remove: vi.fn(),
+        addSource: vi.fn(),
+        layers: { items: [{ id: 'GBIF' }] },
+      },
+      regionLayers: { GBIF: buildLayer('GBIF') },
+      dataPoints: [
+        {
+          label: 'Point observations',
+          id: LAYER_OPTIONS.POINT_OBSERVATIONS,
+          total_no_rows: 4,
+          showChildren: true,
+          items: [pointItem],
+        },
+      ],
+    });
+
+    fireEvent.click(screen.getByText('GBIF').previousSibling);
+
+    await waitFor(() => {
+      expect(props.map.remove).toHaveBeenCalled();
+      expect(props.setRegionLayers).toHaveBeenCalled();
+      expect(props.setMapLegendLayers).toHaveBeenCalled();
+    });
+  });
+
   it('uses the private occurrence service for private datasets', async () => {
     const privateItem = {
       dataset_id: 'private-dataset',
@@ -505,6 +544,45 @@ describe('GroupedListComponent', () => {
     });
   });
 
+  it('removes an active regional checklist layer', async () => {
+    const checklistItem = {
+      dataset_id: 'checklist-1',
+      dataset_title: 'Regional checklist',
+      type_title: LAYER_TITLE_TYPES.REGIONAL_CHECKLISTS,
+      isActive: true,
+      parentId: 'CHECKLIST_PARENT',
+      id: 'checklist-1',
+      no_rows: 1,
+    };
+
+    const { props } = renderComponent({
+      map: {
+        add: vi.fn(),
+        remove: vi.fn(),
+        addSource: vi.fn(),
+        layers: { items: [{ id: 'REGIONAL CHECKLIST' }] },
+      },
+      regionLayers: { 'REGIONAL CHECKLIST': buildLayer('REGIONAL CHECKLIST') },
+      dataPoints: [
+        {
+          label: 'Regional checklists',
+          id: 'CHECKLIST_PARENT',
+          total_no_rows: 1,
+          isActive: true,
+          showChildren: true,
+          items: [checklistItem],
+        },
+      ],
+    });
+
+    fireEvent.click(screen.getByLabelText('checkbox'));
+
+    await waitFor(() => {
+      expect(props.map.remove).toHaveBeenCalled();
+      expect(props.setRegionLayers).toHaveBeenCalled();
+    });
+  });
+
   it('activates default checked layers when map data arrives', async () => {
     renderComponent({
       dataPoints: [
@@ -664,6 +742,32 @@ describe('GroupedListComponent', () => {
     });
   });
 
+  it('removes active protected areas single-layer rows', async () => {
+    const { props } = renderComponent({
+      regionLayers: {
+        [LAYER_OPTIONS.PROTECTED_AREAS]: buildLayer('protected-layer'),
+      },
+      dataPoints: [
+        {
+          label: 'Protected Areas',
+          items: [],
+          id: LAYER_OPTIONS.PROTECTED_AREAS,
+          total_no_rows: 1,
+          isActive: true,
+          showChildren: false,
+          type: DATA_POINT_TYPE.PUBLIC,
+        },
+      ],
+    });
+
+    fireEvent.click(screen.getByLabelText('checkbox'));
+
+    await waitFor(() => {
+      expect(props.map.remove).toHaveBeenCalled();
+      expect(props.setRegionLayers).toHaveBeenCalled();
+    });
+  });
+
   it('loads indigenous lands for single-layer rows', async () => {
     renderComponent({
       dataPoints: [
@@ -687,6 +791,32 @@ describe('GroupedListComponent', () => {
         'GUY',
         LAYER_OPTIONS.INDIGENOUS_LANDS
       );
+    });
+  });
+
+  it('turns off habitat chart when active habitat layer is toggled off', async () => {
+    const { props } = renderComponent({
+      regionLayers: {
+        [LAYER_OPTIONS.HABITAT]: buildLayer('habitat-layer'),
+      },
+      dataPoints: [
+        {
+          label: 'Habitat Loss/Gain',
+          items: [],
+          id: LAYER_OPTIONS.HABITAT,
+          total_no_rows: 1,
+          isActive: true,
+          showChildren: false,
+          type: DATA_POINT_TYPE.PUBLIC,
+        },
+      ],
+    });
+
+    fireEvent.click(screen.getByLabelText('checkbox'));
+
+    await waitFor(() => {
+      expect(props.setShowHabitatChart).toHaveBeenCalledWith(false);
+      expect(props.map.remove).toHaveBeenCalled();
     });
   });
 
@@ -819,6 +949,25 @@ describe('GroupedListComponent', () => {
 
     await waitFor(() => {
       expect(mapWithEbird.add).toHaveBeenCalledWith(expect.anything(), 0);
+    });
+  });
+
+  it('inserts prediction maps at the earliest index when both GBIF and eBird exist', async () => {
+    const mapWithBoth = {
+      add: vi.fn(),
+      remove: vi.fn(),
+      addSource: vi.fn(),
+      layers: { items: [{ id: 'ebird-layer' }, { id: 'gbif-layer' }] },
+    };
+
+    renderComponent({
+      map: mapWithBoth,
+      showPredictionMap: true,
+      dataPoints: [],
+    });
+
+    await waitFor(() => {
+      expect(mapWithBoth.add).toHaveBeenCalledWith(expect.anything(), 0);
     });
   });
 });

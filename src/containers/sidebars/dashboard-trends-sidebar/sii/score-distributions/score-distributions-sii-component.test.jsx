@@ -282,4 +282,107 @@ describe('ScoreDistributionsSiiComponent', () => {
       chartProps.options.plugins.tooltip.callbacks.title([{ label: '15' }])
     ).toBe('15 - 20');
   });
+
+  it('uses country ISO region key for national bucket requests', async () => {
+    render(
+      <LightModeContext.Provider value={{ lightMode: false }}>
+        <ScoreDistributionsSiiComponent
+          siiScoresData={[
+            {
+              bin: '0, low',
+              birds: 2,
+              mammals: 1,
+              reptiles: 0,
+              amphibians: 3,
+            },
+          ]}
+          siiSelectSpeciesData={[
+            {
+              species_sii: [
+                {
+                  species: 'Amazona ochrocephala',
+                  commonname: 'Yellow-crowned Amazon',
+                  species_url: 'image',
+                  sis_stewardship: 34.2,
+                  taxa: 'birds',
+                },
+              ],
+            },
+          ]}
+          setMapLegendLayers={vi.fn()}
+          setFromTrends={vi.fn()}
+          setSelectedIndex={vi.fn()}
+          setScientificName={vi.fn()}
+          setSpsSpecies={vi.fn()}
+          lang="en"
+          selectedProvince={{ region_key: 'cusco' }}
+          countryISO="PER"
+          siiActiveTrend="NATIONAL"
+        />
+      </LightModeContext.Provider>
+    );
+
+    await waitFor(() => {
+      expect(chartProps).toBeDefined();
+      expect(screen.getByTestId('distribution-chart')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByTestId('distribution-chart'));
+
+    await waitFor(() => {
+      const bucketCall = global.fetch.mock.calls.find(([url]) =>
+        String(url).includes('filter_by=sis_stewardship')
+      );
+      expect(bucketCall).toBeTruthy();
+      expect(bucketCall[0]).toContain('region_key=PER');
+    });
+  });
+
+  it('does not request bucket species when chart click has no selected elements', async () => {
+    render(
+      <LightModeContext.Provider value={{ lightMode: false }}>
+        <ScoreDistributionsSiiComponent
+          siiScoresData={[
+            {
+              bin: '0, low',
+              birds: 2,
+              mammals: 1,
+              reptiles: 0,
+              amphibians: 3,
+            },
+          ]}
+          siiSelectSpeciesData={[
+            {
+              species_sii: [
+                {
+                  species: 'Amazona ochrocephala',
+                  commonname: 'Yellow-crowned Amazon',
+                  species_url: 'image',
+                  sis_stewardship: 34.2,
+                  taxa: 'birds',
+                },
+              ],
+            },
+          ]}
+          setMapLegendLayers={vi.fn()}
+          setFromTrends={vi.fn()}
+          setSelectedIndex={vi.fn()}
+          setScientificName={vi.fn()}
+          setSpsSpecies={vi.fn()}
+          lang="en"
+          selectedProvince={{ region_key: 'cusco' }}
+          countryISO="PER"
+          siiActiveTrend="NATIONAL"
+        />
+      </LightModeContext.Provider>
+    );
+
+    await waitFor(() => {
+      expect(chartProps).toBeDefined();
+    });
+
+    global.fetch.mockClear();
+    chartProps.options.onClick(null, []);
+    expect(global.fetch).not.toHaveBeenCalled();
+  });
 });
