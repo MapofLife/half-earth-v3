@@ -58,6 +58,7 @@ import {
   TRANSPORTATION_HUMAN_PRESSURES_TILE_LAYER,
   APURIMAC_LANDCOVER_LAYER,
 } from 'constants/layers-slugs';
+import PrintMapComponent from '../../../../components/print-map/print-map-component';
 
 ChartJS.register(
   LinearScale,
@@ -863,6 +864,7 @@ function DataLayerComponent(props) {
           label={t('Back')}
         />
       </div>
+      <PrintMapComponent view={props.view} />
       <hr className={hrTheme.dark} />
       {speciesInfo && (
         <>

@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 
 import { useT, T } from '@transifex/react';
-
+import esriConfig from '@arcgis/core/config.js';
 import {
   numberToLocaleStringWithOneDecimal,
   PROVINCE_FEATURE_GLOBAL_OUTLINE_ID,
@@ -16,7 +16,6 @@ import {
 } from 'constants/dashboard-constants.js';
 import Button from 'components/button';
 import DownloadGbifReport from 'components/DownloadGbifReport';
-
 import EsriFeatureService from 'services/esri-feature-service';
 
 import {
@@ -45,6 +44,8 @@ import NationalChartContainer from './national-chart';
 import ProvinceChartContainer from './province-chart';
 import TrendTableComponent from './trend-table/trend-table-component';
 import ZoneChartContainer from './zone-chart';
+import PrintViewModel from '@arcgis/core/widgets/Print/PrintViewModel';
+import PrintMapComponent from '../../../../../components/print-map/print-map-component';
 
 function TemporalTrendsSpiComponent(props) {
   const t = useT();
@@ -172,6 +173,7 @@ function TemporalTrendsSpiComponent(props) {
             />
           </div>
         </div>
+        <PrintMapComponent view={view} />
         <span className={styles.title}>{t('Temporal Trends')}</span>
         {spiActiveTrend === MARINE && (
           <p className={styles.description}>

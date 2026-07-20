@@ -16,6 +16,7 @@ import { SATELLITE_BASEMAP_LAYER } from 'constants/layers-slugs';
 
 import Component from './component';
 import mapStateToProps from './selectors';
+import WebMap from '@arcgis/core/WebMap';
 
 function ViewContainer(props) {
   const {
@@ -123,7 +124,7 @@ function ViewContainer(props) {
     setGraphicsLayer(layers.graphics);
     setGroupLayer(layers.group);
 
-    const flatMap = new Map({
+    const flatMap = new WebMap({
       basemap: SATELLITE_BASEMAP_LAYER,
       ground: {
         surfaceColor: '#070710',
