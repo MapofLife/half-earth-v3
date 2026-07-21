@@ -4,10 +4,7 @@ import { useT } from '@transifex/react';
 
 import {
   PROVINCE_FEATURE_GLOBAL_OUTLINE_ID,
-  GBIF_OCCURENCE_URL,
   INDIGENOUS_LANDS_FEATURE_ID,
-  REGION_OCCURENCE_ID,
-  EEWWF_COUNTRY_LINES_FEATURE_ID,
   APURIMAC_LANDCOVER_FEATURE_ID,
   PERU_CROPS_FEATURE_ID,
 } from 'utils/dashboard-utils';
@@ -237,13 +234,6 @@ function GroupedListComponent(props) {
           );
         }
       }
-    } else if (id === LAYER_OPTIONS.EEWWF_COUNTRY_LINES) {
-      setIsLoading(true);
-      layer = await EsriFeatureService.getFeatureLayer(
-        EEWWF_COUNTRY_LINES_FEATURE_ID,
-        countryISO,
-        id
-      );
     } else if (id === LAYER_OPTIONS.SDM) {
       layer = await EsriFeatureService.getTileLayer(
         DASHBOARD_URLS.SDM_FEATURE_LAYER_URL,

@@ -42,6 +42,8 @@ function ScoreDistributionsSpiComponent(props) {
     setMapLegendLayers,
     spiScoresData,
     spiSelectSpeciesData,
+    spiMarineScoresData,
+    spiSelectMarineSpeciesData,
     setFromTrends,
     lang,
     countryISO,
@@ -189,27 +191,31 @@ function ScoreDistributionsSpiComponent(props) {
     };
 
     let locationData = [];
-    if (activeTrend === PROVINCE_TREND && selectedProvince) {
-      locationData = spiScoresData?.filter(
-        (loc) => loc.iso3_regional === selectedProvince.iso3_regional
-      );
-    } else if (acceptedZones.includes(activeTrend)) {
-      let data;
-      if (countryISO !== 'EE') {
-        const zoneName = activeTrend === 'ZONE_3' ? 'ACC_3' : 'ACC_5';
-        data = zoneHistrogramData.filter((item) =>
-          item.region_key.includes(zoneName)
-        );
-      } else {
-        data = zoneHistrogramData.filter(
-          (item) =>
-            item.project === 'eewwf' &&
-            item.region_key === selectedProvince?.region_key
-        );
-      }
-      locationData = data;
+    if (spiActiveTrend === 'MARINE') {
+      locationData = spiMarineScoresData;
     } else {
-      locationData = spiScoresData;
+      if (activeTrend === PROVINCE_TREND && selectedProvince) {
+        locationData = spiScoresData?.filter(
+          (loc) => loc.iso3_regional === selectedProvince.iso3_regional
+        );
+      } else if (acceptedZones.includes(activeTrend)) {
+        let data;
+        if (countryISO !== 'EE') {
+          const zoneName = activeTrend === 'ZONE_3' ? 'ACC_3' : 'ACC_5';
+          data = zoneHistrogramData.filter((item) =>
+            item.region_key.includes(zoneName)
+          );
+        } else {
+          data = zoneHistrogramData.filter(
+            (item) =>
+              item.project === 'eewwf' &&
+              item.region_key === selectedProvince?.region_key
+          );
+        }
+        locationData = data;
+      } else {
+        locationData = spiScoresData;
+      }
     }
 
     // Loop through each number and place it in the appropriate bucket
@@ -316,7 +322,12 @@ function ScoreDistributionsSpiComponent(props) {
 
       setSpsSpecies(species.slice(0, 4));
     } else {
-      spiSelectSpeciesData.forEach((item) => {
+      const selectSpeciesData =
+        spiActiveTrend === 'MARINE'
+          ? spiSelectMarineSpeciesData
+          : spiSelectSpeciesData;
+
+      selectSpeciesData.forEach((item) => {
         if (item.species_sps) {
           const values = item.species_sps;
 

@@ -44,7 +44,7 @@ describe('ProtectionComponent', () => {
         protectionTableData={[
           {
             country: 'Colombia',
-            sps_stewardship: 11.1,
+            stewardship: 11.1,
             rangeProtected: 22.2,
             targetProtected: 33.3,
             sps: 44.4,
@@ -79,6 +79,7 @@ describe('ProtectionComponent', () => {
         .find((element) => element.tagName.toLowerCase() === 'td')
     );
     expect(updateCountry).toHaveBeenCalledWith({ value: 'Colombia' });
+    expect(screen.getByText('11.1%')).toBeInTheDocument();
   });
 
   it('renders the EE region legend branch without the selected country chip', async () => {

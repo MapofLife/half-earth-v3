@@ -30,88 +30,38 @@ export const IUCNStatusTypes = {
   UN: 'Unknown',
 };
 
+// Global layers
 export const PROVINCE_FEATURE_GLOBAL_SPI_LAYER_ID =
-  'a2adcca9c4a4425582e29fb413df6a72'; // 'e3dca98a5bf74c9898c30f72baf6b1ba';
+  'a2adcca9c4a4425582e29fb413df6a72';
 export const PROVINCE_FEATURE_GLOBAL_OUTLINE_ID =
   'c6bc2248f053422da9d8d30ce591ca16';
 
 export const GLOBAL_COUNTRY_OUTLINE_ID = 'dda66f1c1e9c4e62abcd043206c19e81';
-
-// DRC LAYERS
-export const PROTECTED_AREA_FEATURE_URL = 'c20d4cbbed23410e9bfc48b5d1c1b483';
-//'https://services1.arcgis.com/7uJv7I3kgh2y7Pe0/arcgis/rest/services/protected_areas_WDPA_WDOECM_all_Jan2026/FeatureServer'; //'c20d4cbbed23410e9bfc48b5d1c1b483'; //'175c41cfa552401c83d07201732c303f';
-// Yale AGOL - 36370bcf99884301bca92ea8eb91f78f
-// DRC SPI LAYER = '41981d576d6042aea14595de0fb924f2';
 export const SHI_LAYER_ID = '6f02cce2565b4d089565aaed6adb6ca2';
 export const SII_LAYER_ID = 'e294958e1e1f4131ad594a3559d8afb6';
-// Yale AGOL - c0a78b5a9b4e4758b4b8f5fcee76412a
-export const DRC_REGION_FEATURE_ID = 'b0109ce737f4495aa188826ef0601816'; // '95cac457c0244a2286d914148c24af98';
-// Yale AGOL - b0109ce737f4495aa188826ef0601816
-
-export const ZONE_5_SPI_FEATURE_ID = '904167199e2d4fe59a57b0c4c2e51ec7';
-export const ZONE_5_SHI_FEATURE_ID = 'c3a05367565e43feba045d5034152139';
-export const ZONE_3_SPI_FEATURE_ID = 'b4fd87a7d9c04143b10018c4224f2999';
-export const ZONE_3_SHI_FEATURE_ID = 'b818d0fe7caf4151af74835aa43c7aea';
-
+export const PROTECTED_AREA_FEATURE_URL = 'c20d4cbbed23410e9bfc48b5d1c1b483';
+// Country specific layers
+export const DRC_REGION_FEATURE_ID = 'b0109ce737f4495aa188826ef0601816';
 export const ACC_REGION_FEATURE_ID = 'e5df85e300ca4604b893744fb8a29221';
 export const GUY_FM_RAPID_INVENTORY_32_FEATURE_ID =
   'cc6b9e1c42c747a2bd220f82039cf0b0';
+export const GUY_RIVER_ID = 'e7557c32f8a2475e95aab9471fc9b4c5';
+export const GUY_RIVER_NAME_ID = '4182314c3f9c4b4db823618b501f914c';
+export const GUY_RIVER_NAME_URL =
+  'https://services1.arcgis.com/7uJv7I3kgh2y7Pe0/arcgis/rest/services/Rivers_Guyana/FeatureServer';
+
 export const RAPID_INVENTORY_32_FEATURE_ID = 'e5a8033abb494173af8896d6ba6d0415';
 export const INDIGENOUS_LANDS_FEATURE_ID = 'f02ae30f5a784e9e920729a5afef92c0';
 export const PERU_CROPS_FEATURE_ID = 'a047064754ee46c78b54f22d99284024';
 export const APURIMAC_LANDCOVER_FEATURE_ID = '78c6f87b51884e1d88872563ad01388d';
 
-export const EEWWF_COUNTRY_LINES_FEATURE_ID =
-  '48e26caf25de440e8deef5bc52ed975e';
-export const EEWWF_SPI_FEATURE_ID = '942229716581474ab9233fd23d6d0178';
-export const EEWWF_SHI_FEATURE_ID = 'c3fdbdaa2fcd48b09bc9f670a1535e3a';
-export const PROTECTED_AREA_EEWWF_FEATURE_ID =
-  '7593f107a991471f9bb56672557a07cc';
-export const PROTECTED_AREA_EEWWF_URL =
-  'https://tiles.arcgis.com/tiles/IkktFdUAcY3WrH25/arcgis/rest/services/ProtectedAreas_20250416/VectorTileServer';
-
-export const NBS_OP_INTERVENTIONS_FEATURE_ID =
-  '41eb11d7bdd1474fb1a208e11546e413';
-
+// MOL Api urls
 export const EXPERT_RANGE_MAP_URL =
   'https://api.mol.org/2.x/species/drc_rangemap';
 export const TREND_MAP_URL = 'https://api.mol.org/2.x/species/drc_trend';
 
 export const REGION_RANGE_MAP_URL =
   'https://api.mol.org/2.x/species/indicators/habitat-trends/tile-urls';
-
-// LIBERIA LAYERS
-export const PROTECTED_AREA_LIB_FEATURE_URL =
-  'db67d0fa645047a18d83c1c5a67e9d99';
-
-// GUINEA LAYERS
-export const PROTECTED_AREA_GIN_FEATURE_URL =
-  'fd86210b977c4ec3935f297559dcd80b';
-
-// SIERRA LEONE
-export const PROTECTED_AREA_SLE_FEATURE_URL =
-  'af483c5930f9447080c9e49f8698882d';
-
-// GUYANA
-export const PROTECTED_AREA_GUY_FEATURE_URL =
-  'd610d9ad96bc4071a31b3aacdfbf844d';
-
-export const GBIF_OCCURENCE_URL = '41fc325e009a46f08c1e3026d14a47ae'; //'1ccb994557a74bc6bd773250d8eebc15';
-export const GUY_RIVER_ID = 'e7557c32f8a2475e95aab9471fc9b4c5';
-export const GUY_RIVER_NAME_ID = '4182314c3f9c4b4db823618b501f914c';
-export const GUY_RIVER_NAME_URL =
-  'https://services1.arcgis.com/7uJv7I3kgh2y7Pe0/arcgis/rest/services/Rivers_Guyana/FeatureServer';
-export const REGION_OCCURENCE_ID = '9f732963e1a7495f889577ca30e44562';
-
-export const DASHBOARD_TABLE_URL =
-  'https://services9.arcgis.com/IkktFdUAcY3WrH25/arcgis/rest/services/ESRI_table1/FeatureServer';
-
-// temporary for DRC demo
-export const SPECIES_LAYER_IDS = {
-  Myotis_bocagii: 'c41c9e06c2284b44be9fc41d144e63ba',
-  Hyperolius_castaneus: 'a8d710cd5a5f4124b90ff189cdcdfeba',
-  Chiromantis_rufescens: 'eb1019801a8b44bebd98e0452ef20132',
-};
 
 export const createDefaultDashboardLayers = () => {
   const countries = new FeatureLayer({

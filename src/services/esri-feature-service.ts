@@ -2,9 +2,7 @@ import { LAYER_OPTIONS, LAYER_TITLE_TYPES } from 'constants/dashboard-constants.
 import { DASHBOARD_URLS, LAYERS_URLS } from 'constants/layers-urls';
 import { LOCAL_SPATIAL_REFERENCE } from 'constants/scenes-constants';
 import { AddFeature, GetFeatures, GetLayer } from 'types/services-types';
-import {
-    PROTECTED_AREA_EEWWF_FEATURE_ID, PROTECTED_AREA_FEATURE_URL, REGION_RANGE_MAP_URL
-} from 'utils/dashboard-utils';
+import { PROTECTED_AREA_FEATURE_URL, REGION_RANGE_MAP_URL } from 'utils/dashboard-utils';
 
 import Polygon from '@arcgis/core/geometry/Polygon.js';
 import CSVLayer from '@arcgis/core/layers/CSVLayer';
@@ -200,15 +198,19 @@ async function getXYZLayer(scientificname, id, type, taxa = null) {
   } else if (type === LAYER_TITLE_TYPES.POINT_OBSERVATIONS) {
     urlTemplate = data['refined map'].tile_url;
   } else if (type === LAYER_TITLE_TYPES.TREND) {
-    urlTemplate = data.trend.tile_url;
+    urlTemplate = data.trend?.tile_url || '';
   } else if (type === LAYER_TITLE_TYPES.PREDICTION_MAPS) {
-    urlTemplate = data.prediction_map.tile_url;
+    urlTemplate = data.prediction_map?.tile_url || '';
   }
 
-  return new ThrottledEarthEngineWebTileLayer({
-    urlTemplate,
-    id,
-  });
+  if(urlTemplate){
+    return new ThrottledEarthEngineWebTileLayer({
+      urlTemplate,
+      id,
+    });
+  } else {
+    return null;
+  }
 
   // return new WebTileLayer({
   //   urlTemplate,
@@ -318,15 +320,6 @@ function addFeature({ url, features }: AddFeature) {
 async function addProtectedAreaLayer(id, countryISO = 'COD') {
   let featurePortalId = PROTECTED_AREA_FEATURE_URL;
   let definitionExpression = `ISO3 = '${countryISO}'`;
-
-  switch (countryISO) {
-    case 'EE':
-      featurePortalId = PROTECTED_AREA_EEWWF_FEATURE_ID;
-      definitionExpression = '';
-      break;
-    default:
-      break;
-  }
 
   const featureLayer = new FeatureLayer({
     portalItem: {

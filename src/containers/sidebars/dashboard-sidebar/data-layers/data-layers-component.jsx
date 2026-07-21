@@ -540,7 +540,7 @@ function DataLayerComponent(props) {
       return updatedDataPoints;
     });
 
-    trend_data.shift();
+    trend_data?.shift();
     setValuesExists(true);
 
     setChartData({

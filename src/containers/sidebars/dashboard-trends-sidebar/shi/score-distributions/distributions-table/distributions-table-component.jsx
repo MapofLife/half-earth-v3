@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 
-import { useT, useLocale } from '@transifex/react';
+import { useT } from '@transifex/react';
 
 import tableStyles from 'components/protected-areas-table/protected-areas-table-styles.module.scss';
 
@@ -10,9 +10,8 @@ import ArrowUp from 'icons/arrow_up.svg?react';
 import styles from './distributions-table-styles.module.scss';
 
 function DistributionsTableComponent(props) {
-  const { chartData } = props;
+  const { chartData, handleSortChange = () => {} } = props;
   const t = useT();
-  const locale = useLocale();
 
   return (
     <div className={styles.container}>

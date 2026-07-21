@@ -522,6 +522,7 @@ export const DASHBOARD_URLS = {
   BUCKET_SPECIES_URL: `${NBIS_BASE_URL}/get-species`,
   SPI_PROVINCE_TREND_URL: `${NBIS_BASE_URL}/get-indicators`,
   SPI_HISTOGRAM_URL: `${NBIS_BASE_URL}/get-bar-data`,
+  SPECIES_SCORE_URL: `${NBIS_BASE_URL}/species-scores`,
   // use updated api, not dev-api.mol.org
   COD_REGIONAL_SPECIES_LAYER: 'd9b12607731a42e8b463612d7b51ffa5',
   // TODO: hardcoded species on home page
@@ -530,6 +531,7 @@ export const DASHBOARD_URLS = {
   // TODO: review with Tamara
   IGNORE_SPECIES_LIST:
     'https://services1.arcgis.com/7uJv7I3kgh2y7Pe0/arcgis/rest/services/species_to_remove/FeatureServer',
+  // Following layers are for private occurrence data.
   PRIVATE_COD_OCCURENCE_LAYER:
     'https://services3.arcgis.com/Zyt0ectKCtAdsOa2/arcgis/rest/services/occurrences_RDC/FeatureServer',
   // metadata about the studies in the private occurrence data
@@ -542,23 +544,10 @@ export const DASHBOARD_URLS = {
   // metadata about the studies in the private occurrence data
   PRIVATE_GIN_OCCURENCE_METADATA_LAYER:
     'https://services5.arcgis.com/0f65lZbPr3QAKkSu/arcgis/rest/services/occurrence_metadata/FeatureServer',
-  ZONE_OCCURRENCE:
-    'https://services1.arcgis.com/7uJv7I3kgh2y7Pe0/arcgis/rest/services/species_occurences_iso3_level/FeatureServer',
-  RAPID_INVENTORY_SPECIES:
-    'https://utility.arcgis.com/usrsvcs/servers/3dd5ccfd05f74871abde3d4cbbe9d6b0/rest/services/RI_32_occurences_w_attributes/FeatureServer',
-  REGION_SHI_SPI_URL:
-    'https://services1.arcgis.com/7uJv7I3kgh2y7Pe0/arcgis/rest/services/region_shi_spi_trend_table/FeatureServer',
-  REGION_HISTOGRAM_URL:
-    'https://services1.arcgis.com/7uJv7I3kgh2y7Pe0/arcgis/rest/services/region_spi_shi_binned/FeatureServer',
-  REGION_BIODIVERSITY_URL:
-    'https://services1.arcgis.com/7uJv7I3kgh2y7Pe0/arcgis/rest/services/species_sps_region_global/FeatureServer',
-  REGION_BIODIVERSITY_SHS_URL:
-    ' https://services1.arcgis.com/7uJv7I3kgh2y7Pe0/arcgis/rest/services/species_shs_region_global/FeatureServer',
-  // Guyana monkey SDM
-  SDM_FEATURE_LAYER_URL:
-    'https://tiles.arcgis.com/tiles/7uJv7I3kgh2y7Pe0/arcgis/rest/services/Ateles_paniscus/MapServer',
+  // Marine boundary on indicator page
   MARINE_LAYER_URL:
     'https://services1.arcgis.com/7uJv7I3kgh2y7Pe0/arcgis/rest/services/marine_eez_boundary_2025_spi/FeatureServer',
+  // Panama demo
   PANAMA_ECO_REGION_LAYER_URL:
     'https://geoportal.miambiente.gob.pa/server/rest/services/Nodo_Bosque_Biodiversidad_2/MapServer/11',
   SAMPLE_PRIORITY_LAYER:

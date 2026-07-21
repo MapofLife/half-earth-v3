@@ -905,10 +905,7 @@ function DashboardContainer(props) {
 
       setData({ habitatTrendData: countryData, spiScoreData: spiCountryData });
     } else {
-      // const habitatTrendUrl = `https://api.mol.org/2.x/species/indicators/habitat-trends/bycountry?scientificname=${scientificName}`;
-      // const spiScoreURL = `https://api.mol.org/2.x/indicators/sps/species_bycountry?scientificname=${scientificName}`;
-
-      const speciesScoreURL = `https://api.mol.org/2.x/nbis/species-scores?species=${scientificName}`;
+      const speciesScoreURL = `${DASHBOARD_URLS.SPECIES_SCORE_URL}?species=${scientificName}`;
 
       const apiCalls = [speciesScoreURL];
       // const apiCalls = [speciesScoreURL];

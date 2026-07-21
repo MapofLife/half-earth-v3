@@ -2,8 +2,6 @@ import React, { useContext, useEffect, useState } from 'react';
 
 import { useT } from '@transifex/react';
 
-import { EEWWF_COUNTRY_LINES_FEATURE_ID } from 'utils/dashboard-utils';
-
 import { LightModeContext } from 'context/light-mode';
 import last from 'lodash/last';
 
@@ -145,7 +143,7 @@ function BioDiversityContainer(props) {
     }
 
     const scores = {
-      habitat: country?.shs[lastCountryYearValue - 1].shs.toFixed(1),
+      habitat: country?.shs[lastCountryYearValue - 1].shs?.toFixed(1) || 0,
       globalHabitat: ((globalAreaScore + globalConnectivityScore) / 2) * 100,
     };
 
@@ -275,11 +273,15 @@ function BioDiversityContainer(props) {
       speciesInfo.taxa
     );
 
-    map.add(webTileLayer);
-    await view.whenLayerView(webTileLayer);
+    if (webTileLayer) {
+      map.add(webTileLayer);
+      await view.whenLayerView(webTileLayer);
+    }
 
-    map.add(protectedLayers);
-    await view.whenLayerView(protectedLayers);
+    if (protectedLayers) {
+      map.add(protectedLayers);
+      await view.whenLayerView(protectedLayers);
+    }
 
     // Add layers to Map Legend
     const protectedAreaLayer = {
@@ -299,27 +301,11 @@ function BioDiversityContainer(props) {
     getLayerIcon(protectedLayers, protectedAreaLayer);
     getLayerIcon(webTileLayer, habitatLayer);
 
-    if (countryISO.toLowerCase() === 'ee') {
-      const layer = await EsriFeatureService.getFeatureLayer(
-        EEWWF_COUNTRY_LINES_FEATURE_ID,
-        countryISO,
-        LAYER_OPTIONS.EEWWF_COUNTRY_LINES
-      );
-
-      setRegionLayers({
-        ...regionLayers,
-        [layerName]: webTileLayer,
-        [LAYER_OPTIONS.PROTECTED_AREAS]: protectedLayers,
-        [LAYER_OPTIONS.EEWWF_COUNTRY_LINES]: layer,
-      });
-      map.add(layer);
-    } else {
-      setRegionLayers({
-        ...regionLayers,
-        [layerName]: webTileLayer,
-        [LAYER_OPTIONS.PROTECTED_AREAS]: protectedLayers,
-      });
-    }
+    setRegionLayers({
+      ...regionLayers,
+      [layerName]: webTileLayer,
+      [LAYER_OPTIONS.PROTECTED_AREAS]: protectedLayers,
+    });
 
     setIsLoading(false);
   };

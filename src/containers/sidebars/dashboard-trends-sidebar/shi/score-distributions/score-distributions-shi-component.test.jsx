@@ -317,4 +317,111 @@ describe('ScoreDistributionsShiComponent', () => {
       expect(global.fetch).toHaveBeenCalled();
     });
   });
+
+  it('formats SHI tooltip title for regular and top buckets', async () => {
+    render(
+      <LightModeContext.Provider value={{ lightMode: false }}>
+        <ScoreDistributionsShiComponent
+          setScientificName={vi.fn()}
+          setSelectedIndex={vi.fn()}
+          shiScoresData={[
+            {
+              bin: '0, habitat',
+              amphibians: 1,
+              birds: 2,
+              mammals: 3,
+              reptiles: 4,
+            },
+          ]}
+          shiSelectSpeciesData={[
+            {
+              species_shs: [
+                {
+                  species: 'Pipra aureola',
+                  commonname: 'Crimson-hooded Manakin',
+                  species_url: 'image',
+                  shs_score: 84.6,
+                  taxa: 'birds',
+                },
+              ],
+            },
+          ]}
+          shiActiveTrend="NATIONAL"
+          setMapLegendLayers={vi.fn()}
+          selectedProvince={{ region_name: 'Cusco', region_key: 'cusco' }}
+          setFromTrends={vi.fn()}
+          lang="en"
+          countryISO="PER"
+          zoneHistrogramData={[]}
+        />
+      </LightModeContext.Provider>
+    );
+
+    await waitFor(() => {
+      expect(chartProps).toBeDefined();
+    });
+
+    expect(
+      chartProps.options.plugins.tooltip.callbacks.title([{ label: '120' }])
+    ).toBe('> 120');
+    expect(
+      chartProps.options.plugins.tooltip.callbacks.title([{ label: '20' }])
+    ).toBe('20 - 25');
+  });
+
+  it('uses EE zone histogram data when active trend is zone and country is EE', async () => {
+    render(
+      <LightModeContext.Provider value={{ lightMode: false }}>
+        <ScoreDistributionsShiComponent
+          setScientificName={vi.fn()}
+          setSelectedIndex={vi.fn()}
+          shiScoresData={[
+            {
+              bin: '0, habitat',
+              amphibians: 0,
+              birds: 0,
+              mammals: 0,
+              reptiles: 0,
+            },
+          ]}
+          shiSelectSpeciesData={[]}
+          shiActiveTrend="ZONE_5"
+          setMapLegendLayers={vi.fn()}
+          selectedProvince={{ region_name: 'MEX', region_key: 'MEX' }}
+          setFromTrends={vi.fn()}
+          lang="en"
+          countryISO="EE"
+          zoneHistrogramData={[
+            {
+              project: 'eewwf',
+              region_key: 'MEX',
+              bin: '0, habitat',
+              birds_shi_count: 2,
+              mammals_shi_count: 1,
+              reptiles_shi_count: 1,
+              amphibians_shi_count: 1,
+              species_shs: [
+                {
+                  '': {
+                    species: 'Zoneus ee',
+                    commonname: 'EE Zone Species',
+                    species_url: 'zone-image',
+                    shs_score: 7.5,
+                    stewardship: 0.2,
+                    taxa: 'birds',
+                    threat_status: 'Least Concern',
+                  },
+                },
+              ],
+            },
+          ]}
+        />
+      </LightModeContext.Provider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('EE Zone Species')).toBeInTheDocument();
+      expect(screen.getByTestId('distribution-chart')).toBeInTheDocument();
+    });
+  });
 });
