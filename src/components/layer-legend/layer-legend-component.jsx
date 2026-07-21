@@ -641,11 +641,13 @@ function LayerLegendComponent(props) {
         )
       );
 
-      setPanamaLayers((prevLayers) =>
-        prevLayers.map((l) =>
-          l.id === layer.id ? { ...l, showLayer: !layer.showLayer } : l
-        )
-      );
+      if (countryISO.toLowerCase() === 'pan') {
+        setPanamaLayers((prevLayers) =>
+          prevLayers.map((l) =>
+            l.id === layer.id ? { ...l, showLayer: !layer.showLayer } : l
+          )
+        );
+      }
     }
   };
 
@@ -811,21 +813,23 @@ function LayerLegendComponent(props) {
           })}
         />
       </button>
-      <ul className={styles.layers}>
-        {Object.values(panamaLayers).map((layer) => (
-          <li key={`${layer.id}-${layer.label}`}>
-            <div className={styles.dataLayer}>
-              <div className={styles.layer}>
-                <div className={styles.title}>
-                  <span className={styles.label}>{layer.label}</span>
-                  <ArrowIcon className={styles.arrowIcon} />
+      {countryISO.toLowerCase() === 'pan' && (
+        <ul className={styles.layers}>
+          {Object.values(panamaLayers).map((layer) => (
+            <li key={`${layer.id}-${layer.label}`}>
+              <div className={styles.dataLayer}>
+                <div className={styles.layer}>
+                  <div className={styles.title}>
+                    <span className={styles.label}>{layer.label}</span>
+                    <ArrowIcon className={styles.arrowIcon} />
+                  </div>
+                  <Switch onChange={() => displayLayer(layer)} />
                 </div>
-                <Switch onChange={() => displayLayer(layer)} />
               </div>
-            </div>
-          </li>
-        ))}
-      </ul>
+            </li>
+          ))}
+        </ul>
+      )}
       {indigenousRegions.includes(countryISO) && (
         <ul className={styles.layers}>
           <li>
