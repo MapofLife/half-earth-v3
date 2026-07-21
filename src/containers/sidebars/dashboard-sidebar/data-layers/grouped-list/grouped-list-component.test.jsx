@@ -305,7 +305,7 @@ describe('GroupedListComponent', () => {
 
   it('creates a vector tile layer for public point observations', async () => {
     const pointItem = {
-      dataset_id: '9905692e-6a28-4310-b01e-476a471e5bf8',
+      dataset_id: '8492fb46-6ab9-43da-b2d9-dc33657ab095',
       dataset_title: 'GBIF',
       type_title: LAYER_TITLE_TYPES.POINT_OBSERVATIONS,
       isActive: false,
@@ -338,7 +338,7 @@ describe('GroupedListComponent', () => {
 
   it('removes an active public point observation layer', async () => {
     const pointItem = {
-      dataset_id: '9905692e-6a28-4310-b01e-476a471e5bf8',
+      dataset_id: '8492fb46-6ab9-43da-b2d9-dc33657ab095',
       dataset_title: 'GBIF',
       type_title: LAYER_TITLE_TYPES.POINT_OBSERVATIONS,
       isActive: true,

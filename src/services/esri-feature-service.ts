@@ -254,7 +254,7 @@ function getMVTSource(scientificname) {
 function getOccurrenceTileLayer(scientificname) {
   const dataLayerParams = {
     scientificname: scientificname,
-    dsids: '9905692e-6a28-4310-b01e-476a471e5bf8~794adb49-7458-41c4-a1c0-56537fdbec1d',
+    dsids: '828b650b-f198-4a3d-ae1c-13b533eca804~8492fb46-6ab9-43da-b2d9-dc33657ab095',
   };
   const dparams = new URLSearchParams(dataLayerParams);
 
