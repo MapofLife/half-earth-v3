@@ -5,24 +5,6 @@ import PrintParameters from '@arcgis/core/rest/support/PrintParameters';
 
 function PrintMapComponent({ view }) {
   const printMap = async () => {
-    // const printVM = new PrintViewModel({
-    //   view: view, // your MapView instance
-    // });
-    // // // 1. Generate the standard mapOptions block with the active viewport extent
-    // const mapOptions = {
-    //   showAttribution: true,
-    //   spatialReference: view.spatialReference.toJSON(),
-    //   extent: view.extent.toJSON(), // Extracts xmin, ymin, xmax, ymax automatically
-    // };
-
-    // // 2. Wrap it inside your structural output payload
-    // const finalExportPayload = {
-    //   mapOptions: mapOptions,
-    //   operationalLayers: view.map.toJSON(), // Loop your layers manually here if needed
-    // };
-
-    // console.log('printVM', finalExportPayload);
-
     const targetLayer = view.map.layers.items[7];
     let targetExtent;
 
@@ -53,59 +35,11 @@ function PrintMapComponent({ view }) {
       { animate: true }
     );
 
-    const tables = [
-      {
-        id: '19f8b2c3142-layer-2',
-        title: 'spi_test_table',
-        layerDefinition: { definitionExpression: '1=1' },
-        url: 'https://esri.mapoflife.ai/server/rest/services/Hosted/spi_test_table/FeatureServer/0',
-      },
-    ];
+    // need this id for print to work, could be anything
+    const layerId = 'asdf-layer-2';
 
-    const myCustomTables = [
-      {
-        id: '19f8b2c3142-layer-2',
-        title: 'spi_test_table',
-        layerDefinition: {
-          name: 'spi_test_table',
-          type: 'Table',
-          geometryType: null,
-          objectIdField: 'objectid',
-          fields: [
-            { name: 'objectid', type: 'esriFieldTypeOID', alias: 'OBJECTID' },
-            {
-              name: 'name',
-              type: 'esriFieldTypeString',
-              alias: 'name',
-              length: 256,
-            },
-            { name: 'spi', type: 'esriFieldTypeDouble', alias: 'spi' },
-            {
-              name: 'area_protected',
-              type: 'esriFieldTypeDouble',
-              alias: 'area_protected',
-            },
-            { name: 'year_', type: 'esriFieldTypeDouble', alias: 'year' },
-          ],
-        },
-        featureSet: {
-          features: [
-            {
-              attributes: {
-                objectid: 1,
-                name: 'Panama',
-                spi: 71,
-                area_protected: 31,
-                year_: 2025,
-              },
-            },
-          ],
-        },
-      },
-    ];
-
-    const myCustonTableLayer = {
-      id: '19f8b2c3142-layer-2',
+    const myCustomTableLayer = {
+      id: layerId,
       title: 'spi_test_table',
       layerType: 'FeatureLayer',
       featureCollection: {
@@ -133,7 +67,6 @@ function PrintMapComponent({ view }) {
                   type: 'esriFieldTypeDouble',
                   alias: 'area_protected',
                 },
-                { name: 'year_', type: 'esriFieldTypeDouble', alias: 'year' },
               ],
             },
             featureSet: {
@@ -144,7 +77,6 @@ function PrintMapComponent({ view }) {
                     name: 'Panama',
                     spi: 71,
                     area_protected: 31,
-                    year_: 2025,
                   },
                 },
                 {
@@ -153,7 +85,6 @@ function PrintMapComponent({ view }) {
                     name: 'Elise',
                     spi: 1,
                     area_protected: 3100,
-                    year_: 2025,
                   },
                 },
                 {
@@ -162,7 +93,6 @@ function PrintMapComponent({ view }) {
                     name: 'Kalkidan',
                     spi: 50,
                     area_protected: 4000,
-                    year_: 2025,
                   },
                 },
               ],
@@ -172,12 +102,31 @@ function PrintMapComponent({ view }) {
       },
     };
 
-    const blah = {
-      operationalLayers: [
-        ...view.map.toJSON().operationalLayers,
-        myCustonTableLayer,
-      ],
-      // tables: myCustomTables,
+    const mapJSON = view.map.toJSON();
+    mapJSON.operationalLayers.forEach((opLayer) => {
+      const matchingLayer = view.map.allLayers.find((l) => l.id === opLayer.id);
+      if (matchingLayer) {
+        // Reconstruct the drawingInfo wrapper required by printing/REST engines
+        opLayer.layerDefinition = opLayer.layerDefinition || {};
+
+        opLayer.layerDefinition.drawingInfo = {
+          renderer: matchingLayer.renderer
+            ? matchingLayer.renderer.toJSON()
+            : null,
+          transparency: matchingLayer.opacity
+            ? 100 - matchingLayer.opacity * 100
+            : 0,
+          labelingInfo: matchingLayer.labelingInfo
+            ? matchingLayer.labelingInfo.map((info) => info.toJSON())
+            : null,
+          showLabels: matchingLayer.labelsVisible,
+        };
+      }
+    });
+    const operationalLayersFromMap = mapJSON.operationalLayers;
+
+    const webMapAsJson = {
+      operationalLayers: [...operationalLayersFromMap, myCustomTableLayer],
       mapOptions: { extent: { ...targetExtent.toJSON() } },
       exportOptions: {
         dpi: 96,
@@ -197,13 +146,21 @@ function PrintMapComponent({ view }) {
           nonMetricLabel: 'mi',
         },
         legendOptions: { operationalLayers: [] },
+        titleText: 'My Custom Map Print',
+        authorText: 'GIS Department',
+        // Force the print service to generate legend items for your symbology
+        legendLayers: view.map.layers
+          .map((layer) => ({
+            layerId: layer.id,
+          }))
+          .toArray(),
       },
       reportOptions: {
         reportSectionOverrides: {
           'Species Protection Index': {
             name: '',
             title: 'spi_test_table',
-            sourceId: '19f8b2c3142-layer-2',
+            sourceId: layerId,
             isDsOutputDs: false,
           },
         },
@@ -219,6 +176,14 @@ function PrintMapComponent({ view }) {
             name: 'Panama',
           },
         ],
+        titleText: 'My Custom Map Print',
+        authorText: 'GIS Department',
+        // Force the print service to generate legend items for your symbology
+        legendLayers: view.map.layers
+          .map((layer) => ({
+            layerId: layer.id,
+          }))
+          .toArray(),
       },
       report: 'SPI_Summaries',
       showLabels: true,
@@ -230,7 +195,7 @@ function PrintMapComponent({ view }) {
       template: template,
       // Overrides the screen view extent with your custom bounding box geometry
       extraParameters: {
-        Web_Map_as_JSON: JSON.stringify(blah),
+        Web_Map_as_JSON: JSON.stringify(webMapAsJson),
       },
     });
 
