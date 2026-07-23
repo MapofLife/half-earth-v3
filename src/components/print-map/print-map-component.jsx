@@ -44,49 +44,199 @@ function PrintMapComponent({ view }) {
       }
     }
 
-    // await view.goTo(
-    //   {
-    //     target: targetExtent,
-    //     zoom: 7.5,
-    //     extent: targetExtent.clone(),
-    //   },
-    //   { animate: true }
-    // );
-
     await view.goTo(
       {
+        target: targetExtent,
         zoom: 7.5,
+        extent: targetExtent.clone(),
       },
       { animate: true }
     );
 
-    const template = new PrintTemplate({
-      format: 'pdf',
-      layout: 'map-only',
+    const tables = [
+      {
+        id: '19f8b2c3142-layer-2',
+        title: 'spi_test_table',
+        layerDefinition: { definitionExpression: '1=1' },
+        url: 'https://esri.mapoflife.ai/server/rest/services/Hosted/spi_test_table/FeatureServer/0',
+      },
+    ];
+
+    const myCustomTables = [
+      {
+        id: '19f8b2c3142-layer-2',
+        title: 'spi_test_table',
+        layerDefinition: {
+          name: 'spi_test_table',
+          type: 'Table',
+          geometryType: null,
+          objectIdField: 'objectid',
+          fields: [
+            { name: 'objectid', type: 'esriFieldTypeOID', alias: 'OBJECTID' },
+            {
+              name: 'name',
+              type: 'esriFieldTypeString',
+              alias: 'name',
+              length: 256,
+            },
+            { name: 'spi', type: 'esriFieldTypeDouble', alias: 'spi' },
+            {
+              name: 'area_protected',
+              type: 'esriFieldTypeDouble',
+              alias: 'area_protected',
+            },
+            { name: 'year_', type: 'esriFieldTypeDouble', alias: 'year' },
+          ],
+        },
+        featureSet: {
+          features: [
+            {
+              attributes: {
+                objectid: 1,
+                name: 'Panama',
+                spi: 71,
+                area_protected: 31,
+                year_: 2025,
+              },
+            },
+          ],
+        },
+      },
+    ];
+
+    const myCustonTableLayer = {
+      id: '19f8b2c3142-layer-2',
+      title: 'spi_test_table',
+      layerType: 'FeatureLayer',
+      featureCollection: {
+        layers: [
+          {
+            layerDefinition: {
+              name: 'spi_test_table',
+              type: 'Table',
+              objectIdField: 'objectid',
+              fields: [
+                {
+                  name: 'objectid',
+                  type: 'esriFieldTypeOID',
+                  alias: 'OBJECTID',
+                },
+                {
+                  name: 'name',
+                  type: 'esriFieldTypeString',
+                  alias: 'name',
+                  length: 256,
+                },
+                { name: 'spi', type: 'esriFieldTypeDouble', alias: 'spi' },
+                {
+                  name: 'area_protected',
+                  type: 'esriFieldTypeDouble',
+                  alias: 'area_protected',
+                },
+                { name: 'year_', type: 'esriFieldTypeDouble', alias: 'year' },
+              ],
+            },
+            featureSet: {
+              features: [
+                {
+                  attributes: {
+                    objectid: 1,
+                    name: 'Panama',
+                    spi: 71,
+                    area_protected: 31,
+                    year_: 2025,
+                  },
+                },
+                {
+                  attributes: {
+                    objectid: 1,
+                    name: 'Elise',
+                    spi: 1,
+                    area_protected: 3100,
+                    year_: 2025,
+                  },
+                },
+                {
+                  attributes: {
+                    objectid: 1,
+                    name: 'Kalkidan',
+                    spi: 50,
+                    area_protected: 4000,
+                    year_: 2025,
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    };
+
+    const blah = {
+      operationalLayers: [
+        ...view.map.toJSON().operationalLayers,
+        myCustonTableLayer,
+      ],
+      // tables: myCustomTables,
+      mapOptions: { extent: { ...targetExtent.toJSON() } },
       exportOptions: {
         dpi: 96,
-        width: view.width,
-        height: view.height,
       },
-      preserveScale: false,
+      format: 'pdf',
+      layout: 'spi_report_test',
+      layoutOptions: {
+        customTextElements: [
+          { name: 'Panama' },
+          { Date: '7/22/2026, 3:34:04 PM' },
+        ],
+        elementOverrides: {},
+        scaleBarOptions: {
+          metricUnit: 'esriKilometers',
+          metricLabel: 'km',
+          nonMetricUnit: 'esriMiles',
+          nonMetricLabel: 'mi',
+        },
+        legendOptions: { operationalLayers: [] },
+      },
+      reportOptions: {
+        reportSectionOverrides: {
+          'Species Protection Index': {
+            name: '',
+            title: 'spi_test_table',
+            sourceId: '19f8b2c3142-layer-2',
+            isDsOutputDs: false,
+          },
+        },
+      },
+    };
+
+    const template = new PrintTemplate({
+      format: 'pdf',
+      layout: 'spi_report_test',
+      layoutOptions: {
+        customTextElements: [
+          {
+            name: 'Panama',
+          },
+        ],
+      },
+      report: 'SPI_Summaries',
+      showLabels: true,
+      includeTables: true,
     });
 
     const params = new PrintParameters({
       view: view,
       template: template,
       // Overrides the screen view extent with your custom bounding box geometry
-      // printServiceRawParams: {
-      //   Web_Map_as_JSON: {
-      //     mapOptions: {
-      //       extent: targetExtent.toJSON(),
-      //       scale: 50000,
-      //     },
-      //   },
-      // },
+      extraParameters: {
+        Web_Map_as_JSON: JSON.stringify(blah),
+      },
     });
 
     const printServiceUrl =
-      'https://esri.mapoflife.ai/server/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task';
+      'https://esri.mapoflife.ai/server/rest/services/spireportest/GPServer/spireport';
+    // 'https://esri.mapoflife.ai/server/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task';
 
     await print.execute(printServiceUrl, params).then((result) => {
       // Handle the result, e.g., open the PDF in a new tab
