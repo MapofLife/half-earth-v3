@@ -35,7 +35,6 @@ function ScoreDistributionsSiiComponent(props) {
     setFromTrends,
     setSelectedIndex,
     setScientificName,
-    setSpsSpecies,
     lang,
     selectedProvince,
     countryISO,
@@ -322,7 +321,7 @@ function ScoreDistributionsSiiComponent(props) {
       countryISO.toLowerCase() === 'guy' &&
       siiActiveTrend === NATIONAL_TREND
     ) {
-      setSpsSpecies([
+      setSiiSpecies([
         {
           species: 'Pipra aureola',
           commonname: 'Crimson-hooded Manakin',
