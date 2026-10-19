@@ -514,7 +514,7 @@ describe('RegionsAnalysisComponent', () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByText('Acarai-Corentyne Corridor')).toBeInTheDocument();
+      expect(screen.getByText('Acarai-Rupununi Corridor')).toBeInTheDocument();
       expect(screen.getByText('Rapid Inventory 32')).toBeInTheDocument();
     });
   });
