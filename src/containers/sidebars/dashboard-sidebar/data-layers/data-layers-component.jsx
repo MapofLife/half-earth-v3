@@ -791,7 +791,7 @@ function DataLayerComponent(props) {
       });
 
       privateDataPoints[0].items = privateData;
-      privateDataPoints[0].showChildren = true;
+      privateDataPoints[0].showChildren = false;
 
       setPrivateDataPoints([privateDataPoints[0]]);
     }

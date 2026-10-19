@@ -38,7 +38,7 @@ function SpeciesHomeComponent(props) {
     <div className={cx(lightMode ? styles.light : '', styles.container)}>
       <div className={styles.content}>
         <span className={styles.sectionTitle}>
-          {t('Biodiversity Dashboard')}
+          {t('National Biodiversity Information System')}
         </span>
         <hr className={hrTheme.dark} />
         <p>
