@@ -404,7 +404,7 @@ function SpeciesFilterComponent(props) {
         setRegionLabel(t('NBS-OP Interventions'));
         break;
       case REGION_OPTIONS.ACC_REGION:
-        setRegionLabel(t('Acarai-Corentyne Corridor'));
+        setRegionLabel(t('Acarai-Rupununi Corridor'));
         break;
       case REGION_OPTIONS.DRAW:
         setRegionLabel(t('Custom Area'));
