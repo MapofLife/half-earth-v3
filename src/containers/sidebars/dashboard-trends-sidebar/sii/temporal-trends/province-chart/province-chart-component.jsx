@@ -379,7 +379,7 @@ function ProvinceChartComponent(props) {
         display: true,
         title: {
           display: true,
-          text: t('SII / Percent of Area Protected'),
+          text: t('Species Information Index'),
           color: lightMode ? getCSSVariable('black') : getCSSVariable('white'),
           font: {
             size: 14,
